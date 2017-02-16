@@ -32,7 +32,8 @@ export default createWidget('hamburger-categories', {
                       h('a.d-link.categories-link', { attributes: { href } }, I18n.t('filters.categories.title'))
                     )];
 
-    const categories = attrs.categories;
+    const uncategoriesId = 1
+    const categories = attrs.categories.filter(c => c.id != uncategoriesId);
     if (categories.length === 0) { return; }
     return result.concat(categories.map(c => this.attach('hamburger-category', c)));
   }
