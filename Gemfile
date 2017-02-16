@@ -182,3 +182,5 @@ gem 'memory_profiler', require: false, platform: :mri
 gem 'rmmseg-cpp', require: false
 
 gem 'logster'
+
+gem 'airbrake'
