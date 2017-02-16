@@ -184,3 +184,4 @@ gem 'rmmseg-cpp', require: false
 gem 'logster'
 
 gem 'airbrake'
+gem 'newrelic_rpm'
