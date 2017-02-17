@@ -379,6 +379,8 @@ GEM
       kgio (~> 2.6)
       raindrops (~> 0.7)
     uniform_notifier (1.10.0)
+    wtf_lang (0.4.0)
+      json
 
 PLATFORMS
   ruby
@@ -480,6 +482,7 @@ DEPENDENCIES
   uglifier
   unf
   unicorn
+  wtf_lang
 
 BUNDLED WITH
    1.14.2

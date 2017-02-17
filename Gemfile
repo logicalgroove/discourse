@@ -185,3 +185,4 @@ gem 'logster'
 
 gem 'airbrake'
 gem 'newrelic_rpm'
+gem 'wtf_lang'
