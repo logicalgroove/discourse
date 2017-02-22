@@ -22,23 +22,7 @@
       window.EmberENV['FORCE_JQUERY'] = true;
     </script>
 
-    <%= script "locales/#{I18n.locale}" %>
-    <%= script "ember_jquery" %>
-    <%= script "preload-store" %>
-    <%= script "vendor" %>
-    <%= script "pretty-text-bundle" %>
-    <%= script "application" %>
-    <%- if allow_plugins? %>
-    <%= script "plugin" %>
-    <%- end %>
-    <%- if allow_third_party_plugins? %>
-    <%= script "plugin-third-party" %>
-    <%- end %>
 
-    <%- if staff? %>
-      <script src="<%= Discourse.base_uri %>/extra-locales/admin"></script>
-      <%= script "admin" %>
-    <%- end %>
 
     <%- unless customization_disabled? %>
       <%= raw SiteCustomization.custom_head_tag(session[:preview_style]) %>
@@ -58,6 +42,24 @@
     <%= render_google_tag_manager_code %>
 
     <div class='debug-eyeline'></div>
+    <div>LOADING</div>
+    <%= script "locales/#{I18n.locale}" %>
+    <%= script "ember_jquery" %>
+    <%= script "preload-store" %>
+    <%= script "vendor" %>
+    <%= script "pretty-text-bundle" %>
+    <%= script "application" %>
+    <%- if allow_plugins? %>
+      <%= script "plugin" %>
+  <%- end %>
+  <%- if allow_third_party_plugins? %>
+      <%= script "plugin-third-party" %>
+  <%- end %>
+
+  <%- if staff? %>
+      <script src="<%= Discourse.base_uri %>/extra-locales/admin"></script>
+      <%= script "admin" %>
+  <%- end %>
 
     <noscript data-path="<%= request.env['PATH_INFO'] %>">
       <%= render partial: 'header' %>
@@ -120,5 +122,6 @@
     <%- unless customization_disabled? %>
       <%= raw SiteCustomization.custom_body_tag(session[:preview_style]) %>
     <%- end %>
+
   </body>
 </html>
