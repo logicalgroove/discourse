@@ -48,7 +48,7 @@ class Auth::DefaultCurrentUserProvider
                          .where('auth_token_updated_at IS NULL OR auth_token_updated_at > ?',
                                   SiteSetting.maximum_session_age.hours.ago)
                          .first
-        current_user.update_column(:last_visit_at, Time.now)
+        current_user.update_column(:last_visit_at, Time.now) if current_user
       end
 
       unless current_user
