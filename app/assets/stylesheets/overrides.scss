@@ -27,3 +27,12 @@ span.online {
     bottom: 9px;
   }
 }
+
+nav.post-controls button.widget-button.has-like {
+  color: #028ace;
+}
+
+nav.post-controls button.d-hover, nav.post-controls button.delete.d-hover, nav.post-controls button.like.d-hover {
+  color: rgba(31, 32, 34, 0.73);
+  background: transparent;
+}
