@@ -169,6 +169,7 @@ GEM
     multipart-post (2.0.0)
     mustache (1.0.3)
     netrc (0.11.0)
+    newrelic_rpm (3.18.1.330)
     nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
     nokogumbo (1.4.10)
@@ -378,6 +379,8 @@ GEM
       kgio (~> 2.6)
       raindrops (~> 0.7)
     uniform_notifier (1.10.0)
+    wtf_lang (0.4.0)
+      json
 
 PLATFORMS
   ruby
@@ -428,6 +431,7 @@ DEPENDENCIES
   mock_redis
   multi_json
   mustache
+  newrelic_rpm
   nokogiri
   oj
   omniauth
@@ -478,6 +482,7 @@ DEPENDENCIES
   uglifier
   unf
   unicorn
+  wtf_lang
 
 BUNDLED WITH
    1.14.2
