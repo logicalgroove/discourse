@@ -41,6 +41,7 @@ export function transformBasicPost(post) {
     user_id: post.user_id,
     usernameUrl: Discourse.getURL(`/users/${post.username}`),
     username: post.username,
+    user_online: post.user_online,
     avatar_template: post.avatar_template,
     bookmarked: post.bookmarked,
     yours: post.yours,
