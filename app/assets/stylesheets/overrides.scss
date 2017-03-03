@@ -14,6 +14,7 @@ span.online {
   right: 2px;
   bottom: -14px;
 }
+
 span.online-wrapper {
   color: #ffffff;
   font-size: 18px;
@@ -25,6 +26,7 @@ span.online-wrapper {
 .d-header .icons span.online[class^="fa fa-"], .d-header .icons span.online-wrapper[class^="fa fa-"] {
   display: none;
 }
+
 .user-card-avatar {
   .online {
     font-size: 18px;
@@ -107,8 +109,18 @@ nav.post-controls button.d-hover, nav.post-controls button.delete.d-hover, nav.p
     }
   }
 }
+
 .topic-poster {
   a {
     position: relative;
+  }
+}
+
+.rtl {
+  .google-adsense {
+    .google-adsense-content {
+      margin-left: auto !important;
+      margin-right: 0px !important;
+    }
   }
 }
