@@ -65,7 +65,6 @@ createWidget('topic-map-summary', {
         dateNode(attrs.topicCreatedAt)
       ]
     ));
-    console.log('attrs', attrs)
     contents.push(h('li',
       h('a', { attributes: { href: attrs.lastPostUrl } }, [
         h('h4', I18n.t('last_reply_lowercase')),
