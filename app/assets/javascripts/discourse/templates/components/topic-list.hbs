@@ -15,7 +15,7 @@
   </thead>
 {{/unless}}
 <tbody>
-  {{#each topics as |topic|}}
+  {{#each topics as |topic index|}}
     {{topic-list-item topic=topic
                       bulkSelectEnabled=bulkSelectEnabled
                       showTopicPostBadges=showTopicPostBadges
@@ -29,5 +29,6 @@
                       lastVisitedTopic=lastVisitedTopic
                       selected=selected}}
     {{raw "list/visited-line" lastVisitedTopic=lastVisitedTopic topic=topic}}
+    {{plugin-outlet name="topic-bottom" args=(hash index=index) }}
   {{/each}}
 </tbody>
