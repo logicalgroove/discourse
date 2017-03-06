@@ -84,11 +84,13 @@ nav.post-controls button.d-hover, nav.post-controls button.delete.d-hover, nav.p
     font-size: 7px;
     right: 1px;
     bottom: 1px;
+    @include small-width {  right: 5px }
   }
   span.online-wrapper {
     font-size: 11px;
     right: -1px;
     bottom: -2px;
+    @include small-width {  right: 3px }
   }
 }
 
