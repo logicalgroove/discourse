@@ -99,13 +99,13 @@ nav.post-controls button.d-hover, nav.post-controls button.delete.d-hover, nav.p
     font-size: 7px;
     right: 3px;
     bottom: -2px;
-    @include small-width {  bottom: 0px; }
+    @include small-width {  bottom: -1px; }
   }
   span.online-wrapper {
     font-size: 11px;
     right: 1px;
     bottom: -5px;
-    @include small-width {  bottom: -3px; }
+    @include small-width {  bottom: -4px; }
   }
   .avatars {
     span.online {
