@@ -115,8 +115,6 @@ nav.post-controls button.d-hover, nav.post-controls button.delete.d-hover, nav.p
     span.online-wrapper {
       right: 4px;
       bottom: -2px;
-      @include small-width {  bottom: -4px; }
-      @include medium-width {  bottom: -4px; }
     }
   }
 }
