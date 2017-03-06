@@ -149,3 +149,9 @@ nav.post-controls button.d-hover, nav.post-controls button.delete.d-hover, nav.p
     margin-left: 0px;
   }
 }
+
+.badge-wrapper {
+  .badge-category {
+    white-space: normal !important;
+  }
+}
