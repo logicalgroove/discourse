@@ -162,3 +162,15 @@ nav.post-controls button.d-hover, nav.post-controls button.delete.d-hover, nav.p
     white-space: normal !important;
   }
 }
+.topic-bottom-outlet-wrapper {
+  padding: 0px !important;
+  margin: 0px !important;
+  td {
+    padding: 0px !important;
+    margin: 0px !important;
+  }
+  border-bottom: none !important;
+  .google-adsense-content {
+    border-bottom: 1px solid #e9e9e9 !important;
+  }
+}
