@@ -174,7 +174,7 @@ describe Plugin::Instance do
           highlight: 'a87137',
           danger: 'e45735',
           success: '1ca551',
-          love: 'fa6c8d'
+          love: '028ace'
         )
       end
       expect(plugin.themes).to be_present

@@ -23,7 +23,7 @@ class ColorScheme < ActiveRecord::Base
           "highlight" =>         '#a87137',
           "danger" =>            '#e45735',
           "success" =>           '#1ca551',
-          "love" =>              '#fa6c8d'
+          "love" =>              '#028ace'
         }
       }
     ]
