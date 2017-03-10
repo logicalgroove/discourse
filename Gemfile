@@ -184,5 +184,5 @@ gem 'rmmseg-cpp', require: false
 gem 'logster'
 
 gem 'airbrake'
-gem 'newrelic_rpm'
+gem 'newrelic_rpm' if ENV['INCLUDE_NEWRELIC']
 gem 'wtf_lang'
