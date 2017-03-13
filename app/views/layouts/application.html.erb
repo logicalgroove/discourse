@@ -50,6 +50,8 @@
     <%- if SiteSetting.native_app_install_banner? %>
         <meta name="apple-itunes-app" content="app-id=1173672076">
     <%- end %>
+    <meta name="msapplication-TileColor" content="#b91d47">
+    <meta name="msapplication-TileImage" content="/images/mstile-144x144.png?v=oLLokpekrr">
 
     <%= yield :head %>
   </head>
