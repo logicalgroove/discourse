@@ -2307,6 +2307,7 @@ he:
   terms_of_service:
     title: "תנאי השימוש"
     signup_form_message: 'קראתי את ואני מסכים/מה עם <a href="/tos" target="_blank">תנאי השירות</a>.'
+  contacts: 'תיצור איתנו קשר'
   deleted: 'נמחק'
   upload:
     edit_reason: "עותקים מקומיים של תמונות שהורדו"
