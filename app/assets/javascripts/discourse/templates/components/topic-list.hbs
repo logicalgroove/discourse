@@ -29,10 +29,12 @@
                       lastVisitedTopic=lastVisitedTopic
                       selected=selected}}
     {{raw "list/visited-line" lastVisitedTopic=lastVisitedTopic topic=topic}}
-    <tr class="topic-bottom-outlet-wrapper">
-      <td colspan="100%">
-        {{plugin-outlet name="topic-bottom" args=(hash index=index) }}
-      </td>
-    </tr>
+    {{#unless suggestedTopics}}
+        <tr class="topic-bottom-outlet-wrapper">
+          <td colspan="100%">
+            {{plugin-outlet name="topic-bottom" args=(hash index=index) }}
+          </td>
+        </tr>
+    {{/unless}}
   {{/each}}
 </tbody>
