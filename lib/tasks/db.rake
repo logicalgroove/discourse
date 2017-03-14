@@ -24,6 +24,7 @@ task 'db:migrate' => ['environment', 'set_locale'] do
     SiteSetting.last_vacuum = Time.now.to_i
     puts "#{Time.now} VACUUM done"
   end
+  SeedFu.seed
 end
 
 task 'test:prepare' => 'environment' do

@@ -377,6 +377,12 @@ createWidget('post-article', {
 
 });
 
+let addPostClassesCallbacks = null;
+export function addPostClassesCallback(callback) {
+  addPostClassesCallbacks = addPostClassesCallbacks || [];
+  addPostClassesCallbacks.push(callback);
+}
+
 export default createWidget('post', {
   buildKey: attrs => `post-${attrs.id}`,
   shadowTree: true,
@@ -405,6 +411,14 @@ export default createWidget('post', {
       classNames.push('moderator');
     } else {
       classNames.push('regular');
+    }
+    if (addPostClassesCallbacks) {
+      for(let i=0; i<addPostClassesCallbacks.length; i++) {
+        let pluginClasses = addPostClassesCallbacks[i].call(this, attrs);
+        if (pluginClasses) {
+          classNames.push.apply(classNames, pluginClasses);
+        }
+      }
     }
     return classNames;
   },
