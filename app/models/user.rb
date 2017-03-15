@@ -162,7 +162,7 @@ class User < ActiveRecord::Base
     lower = username.downcase
 
     User.where(username_lower: lower).blank? &&
-      !SiteSetting.reserved_usernames.split("|").any? { |reserved| reserved.casecmp(username) == 0 }
+      SiteSetting.reserved_usernames.split("|").all? { |reserved| !lower.match('^' + Regexp.escape(reserved).gsub('\*', '.*') + '$') }
   end
 
   def self.plugin_staff_user_custom_fields
@@ -275,7 +275,7 @@ class User < ActiveRecord::Base
       self.approved_by = approved_by
     end
 
-    self.approved_at = Time.now
+    self.approved_at = Time.zone.now
 
     if result = save
       send_approval_email if send_mail
@@ -355,7 +355,7 @@ class User < ActiveRecord::Base
   TRACK_FIRST_NOTIFICATION_READ_DURATION = 1.week.to_i
 
   def read_first_notification?
-    if (trust_level > TrustLevel[0] ||
+    if (trust_level > TrustLevel[1] ||
         created_at < TRACK_FIRST_NOTIFICATION_READ_DURATION.seconds.ago)
 
       return true
@@ -1016,7 +1016,6 @@ class User < ActiveRecord::Base
       @raw_password = nil
     end
   end
-
 
   def hash_password(password, salt)
     raise StandardError.new("password is too long") if password.size > User.max_password_length

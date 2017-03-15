@@ -32,7 +32,7 @@
     {{#unless suggestedTopics}}
         <tr class="topic-bottom-outlet-wrapper">
           <td colspan="100%">
-            {{plugin-outlet name="topic-bottom" args=(hash index=index) }}
+            {{plugin-outlet name="topic-bottom" args=(hash index=index topic=topic) }}
           </td>
         </tr>
     {{/unless}}
