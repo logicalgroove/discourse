@@ -20,8 +20,8 @@ class ContactsController < ApplicationController
   end
 
   def create
-    if params[:message]
-      ContactsMailer.contact_us(params[:message]).deliver_now
+    if params[:message] && params[:email]
+      ContactsMailer.contact_us(params).deliver_now
       flash[:notice] = I18n.t('contact_success_message')
     end
     redirect_to contacts_path
