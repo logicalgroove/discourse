@@ -6,6 +6,6 @@ class ContactsMailer < ActionMailer::Base
   def contact_us(params)
     @message = params[:message]
     @email = params[:email]
-    mail(to: ['vl.shidlovsky@sumatosoft.com', 'atanych@gmail.com'], subject: I18n.t('contact_success_message_email_title'), from: 'server@sportenter.co.il')
+    mail(to: ['support@sportenter.co.il'], subject: I18n.t('contact_success_message_email_title'), from: 'server@sportenter.co.il')
   end
 end
