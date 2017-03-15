@@ -125,6 +125,8 @@ nav.post-controls button.d-hover, nav.post-controls button.delete.d-hover, nav.p
 .details {
   .primary {
     .avatar-wrapper {
+      float: left;
+      margin-right: 10px;
       span.online {
         font-size: 18px;
         top: 94px;
@@ -139,6 +141,18 @@ nav.post-controls button.d-hover, nav.post-controls button.delete.d-hover, nav.p
         right: auto;
         bottom: auto;
       }
+    }
+  }
+}
+.collapsed-info {
+  .avatar-wrapper {
+    span.online, span.online-wrapper {
+      display: none !important;
+    }
+
+    img {
+      @include small-width {  margin-right: 0px !important; }
+
     }
   }
 }
