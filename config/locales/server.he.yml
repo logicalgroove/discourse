@@ -7,6 +7,8 @@
 
 he:
   contact_success_message: 'הודעה נשלחה בהצלחה'
+  contact_success_message_email_title: 'מצורה צור קשר'
+  contact_success_message_email_h: 'דברי טופס צור קשר'
   dates:
     short_date_no_year: "D MMM"
     short_date: "D MMM, YYYY"
