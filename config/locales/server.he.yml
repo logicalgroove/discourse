@@ -6,6 +6,7 @@
 # https://www.transifex.com/projects/p/discourse-org/
 
 he:
+  contact_success_message: 'הודעה נשלחה בהצלחה'
   dates:
     short_date_no_year: "D MMM"
     short_date: "D MMM, YYYY"
@@ -2308,6 +2309,7 @@ he:
     title: "תנאי השימוש"
     signup_form_message: 'קראתי את ואני מסכים/מה עם <a href="/tos" target="_blank">תנאי השירות</a>.'
   contacts: 'תיצור איתנו קשר'
+  send: "לִשְׁלוֹחַ"
   deleted: 'נמחק'
   upload:
     edit_reason: "עותקים מקומיים של תמונות שהורדו"

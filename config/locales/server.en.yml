@@ -15,6 +15,7 @@
 # http://yamllint.com/
 
 en:
+  contact_success_message: 'Message successfully is sent'
   dates:
     # Use Moment.js format string: http://momentjs.com/docs/#/displaying/format/
     short_date_no_year: "D MMM"

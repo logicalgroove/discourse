@@ -1,3 +1,19 @@
-import staticRouteBuilder from 'discourse/lib/static-route-builder';
+import { ajax } from 'discourse/lib/ajax';
+export default Discourse.Route.extend({
+    model() {
+        return ajax("/contacts.json").then(result => {
+            return result
+        });
+    },
 
-export default staticRouteBuilder('contacts');
+    titleToken() {
+        return I18n.t('contacts');
+    },
+
+    actions: {
+        didTransition() {
+            this.controllerFor("application").set("showFooter", true);
+            return true;
+        }
+    }
+});

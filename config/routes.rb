@@ -37,6 +37,9 @@ Discourse::Application.routes.draw do
     end
   end
 
+  resources :contacts do
+  end
+
   get "finish-installation" => "finish_installation#index"
   get "finish-installation/register" => "finish_installation#register"
   post "finish-installation/register" => "finish_installation#register"
@@ -298,7 +301,6 @@ Discourse::Application.routes.draw do
   get "faq" => "static#show", id: "faq", constraints: { format: /(json|html)/ }
   get "guidelines" => "static#show", id: "guidelines", as: 'guidelines', constraints: { format: /(json|html)/ }
   get "tos" => "static#show", id: "tos", as: 'tos', constraints: { format: /(json|html)/ }
-  get "contacts" => "static#show", id: "contacts", as: 'contacts', constraints: { format: /(json|html)/ }
   get "privacy" => "static#show", id: "privacy", as: 'privacy', constraints: { format: /(json|html)/ }
   get "signup" => "static#show", id: "signup", constraints: { format: /(json|html)/ }
   get "login-preferences" => "static#show", id: "login", constraints: { format: /(json|html)/ }
