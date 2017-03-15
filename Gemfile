@@ -185,6 +185,6 @@ gem 'logster'
 
 gem 'airbrake'
 
-gem 'newrelic_rpm', group: :relic
+# gem 'newrelic_rpm', group: :relic
 
 gem 'wtf_lang'
