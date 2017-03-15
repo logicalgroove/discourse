@@ -131,6 +131,7 @@ export default createWidget('hamburger-menu', {
   footerLinks(prioritizeFaq, faqUrl) {
     const links = [];
     links.push({ route: 'about', className: 'about-link', label: 'about.simple_title' });
+    links.push({ route: 'contacts', className: 'contacts-link', label: 'contacts' });
 
     if (!prioritizeFaq) {
       links.push({ href: faqUrl, className: 'faq-link', label: 'faq' });
