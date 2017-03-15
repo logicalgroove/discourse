@@ -16,6 +16,8 @@
 
 en:
   contact_success_message: 'Message successfully is sent'
+  contact_success_message_email_title: 'From Form Contact Us'
+  contact_success_message_email_h: 'Message from Form Contact Us'
   dates:
     # Use Moment.js format string: http://momentjs.com/docs/#/displaying/format/
     short_date_no_year: "D MMM"

@@ -5,6 +5,6 @@ class ContactsMailer < ActionMailer::Base
 
   def contact_us(message)
     @message = message
-    mail(to: 'atanych@gmail.com', subject: 'From Form Contact Us', from: 'server@sportenter.co.il')
+    mail(to: 'atanych@gmail.com', subject: I18n('contact_success_message_email_title'), from: 'server@sportenter.co.il')
   end
 end
