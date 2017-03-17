@@ -7,7 +7,7 @@ $(function() {
         var messageField = $('form.contact-us #contact-us-message')
         emailField.css('border-color', emailField.val() && validateEmail(emailField.val()) ? '#b1b1b1' : '#e45735')
         messageField.css('border-color', messageField.val() ? '#b1b1b1' : '#e45735')
-        return !!(emailField.val() && messageField.val())
+        return !!(emailField.val() && validateEmail(emailField.val()) && messageField.val())
     })
 
     function validateEmail(email) {
