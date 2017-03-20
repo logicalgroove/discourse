@@ -206,5 +206,6 @@ nav.post-controls button.d-hover, nav.post-controls button.delete.d-hover, nav.p
 
 button {
   outline: none !important;
-  box-shadow: none !important;;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
