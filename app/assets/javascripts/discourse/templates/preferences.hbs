@@ -165,6 +165,11 @@
       {{desktop-notification-config}}
       <div class="instructions">{{i18n 'user.desktop_notifications.each_browser_note'}}</div>
     </div>
+
+    <div class="control-group other">
+      {{plugin-outlet name="user-custom-preferences" args=(hash model=model)}}
+    </div>
+
     <div class="control-group category">
       <label class="control-label">{{i18n 'user.categories_settings'}}</label>
       <div class="controls category-controls">
