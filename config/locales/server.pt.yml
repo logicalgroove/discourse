@@ -232,6 +232,41 @@ pt:
       - Críticas construtivas são bem-vindas, mas critique *ideias*, não pessoas.
 
       Para mais, [verifique as orientações da comunidade](/guidelines). Este painel irá aparecer apenas para o seu primeiro %{education_posts_text}.
+    avatar: |
+      ### E que tal uma fotografia para a sua conta?
+
+      Publicou alguns tópicos e respostas, mas a sua fotografia de perfil não é tão única como você o é -- é apenas uma letra.
+
+      Considerou **[visitar o seu perfil de utilizador](%{profile_path})** e carregar uma fotografia que o represente?
+
+      É mais fácil seguir discussões e encontrar pessoas interessantes em conversações quando toda a gente tem uma fotografia de perfil única!
+    sequential_replies: |
+      ### Considere responder a várias mensagens de uma única vez
+
+      Em vez de várias respostas sequenciais a um tópico, por favor considere uma única resposta que inclua citações de mensagens anteriores ou referências a @nome.
+
+      Pode editar a sua resposta anterior para adicionar uma citação ao destacar o texto e selecionar o botão  <b>resposta com citação</b> que aparece.
+
+      É mais fácil para todos ler tópicos que tenham poucas respostas em profundidade em vez de muitas mas pequenas respostas individuais.
+    dominating_topic: |+
+      ### Deixe que os outros se juntem à conversa
+
+      Este tópico é claramente importante para si &ndash; publicou mais de %{percent}% das respostas aqui.
+
+      Tem a certeza de que está a fornecer o tempo adequado para que outras pessoas também possam partilhar os seus pontos de vista?
+
+    too_many_replies: |+
+      ### Chegou ao limite de respostas para este tópico
+
+      Pedimos desculpa mas novos utilizadores estão temporariamente limitados a %{newuser_max_replies_per_topic} respostas no mesmo tópico.
+
+      Em vez de adicionar outra resposta, por favor considere editar as suas respostas anteriores, ou visitar outros tópicos.
+    reviving_old_topic: |
+      ### Reavivar este tópico?
+
+      A última resposta a este tópico tem agora %{days} dias. A sua resposta irá sobressair no tópico, no topo da sua lista e notificar todos os que anteriormente estavam envolvidos nesta conversação.
+
+      Tem a certeza que pretende continuar esta conversação antiga?
   activerecord:
     attributes:
       category:
@@ -309,7 +344,6 @@ pt:
       (Para mais informação acerca dos Níveis de Confiança, [veja este tópico][confiança]. Por favor tenha conhecimento que apenas membros que continuam a corresponder aos requisitos ao longo do tempo, irão manter-se habituais.)
 
       [confiança]: https://meta.discourse.org/t/what-do-user-trust-levels-do/4924
-
   category:
     topic_prefix: "Acerca da categoria %{category}"
     replace_paragraph: "(Substitua este primeiro parágrafo com uma breve descrição da sua nova categoria. Este guia irá aparecer na área de seleção da categoria, por isso tente mantê-lo abaixo dos 200 caracteres. **Até editar esta descrição ou criar tópicos, esta categoria não irá aparecer na página das categorias.**)"
@@ -1596,7 +1630,6 @@ pt:
         Pedimos desculpa mas a sua mensagem de email para %{destination} (intitulada %{former_title}) não funcionou.
 
         A sua conta associada com este endereço de email foi bloqueada.
-
     email_reject_reply_user_not_matching:
       subject_template: "[%{site_name}] Problema de email -- Endereço de Resposta Inesperado"
       text_body_template: |+

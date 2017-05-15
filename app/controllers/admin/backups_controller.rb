@@ -57,12 +57,7 @@ class Admin::BackupsController < Admin::AdminController
   end
 
   def show
-
-    if !EmailBackupToken.compare(current_user.id, params.fetch(:token))
-      @error = I18n.t('download_backup_mailer.no_token')
-    end
-    if !@error && backup = Backup[params.fetch(:id)]
-      EmailBackupToken.del(current_user.id)
+    if backup = Backup[params.fetch(:id)]
       StaffActionLogger.new(current_user).log_backup_download(backup)
       headers['Content-Length'] = File.size(backup.path).to_s
       send_file backup.path

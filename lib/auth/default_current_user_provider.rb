@@ -117,25 +117,9 @@ class Auth::DefaultCurrentUserProvider
 
   def refresh_session(user, session, cookies)
 
-    # if user was not loaded, no point refreshing session
-    # it could be an anonymous path, this would add cost
-    return if is_api? || !@env.key?(CURRENT_USER_KEY)
-
-    if !is_user_api? && @user_token && @user_token.user == user
-      rotated_at = @user_token.rotated_at
-
-      needs_rotation = @user_token.auth_token_seen ? rotated_at < UserAuthToken::ROTATE_TIME.ago : rotated_at < UserAuthToken::URGENT_ROTATE_TIME.ago
-
-      if !@user_token.legacy && needs_rotation
-        if @user_token.rotate!(user_agent: @env['HTTP_USER_AGENT'],
-                              client_ip: @request.ip,
-                              path: @env['REQUEST_PATH'])
-          cookies[TOKEN_COOKIE] = cookie_hash(@user_token.unhashed_auth_token)
-        end
-      elsif @user_token.legacy
-        # make a new token
-        log_on_user(user, session, cookies)
-      end
+    if user && !is_user_api? && (!user.auth_token_updated_at || user.auth_token_updated_at <= 1.hour.ago)
+      user.update_column(:auth_token_updated_at, Time.zone.now)
+      cookies[TOKEN_COOKIE] = cookie_hash(user)
     end
 
     if !user && cookies.key?(TOKEN_COOKIE)

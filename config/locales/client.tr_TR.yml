@@ -345,9 +345,7 @@ tr_TR:
       selector_placeholder: "Üye ekle"
       owner: "sahip"
       visible: "Grup tüm kullanıcılar tarafından görüntülenebiliyor"
-      index:
-        title: "Gruplar"
-        empty: "Görünen hiç bir grup bulunmamaktadır."
+      index: "Gruplar"
       title:
         other: "gruplar"
       activity: "Etkinlik"

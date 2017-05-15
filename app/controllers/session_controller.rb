@@ -6,6 +6,8 @@ class SessionController < ApplicationController
   skip_before_filter :redirect_to_login_if_required
   skip_before_filter :preload_json, :check_xhr, only: ['sso', 'sso_login', 'become', 'sso_provider', 'destroy']
 
+  ACTIVATE_USER_KEY = "activate_user"
+
   def csrf
     render json: {csrf: form_authenticity_token }
   end
@@ -44,6 +46,11 @@ class SessionController < ApplicationController
         sso.external_id = current_user.id.to_s
         sso.admin = current_user.admin?
         sso.moderator = current_user.moderator?
+        if sso.return_sso_url.blank?
+          render plain: "return_sso_url is blank, it must be provided", status: 400
+          return
+        end
+
         if request.xhr?
           cookies[:sso_destination_url] = sso.to_url(sso.return_sso_url)
         else
@@ -276,6 +283,7 @@ class SessionController < ApplicationController
   end
 
   def not_activated(user)
+    session[ACTIVATE_USER_KEY] = user.id
     render json: {
       error: I18n.t("login.not_activated"),
       reason: 'not_activated',
@@ -303,6 +311,7 @@ class SessionController < ApplicationController
   end
 
   def login(user)
+    session.delete(ACTIVATE_USER_KEY)
     log_on_user(user)
 
     if payload = session.delete(:sso_payload)

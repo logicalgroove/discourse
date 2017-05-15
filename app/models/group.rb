@@ -162,6 +162,31 @@ class Group < ActiveRecord::Base
     result.order('posts.created_at desc')
   end
 
+  def messages_for(guardian, before_post_id=nil)
+    result = Post.includes(:user, :topic, topic: :category)
+                 .references(:posts, :topics, :category)
+                 .where('topics.archetype = ?', Archetype.private_message)
+                 .where(post_type: Post.types[:regular])
+                 .where('topics.id IN (SELECT topic_id FROM topic_allowed_groups WHERE group_id = ?)', self.id)
+
+    result = guardian.filter_allowed_categories(result)
+    result = result.where('posts.id < ?', before_post_id) if before_post_id
+    result.order('posts.created_at desc')
+  end
+
+  def mentioned_posts_for(guardian, before_post_id=nil)
+    result = Post.joins(:group_mentions)
+                 .includes(:user, :topic, topic: :category)
+                 .references(:posts, :topics, :category)
+                 .where('topics.archetype <> ?', Archetype.private_message)
+                 .where(post_type: Post.types[:regular])
+                 .where('group_mentions.group_id = ?', self.id)
+
+    result = guardian.filter_allowed_categories(result)
+    result = result.where('posts.id < ?', before_post_id) if before_post_id
+    result.order('posts.created_at desc')
+  end
+
   def self.trust_group_ids
     (10..19).to_a
   end

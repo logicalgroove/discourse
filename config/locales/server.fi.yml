@@ -265,16 +265,7 @@ fi:
 
       Tämä ketju on selvästikin tärkeä sinulle &ndash; olet kirjoittanut yli %{percent}% vastauksista.
 
-      Oletko varma, että annat muillekin riittävästi aikaa jakaa omia ajatuksiaan?
-
-    get_a_room: |
-      ### Harkitse vastaamista muillekin
-
-      Olet vastannut jo %{count} kertaa käyttäjälle @%{reply_username} tässä ketjussa.
-
-      Oletko harkinnut vastaavasi myös *muille* keskusteluun osallistuville? Parhaissa keskusteluissa on useita ääniä ja näkökantoja.
-
-      Jos haluat jatkaa keskustelua tämän käyttäjän kanssa edelleen, [lähetä hänelle yksityisviesti](/users/%{reply_username}).
+      Oletko varma, että annat myös muille riittävästi aikaa jakaa omia näkökulmiaan?
     too_many_replies: |
       ### Olet kirjoittanut enimmäismäärän vastauksia tähän ketjuun
 
@@ -1783,7 +1774,6 @@ fi:
         Pahoittelemme, mutta sähköpostin lähettäminen tänne %{destination} (otsikolla %{former_title}) ei onnistunut.
 
         Viestisi lähetettiin estetystä sähköpostiosoitteesta. Yritä lähettää viesti toisesta sähköpostiosoitteesta tai ota yhteyttä henkilökuntaan.
-
     email_reject_inactive_user:
       title: "Sähköposti hylätty - aktivoimaton käyttäjä"
       subject_template: "[%{site_name}]  Sähköpostiongelma -- Aktivoimaton käyttäjä"
@@ -1821,7 +1811,6 @@ fi:
         Emme löytäneet sähköpostiviestistäsi sisältöä.
 
         Jos saat tämän viestin ja viestisi _sisälsi_ sisältöä, yritä uudestaan yksinkertaisemmalla muotoilulla.
-
     email_reject_parsing:
       title: "Sähköposti hylätty - jäsennys"
       subject_template: "[%{site_name}] Sähköpostiongelma -- Sisältöä ei tunnistettu"
@@ -2255,7 +2244,6 @@ fi:
         Vahvista sähköpostiosoitteesti sivustolle %{site_name} klikkaamalla linkkiä:
 
         %{base_url}/users/authorize-email/%{email_token}
-
     notify_old_email:
       title: "Ilmoita vanhaan sähköpostiosoitteeseen"
       subject_template: "[%{site_name}] Sähköpostiosoitteesi on vaihdettu"

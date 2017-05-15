@@ -1039,6 +1039,13 @@ fa_IR:
         ```
     csv_export_succeeded:
       subject_template: "خارج کردن اطلاعات کامل شد"
+      text_body_template: |+
+        خارج کردن فایل ها با موفقیت انجام شد! :dvd:
+
+
+        <a class="attachment" href="%{download_link}">%{file_name}</a> (%{file_size})
+
+        پیوند زیر برای دانلود فقط برای 48 ساعت اعتبار دارد.
     csv_export_failed:
       subject_template: "خارج کردن فایل ها ناموفق شد"
       text_body_template: "ما متاسفیم٬ ولی خارج کردن اطلاعات ناموفق شد. لطفا سیستم را چک کنید یا با یکی از مدیران تماس بگیرید. "
