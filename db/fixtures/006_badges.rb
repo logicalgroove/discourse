@@ -256,15 +256,16 @@ end
 end
 
 Badge.seed do |b|
-  b.id = Badge::OneYearAnniversary
+  b.id = Badge::Anniversary
   b.name = "Anniversary"
   b.default_icon = "fa-clock-o"
   b.badge_type_id = BadgeType::Silver
-  b.query = BadgeQueries::OneYearAnniversary
   b.default_badge_grouping_id = BadgeGrouping::Community
+  b.query = nil
   b.trigger = Badge::Trigger::None
   b.auto_revoke = false
   b.system = true
+  b.multiple_grant = true
 end
 
 [
@@ -394,6 +395,20 @@ Badge.seed do |b|
   b.multiple_grant = false
   b.target_posts = true
   b.show_posts = true
+  b.query = nil
+  b.badge_grouping_id = BadgeGrouping::GettingStarted
+  b.default_badge_grouping_id = BadgeGrouping::GettingStarted
+  b.trigger = Badge::Trigger::None
+  b.system = true
+end
+
+Badge.seed do |b|
+  b.id = Badge::NewUserOfTheMonth
+  b.name = "New User of the Month"
+  b.badge_type_id = BadgeType::Bronze
+  b.multiple_grant = false
+  b.target_posts = false
+  b.show_posts = false
   b.query = nil
   b.badge_grouping_id = BadgeGrouping::GettingStarted
   b.default_badge_grouping_id = BadgeGrouping::GettingStarted

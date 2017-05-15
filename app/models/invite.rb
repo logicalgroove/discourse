@@ -1,6 +1,7 @@
 require_dependency 'rate_limiter'
 
 class Invite < ActiveRecord::Base
+  class UserExists < StandardError; end
   include RateLimiter::OnCreateRecord
   include Trashable
 
@@ -103,7 +104,7 @@ class Invite < ActiveRecord::Base
 
     if user
       extend_permissions(topic, user, invited_by) if topic
-      return nil
+      raise UserExists.new I18n.t("invite.user_exists", email: lower_email, username: user.username)
     end
 
     invite = Invite.with_deleted
@@ -115,6 +116,8 @@ class Invite < ActiveRecord::Base
       invite.destroy
       invite = nil
     end
+
+    invite.update_columns(created_at: Time.zone.now, updated_at: Time.zone.now) if invite
 
     if !invite
       create_args = { invited_by: invited_by, email: lower_email }

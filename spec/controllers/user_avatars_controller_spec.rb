@@ -10,7 +10,7 @@ describe UserAvatarsController do
     end
 
     it 'returns an avatar if we are allowing the proxy' do
-      response = get :show_proxy_letter, version: 'v2', letter: 'a', color: 'aaaaaa', size: 20
+      response = get :show_proxy_letter, version: 'v2', letter: 'a', color: 'aaaaaa', size: 360
       expect(response.status).to eq(200)
     end
   end
@@ -24,7 +24,7 @@ describe UserAvatarsController do
       SiteSetting.s3_upload_bucket = "test"
       SiteSetting.s3_cdn_url = "http://cdn.com"
 
-      FakeWeb.register_uri(:get, "http://cdn.com/something/else", :body => 'image')
+      stub_request(:get, "http://cdn.com/something/else").to_return(body: 'image')
 
       GlobalSetting.expects(:cdn_url).returns("http://awesome.com/boom")
 

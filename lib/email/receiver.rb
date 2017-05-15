@@ -1,7 +1,8 @@
 require "digest"
 require_dependency "new_post_manager"
 require_dependency "post_action_creator"
-require_dependency "email/html_cleaner"
+require_dependency "html_to_markdown"
+require_dependency "upload_creator"
 
 module Email
 
@@ -188,17 +189,21 @@ module Email
         text = fix_charset(@mail)
       end
 
-      if html.present? && (SiteSetting.incoming_email_prefer_html || text.blank?)
-        html = Email::HtmlCleaner.new(html).output_html
-        html = trim_discourse_markers(html)
-        html, elided = EmailReplyTrimmer.trim(html, true)
-        return [html, elided]
+      text, elided_text = if text.present?
+        text = trim_discourse_markers(text)
+        EmailReplyTrimmer.trim(text, true)
       end
 
-      if text.present?
-        text = trim_discourse_markers(text)
-        text, elided = EmailReplyTrimmer.trim(text, true)
-        return [text, elided]
+      markdown, elided_markdown = if html.present?
+        markdown = HtmlToMarkdown.new(html, keep_img_tags: true, keep_cid_imgs: true).to_markdown
+        markdown = trim_discourse_markers(markdown)
+        EmailReplyTrimmer.trim(markdown, true)
+      end
+
+      if text.blank? || (SiteSetting.incoming_email_prefer_html && markdown.present?)
+        return [markdown, elided_markdown]
+      else
+        return [text, elided_text]
       end
     end
 
@@ -212,6 +217,13 @@ module Email
       # common encodings
       encodings = ["UTF-8", "ISO-8859-1"]
       encodings.unshift(mail_part.charset) if mail_part.charset.present?
+
+      # mail (>=2.5) decodes mails with 8bit transfer encoding to utf-8, so
+      # always try UTF-8 first
+      if mail_part.content_transfer_encoding == "8bit"
+        encodings.delete("UTF-8")
+        encodings.unshift("UTF-8")
+      end
 
       encodings.uniq.each do |encoding|
         fixed = try_to_encode(string, encoding)
@@ -302,11 +314,11 @@ module Email
 
     def destinations
       all_destinations
-        .map { |d| check_address(d) }
+        .map { |d| Email::Receiver.check_address(d) }
         .drop_while(&:blank?)
     end
 
-    def check_address(address)
+    def self.check_address(address)
       # only check for a group/category when 'email_in' is enabled
       if SiteSetting.email_in
         group = Group.find_by_email(address)
@@ -317,7 +329,7 @@ module Email
       end
 
       # reply
-      match = reply_by_email_address_regex.match(address)
+      match = Email::Receiver.reply_by_email_address_regex.match(address)
       if match && match.captures
         match.captures.each do |c|
           next if c.blank?
@@ -443,7 +455,7 @@ module Email
       true
     end
 
-    def reply_by_email_address_regex
+    def self.reply_by_email_address_regex
       @reply_by_email_address_regex ||= begin
         reply_addresses = [
            SiteSetting.reply_by_email_address,
@@ -553,17 +565,23 @@ module Email
     def create_post_with_attachments(options={})
       # deal with attachments
       attachments.each do |attachment|
-        tmp = Tempfile.new("discourse-email-attachment")
+        tmp = Tempfile.new(["discourse-email-attachment", File.extname(attachment.filename)])
         begin
           # read attachment
           File.open(tmp.path, "w+b") { |f| f.write attachment.body.decoded }
           # create the upload for the user
           opts = { is_attachment_for_group_message: options[:is_group_message] }
-          upload = Upload.create_for(options[:user].id, tmp, attachment.filename, tmp.size, opts)
+          upload = UploadCreator.new(tmp, attachment.filename, opts).create_for(options[:user].id)
           if upload && upload.errors.empty?
             # try to inline images
-            if attachment.content_type.start_with?("image/") && options[:raw][/\[image: .+ \d+\]/]
-              options[:raw].sub!(/\[image: .+ \d+\]/, attachment_markdown(upload))
+            if attachment.content_type.start_with?("image/")
+              if options[:raw][attachment.url]
+                options[:raw].sub!(attachment.url, upload.url)
+              elsif options[:raw][/\[image:.*?\d+[^\]]*\]/i]
+                options[:raw].sub!(/\[image:.*?\d+[^\]]*\]/i, attachment_markdown(upload))
+              else
+                options[:raw] << "\n\n#{attachment_markdown(upload)}\n\n"
+              end
             else
               options[:raw] << "\n\n#{attachment_markdown(upload)}\n\n"
             end
@@ -652,7 +670,7 @@ module Email
     end
 
     def should_invite?(email)
-      email !~ reply_by_email_address_regex &&
+      email !~ Email::Receiver.reply_by_email_address_regex &&
       email !~ group_incoming_emails_regex &&
       email !~ category_email_in_regex
     end

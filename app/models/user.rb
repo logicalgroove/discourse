@@ -37,7 +37,7 @@ class User < ActiveRecord::Base
   has_many :invites, dependent: :destroy
   has_many :topic_links, dependent: :destroy
   has_many :uploads
-  has_many :warnings
+  has_many :user_warnings
   has_many :user_archived_messages, dependent: :destroy
   has_many :email_change_requests, dependent: :destroy
   has_many :directory_items, dependent: :delete_all
@@ -93,7 +93,6 @@ class User < ActiveRecord::Base
   after_create :create_user_profile
   after_create :ensure_in_trust_level_group
   after_create :set_default_categories_preferences
-  after_create :trigger_user_created_event
 
   before_save :update_username_lower
   before_save :ensure_password_is_hashed
@@ -105,6 +104,7 @@ class User < ActiveRecord::Base
   after_save :badge_grant
   after_save :expire_old_email_tokens
   after_save :index_search
+  after_commit :trigger_user_created_event, on: :create
 
   before_destroy do
     # These tables don't have primary keys, so destroying them with activerecord is tricky:
@@ -124,8 +124,10 @@ class User < ActiveRecord::Base
   # set to true to optimize creation and save for imports
   attr_accessor :import_mode
 
+  scope :human_users, -> { where('users.id > 0') }
+
   # excluding fake users like the system user or anonymous users
-  scope :real, -> { where('users.id > 0').where('NOT EXISTS(
+  scope :real, -> { human_users.where('NOT EXISTS(
                      SELECT 1
                      FROM user_custom_fields ucf
                      WHERE
@@ -160,9 +162,15 @@ class User < ActiveRecord::Base
 
   def self.username_available?(username)
     lower = username.downcase
+    !reserved_username?(lower) && !User.where(username_lower: lower).exists?
+  end
 
-    User.where(username_lower: lower).blank? &&
-      SiteSetting.reserved_usernames.split("|").all? { |reserved| !lower.match('^' + Regexp.escape(reserved).gsub('\*', '.*') + '$') }
+  def self.reserved_username?(username)
+    lower = username.downcase
+
+    SiteSetting.reserved_usernames.split("|").any? do |reserved|
+      !!lower.match("^#{Regexp.escape(reserved).gsub('\*', '.*')}$")
+    end
   end
 
   def self.plugin_staff_user_custom_fields
@@ -269,7 +277,7 @@ class User < ActiveRecord::Base
   def approve(approved_by, send_mail=true)
     self.approved = true
 
-    if approved_by.is_a?(Fixnum)
+    if approved_by.is_a?(Integer)
       self.approved_by_id = approved_by
     else
       self.approved_by = approved_by
@@ -537,6 +545,8 @@ class User < ActiveRecord::Base
     # using update_column to avoid the AR transaction
     update_column(:last_seen_at, now)
     update_column(:first_seen_at, now) unless self.first_seen_at
+
+    DiscourseEvent.trigger(:user_seen, self)
   end
 
   def self.gravatar_template(email)
@@ -622,7 +632,7 @@ class User < ActiveRecord::Base
   end
 
   def warnings_received_count
-    warnings.count
+    user_warnings.count
   end
 
   def flags_received_count
@@ -748,7 +758,7 @@ class User < ActiveRecord::Base
     (tl_badge + other_badges).take(limit)
   end
 
-  def self.count_by_signup_date(start_date, end_date, group_id=nil)
+  def self.count_by_signup_date(start_date, end_date, group_id = nil)
     result = where('users.created_at >= ? AND users.created_at <= ?', start_date, end_date)
 
     if group_id
@@ -805,7 +815,7 @@ class User < ActiveRecord::Base
   end
 
   def find_email
-    last_sent_email_address || email
+    last_sent_email_address.present? && EmailValidator.email_regex =~ last_sent_email_address ? last_sent_email_address : email
   end
 
   def tl3_requirements
@@ -897,10 +907,6 @@ class User < ActiveRecord::Base
               .count
   end
 
-  def number_of_warnings
-    self.warnings.count
-  end
-
   def number_of_suspensions
     UserHistory.for(self, :suspend_user).count
   end
@@ -916,7 +922,7 @@ class User < ActiveRecord::Base
   end
 
   def is_singular_admin?
-    User.where(admin: true).where.not(id: id).where.not(id: Discourse::SYSTEM_USER_ID).blank?
+    User.where(admin: true).where.not(id: id).human_users.blank?
   end
 
   def logged_out
@@ -955,7 +961,7 @@ class User < ActiveRecord::Base
   end
 
   def clear_global_notice_if_needed
-    return if id == Discourse::SYSTEM_USER_ID
+    return if id < 0
 
     if admin && SiteSetting.has_login_hint
       SiteSetting.has_login_hint = false
@@ -969,8 +975,7 @@ class User < ActiveRecord::Base
 
   def automatic_group_membership
     user = User.find(self.id)
-
-    return unless user && user.active && !user.staged
+    return unless user && user.active && user.email_confirmed? && !user.staged
 
     Group.where(automatic: false)
          .where("LENGTH(COALESCE(automatic_membership_email_domains, '')) > 0")
@@ -1094,11 +1099,6 @@ class User < ActiveRecord::Base
     end
   end
 
-  def trigger_user_created_event
-    DiscourseEvent.trigger(:user_created, self)
-    true
-  end
-
   private
 
   def previous_visit_at_update_required?(timestamp)
@@ -1112,6 +1112,11 @@ class User < ActiveRecord::Base
     end
   end
 
+  def trigger_user_created_event
+    DiscourseEvent.trigger(:user_created, self)
+    true
+  end
+
 end
 
 # == Schema Information
@@ -1122,7 +1127,7 @@ end
 #  username                :string(60)       not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
-#  name                    :string(255)
+#  name                    :string
 #  seen_notification_id    :integer          default(0), not null
 #  last_posted_at          :datetime
 #  email                   :string(513)      not null
@@ -1130,7 +1135,6 @@ end
 #  salt                    :string(32)
 #  active                  :boolean          default(FALSE), not null
 #  username_lower          :string(60)       not null
-#  auth_token              :string(32)
 #  last_seen_at            :datetime
 #  admin                   :boolean          default(FALSE), not null
 #  last_emailed_at         :datetime
@@ -1147,7 +1151,7 @@ end
 #  ip_address              :inet
 #  moderator               :boolean          default(FALSE)
 #  blocked                 :boolean          default(FALSE)
-#  title                   :string(255)
+#  title                   :string
 #  uploaded_avatar_id      :integer
 #  locale                  :string(10)
 #  primary_group_id        :integer
@@ -1155,13 +1159,11 @@ end
 #  trust_level_locked      :boolean          default(FALSE), not null
 #  staged                  :boolean          default(FALSE), not null
 #  first_seen_at           :datetime
-#  auth_token_updated_at   :datetime
 #
 # Indexes
 #
 #  idx_users_admin                    (id)
 #  idx_users_moderator                (id)
-#  index_users_on_auth_token          (auth_token)
 #  index_users_on_last_posted_at      (last_posted_at)
 #  index_users_on_last_seen_at        (last_seen_at)
 #  index_users_on_uploaded_avatar_id  (uploaded_avatar_id)

@@ -25,7 +25,7 @@
 @import "mobile/group";
 @import "overrides";
 
-/* These files doesn't actually exist, they are injected by DiscourseSassImporter. */
+/* These files doesn't actually exist, they are injected by Stylesheet::Compiler. */
 
 @import "plugins";
 @import "plugins_mobile";

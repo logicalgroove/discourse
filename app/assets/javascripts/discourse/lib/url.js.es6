@@ -18,6 +18,32 @@ const SERVER_SIDE_ONLY = [
   /\.json$/,
 ];
 
+export function rewritePath(path) {
+  const params = path.split("?");
+
+  let result = params[0];
+  rewrites.forEach(rw => {
+    if (((rw.opts.exceptions || []).some(ex => path.indexOf(ex) === 0))) {
+      return;
+    }
+    result = result.replace(rw.regexp, rw.replacement);
+  });
+
+  if (params.length > 1) {
+    result += `?${params[1]}`;
+  }
+
+  return result;
+}
+
+export function clearRewrites() {
+  rewrites.length = 0;
+}
+
+export function userPath(subPath) {
+  return Discourse.getURL(subPath ? `/u/${subPath}` : '/u');
+}
+
 let _jumpScheduled = false;
 export function jumpToElement(elementId) {
   if (_jumpScheduled || Ember.isEmpty(elementId)) { return; }
@@ -34,10 +60,12 @@ export function jumpToElement(elementId) {
   });
 }
 
+let _transitioning = false;
+
 const DiscourseURL = Ember.Object.extend({
 
   isJumpScheduled() {
-    return _jumpScheduled;
+    return _transitioning || _jumpScheduled;
   },
 
   // Jumps to a particular post in the stream
@@ -45,12 +73,14 @@ const DiscourseURL = Ember.Object.extend({
     opts = opts || {};
     const holderId = `#post_${postNumber}`;
 
-    Em.run.schedule('afterRender', () => {
+    _transitioning = postNumber > 1;
+    Ember.run.schedule('afterRender', () => {
       let elementId;
       let holder;
 
       if (postNumber === 1 && !opts.anchor) {
         $(window).scrollTop(0);
+        _transitioning = false;
         return;
       }
 
@@ -64,7 +94,11 @@ const DiscourseURL = Ember.Object.extend({
         holder = $(elementId);
       }
 
-      const lockon = new LockOn(elementId);
+      const lockon = new LockOn(elementId, {
+        finished() {
+          _transitioning = false;
+        }
+      });
 
       if (holder.length > 0 && opts && opts.skipIfOnScreen){
         const elementTop = lockon.elementTop();
@@ -73,11 +107,16 @@ const DiscourseURL = Ember.Object.extend({
         const height = holder.height();
 
         if (elementTop > scrollTop && (elementTop + height) < (scrollTop + windowHeight)) {
+          _transitioning = false;
           return;
         }
       }
 
       lockon.lock();
+      if (lockon.elementTop() < 1) {
+        _transitioning = false;
+        return;
+      }
     });
   },
 
@@ -86,7 +125,6 @@ const DiscourseURL = Ember.Object.extend({
     if (window.history &&
         window.history.pushState &&
         window.history.replaceState &&
-        !navigator.userAgent.match(/((iPod|iPhone|iPad).+\bOS\s+[1-4]|WebApps\/.+CFNetwork)/) &&
         (window.location.pathname !== path)) {
 
         // Always use replaceState in the next runloop to prevent weird routes changing
@@ -164,15 +202,14 @@ const DiscourseURL = Ember.Object.extend({
     if (path.indexOf('/my/') === 0) {
       const currentUser = Discourse.User.current();
       if (currentUser) {
-        path = path.replace('/my/', '/users/' + currentUser.get('username_lower') + "/");
+        path = path.replace('/my/', userPath(currentUser.get('username_lower') + "/"));
       } else {
         document.location.href = "/404";
         return;
       }
     }
 
-    rewrites.forEach(rw => path = path.replace(rw.regexp, rw.replacement));
-
+    path = rewritePath(path);
     if (this.navigatedToPost(oldPath, path, opts)) { return; }
 
     if (oldPath === path) {
@@ -187,8 +224,8 @@ const DiscourseURL = Ember.Object.extend({
     return this.handleURL(path, opts);
   },
 
-  rewrite(regexp, replacement) {
-    rewrites.push({ regexp, replacement });
+  rewrite(regexp, replacement, opts) {
+    rewrites.push({ regexp, replacement, opts: opts || {} });
   },
 
   redirectTo(url) {
@@ -237,18 +274,17 @@ const DiscourseURL = Ember.Object.extend({
 
         if (newMatches[3]) { opts.nearPost = newMatches[3]; }
         if (path.match(/last$/)) { opts.nearPost = topicController.get('model.highest_post_number'); }
-        const closest = opts.nearPost || 1;
 
         opts.cancelSummary = true;
 
         postStream.refresh(opts).then(() => {
+          const closest = postStream.closestPostNumberFor(opts.nearPost || 1);
           topicController.setProperties({
             'model.currentPost': closest,
             enteredAt: new Date().getTime().toString()
           });
 
           this.appEvents.trigger('post:highlight', closest);
-        }).then(() => {
           const jumpOpts = {
             skipIfOnScreen: routeOpts.skipIfOnScreen
           };

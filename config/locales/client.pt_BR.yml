@@ -10,7 +10,7 @@ pt_BR:
     number:
       format:
         separator: ","
-        delimiter: ","
+        delimiter: "."
       human:
         storage_units:
           format: '%n %u'
@@ -100,7 +100,7 @@ pt_BR:
           one: "1 ano depois"
           other: "%{count} anos depois"
       previous_month: 'Mês Anterior'
-      next_month: 'Próximo Mês'
+      next_month: 'Mês Seguinte'
     share:
       topic: 'compartilhe o link desse tópico'
       post: 'mensagem #%{postNumber}'
@@ -135,8 +135,11 @@ pt_BR:
       visible:
         enabled: 'listou %{when}'
         disabled: 'desalistou %{when}'
+      banner:
+        enabled: 'tornou isso um banner %{when}. Isso será mostrado no todo de todas as páginas até que seja descartado pelo usuário.'
+        disabled: 'removeu esse banner %{when}. Ele não vai mais aparecer no topo de todas as páginas.'
     topic_admin_menu: "ações administrativas do tópico"
-    wizard_required: "Chegou a hora de configurar seu fórum! <a href='%{url}' data-auto-route='true'>Começar o Assistente de Configuração</a>!"
+    wizard_required: "Bem vindo ao seu novo Discourse! Vamos começar com o <a href='%{url}' data-auto-route='true'>assistente de configuração</a> ✨"
     emails_are_disabled: "Todo o envio de email foi globalmente desabilitado por algum administrador. Nenhum email de notificações de qualquer tipo será enviado."
     bootstrap_mode_enabled: "Para facilitar o lançamento do seu novo site, você esta no modo de inicialização. A todos os novos usuários, será concedido o nível de confiança 1 e eles terão o resumo diário de atualizações por email ativado. Isso será automaticamente desativado quando a contagem total de usuários exceder %{min_users} usuários."
     bootstrap_mode_disabled: "O modo de inicialização será desativado nas próximas 24 horas."
@@ -363,7 +366,6 @@ pt_BR:
       automatic_group: Grupo Automático
       closed_group: Grupo Fechado
       is_group_user: "Você é membro deste grupo"
-      allow_membership_requests: "Permitir que usuários enviem pedidos de adesão a donos do grupo (Requer que todos possam mencionar o grupo)"
       membership: "Adesão"
       name: "Nom"
       user_count: "Número de Membros"
@@ -645,6 +647,7 @@ pt_BR:
         short_instructions: "As pessoas podem mencionar você usando @{{username}}."
         available: "Seu nome de usuário está disponível"
         not_available: "Não está disponível. Tente {{suggestion}}?"
+        not_available_no_suggestion: "Não disponível"
         too_short: "Seu nome de usuário é muito curto"
         too_long: "Seu nome de usuário é muito longo"
         checking: "Verificando disponibilidade do Nome de Usuário..."
@@ -745,8 +748,10 @@ pt_BR:
         link_generated: "Link de convite gerado com sucesso!"
         valid_for: "Link de convite é válido apenas para esse endereço de email: %{email}"
         bulk_invite:
+          none: "Você ainda não convidou ninguém para cá. Envie convites individuais, ou convide várias pessoas de uma só vez, fazendo a <a href='https://meta.discourse.org/t/send-bulk-invites/16468'>importação de um arquivo CSV</a>."
           text: "Convidar em massa a partir de arquivo"
           success: "Arquivo enviado com sucesso, você será notificado por mensagem quando o processo estiver completo."
+          error: "Pedimos desculpas, o arquivo deve estar no formato CSV."
       password:
         title: "Senha"
         too_short: "A sua senha é muito curta."
@@ -872,7 +877,7 @@ pt_BR:
       hide_session: "Lembre-me amanhã"
       hide_forever: "não obrigado"
       hidden_for_session: "OK, Eu vou perguntar amanhã. Você pode também sempre usar o 'Registre-se' para criar uma conta."
-      intro: "Ei você! :heart_eyes: Para que você está gostando da discussão, mas ainda não criou uma conta."
+      intro: "Ei você! :heart_eyes: Parece que você está gostando da discussão, mas ainda não criou uma conta."
       value_prop: "Quando você cria uma conta, nós lembramos exatamente o que você leu, assim você sempre volta exatamente aonde estava. Você também recebe notificações, aqui e por e-mail, quando novas mensagens são feitas. E você pode curtir tópicos para compartilhar o amor. :heartbeat:"
     summary:
       enabled_description: "Você está vendo um sumário deste tópico: os posts mais interessantes conforme determinados pela comunidade."
@@ -925,13 +930,16 @@ pt_BR:
       logging_in: "Entrando..."
       or: "Ou"
       authenticating: "Autenticando..."
-      awaiting_confirmation: "A sua conta está aguardando ativação, utilize o link 'Esqueci a Senha' para pedir um novo link para ativar o email."
+      awaiting_activation: "Sua conta está aguardando ativação, utilize o link \"Esqueci minha senha\" para enviar um novo email de ativação."
       awaiting_approval: "Sua conta ainda não foi aprovada por um membro da equipe. Você receberá um email quando sua conta for aprovada."
       requires_invite: "Desculpe, o acesso a este fórum é permitido somente por convite de outro membro."
       not_activated: "Você não pode entrar ainda. Nós lhe enviamos um email de ativação anteriormente no endereço <b>{{sentTo}}</b>. Por favor siga as instruções contidas neste email para ativar a sua conta."
       not_allowed_from_ip_address: "Você não pode logar deste endereço IP."
       admin_not_allowed_from_ip_address: "Você não pode entrar como administrador a partir deste endereço IP."
       resend_activation_email: "Clique aqui para enviar o email de ativação novamente."
+      resend_title: "Reenviar E-mail de Ativação"
+      change_email: "Trocar Endereço de E-mail"
+      submit_new_email: "Atualizar Endereço de E-mail"
       sent_activation_email_again: "Nós enviamos mais um email de ativação para você no endereço <b>{{currentEmail}}</b>. Pode ser que demore alguns minutos para chegar; verifique sempre sua caixa de spams."
       to_continue: "Por favor efetue o login"
       preferences: "Você precisa estar logado para mudar suas preferências de usuário."
@@ -958,6 +966,15 @@ pt_BR:
       github:
         title: "com GitHub"
         message: "Autenticando com GitHub (certifique-se de que os bloqueadores de popup estejam desativados)"
+    invites:
+      accept_title: "Convite"
+      welcome_to: "Bem vindo a %{site_name}!"
+      invited_by: "Você foi convidado por:"
+      social_login_available: "Em breve, você poderá entrar com qualquer login de redes sociais usando este email."
+      your_email: "O endereço de email da sua conta é <b>%{email}</b>."
+      accept_invite: "Aceitar Convite"
+      success: "Sua conta foi criada e você já está logado."
+      password_label: "Configurar Senha (opcional)"
     password_reset:
       continue: "Continuar para %{site_name}"
     emoji_set:
@@ -1061,15 +1078,6 @@ pt_BR:
         title: "Você se esqueceu de adicionar destinatários?"
         body: "No momento esta mensagem está sendo enviada apenas para si mesmo!"
       admin_options_title: "Configurações opcionais da equipe para este tópico"
-      auto_close:
-        label: "Tempo para fechamento automático do tópico:"
-        error: "Por favor, digite um valor válido."
-        based_on_last_post: "Não feche até que o último post no tópico seja o mais velho."
-        all:
-          examples: 'Insira o número de horaas (24), hora absoluta (17:30) ou o timestamp (2013-11-22 14:00).'
-        limited:
-          units: "(núm. de horas)"
-          examples: 'Insira o número de horas (24).'
     notifications:
       title: "notificações de menção de @name, respostas às suas postagens,  tópicos, mensagens, etc"
       none: "Não foi possível carregar notificações no momento."
@@ -1180,6 +1188,8 @@ pt_BR:
           first: são a primeira publicação
           pinned: está fixado
           unpinned: não está fixado
+          seen: Eu li
+          unseen: Eu não li
           wiki: é uma wiki
         statuses:
           label: Onde os tópicos
@@ -1224,8 +1234,10 @@ pt_BR:
         selected:
           one: "Você selecionou <b>1</b> tópico."
           other: "Você selecionou <b>{{count}}</b> tópicos."
-        change_tags: "Mudar Etiquetas"
+        change_tags: "Substituir marcadores"
+        append_tags: "Adicionar Etiquetas"
         choose_new_tags: "Escolha novas tags para esses tópicos:"
+        choose_append_tags: "Escolha novos marcadores para anexar a esses tópicos:"
         changed_tags: "As tags para esses tópicos foram alteradas."
       none:
         unread: "Não há nenhum tópico não lido."
@@ -1313,11 +1325,7 @@ pt_BR:
       jump_reply_up: pular para a resposta mais recente
       jump_reply_down: pular para a resposta mais antiga
       deleted: "Este tópico foi apagado"
-      auto_close_notice: "Este tópico vai ser automaticamente fechado em %{timeLeft}."
-      auto_close_notice_based_on_last_post: "Este tópico fechará %{duration} depois da última resposta."
       auto_close_title: 'Configurações para fechar automaticamente'
-      auto_close_save: "Salvar"
-      auto_close_remove: "Não fechar automaticamente este tópico"
       auto_close_immediate:
         one: "A última publicação no tópico já tem 1 hora, portanto ele será fechado imediatamente."
         other: "A última publicação no tópico já tem %{count} horas, portanto ele será fechado imediatamente."
@@ -1347,10 +1355,6 @@ pt_BR:
           '3_2': 'Você receberá notificações porque está observando este tópico.'
           '3_1': 'Você receberá notificações porque criou este tópico.'
           '3': 'Você receberá notificações porque você está observando este tópico.'
-          '2_8': 'Você receberá notificações porque você está monitorando essa categoria.'
-          '2_4': 'Você receberá notificações porque postou uma resposta neste tópico.'
-          '2_2': 'Você receberá notificações porque está monitorando este tópico.'
-          '2': 'Você receberá notificações porque você <a href="/users/{{username}}/preferences">leu este tópico</a>.'
           '1_2': 'Você será notificado se alguém mencionar o seu @nome ou responder à sua mensagem.'
           '1': 'Você será notificado se alguém mencionar o seu @nome ou responder à sua mensagem.'
           '0_7': 'Você está ignorando todas as notificações nessa categoria.'
@@ -1386,7 +1390,6 @@ pt_BR:
         open: "Abrir tópico"
         close: "Fechar tópico"
         multi_select: "Selecionar Mensagens..."
-        auto_close: "Fechar automaticamente..."
         pin: "Fixar Tópico..."
         unpin: "Desafixar Tópico..."
         unarchive: "Desarquivar tópico"
@@ -1507,7 +1510,6 @@ pt_BR:
           other: "Por favor, escolha o novo autor dessas {{count}} mensagens que eram de <b>{{old_user}}</b>."
         instructions_warn: "Note que qualquer notificação sobre esta mensagem não irá ser transferida para o novo usuário retroativamente.<br>Alerta: Atualmente, nenhum dado dependente da mensagem será transferido para o novo usuário. Use com cuidado."
       change_timestamp:
-        title: "Alterar Horário"
         action: "alterar horário"
         invalid_timestamp: "Horário não pode ser no futuro."
         error: "Ocorreu um erro alterando o horário do tópico."
@@ -1718,6 +1720,17 @@ pt_BR:
           side_by_side_markdown:
             title: "Mostrar a diferença da fonte crua lado-a-lado"
             button: 'Texto Bruto'
+      raw_email:
+        displays:
+          raw:
+            title: "Mostrar Email"
+            button: 'Texto Bruto'
+          text_part:
+            title: "Mostrar texto do email"
+            button: 'Texto'
+          html_part:
+            title: "Mostrar texto html do email"
+            button: 'HTML'
     category:
       can: 'pode&hellip; '
       none: '(sem categoria)'
@@ -1762,15 +1775,18 @@ pt_BR:
       security: "Segurança"
       special_warning: "Atenção: Esta categoria é uma categoria padrão e as configurações de segurança e não podem ser editadas. Se você não quer usar esta categoria, apague-a ao invés de reaproveitá-la."
       images: "Imagens"
-      auto_close_label: "Fechar automaticamente tópicos depois de:"
-      auto_close_units: "horas"
       email_in: "Endereço de e-mail personalizado de entrada:"
       email_in_allow_strangers: "Aceitar emails de usuários anônimos sem cont"
       email_in_disabled: "Postar novos tópicos via email está desabilitado nas Configurações do Site. Para habilitar respostas em novos tópicos via email,"
       email_in_disabled_click: 'habilitar a configuração de "email em".'
       suppress_from_homepage: "Suprimir esta categoria da página inicial."
+      show_subcategory_list: "Exibir lista de subcategorias acima dos tópicos nesta categoria."
+      num_featured_topics: "Número de tópicos exibidos na página de Categorias:"
+      subcategory_num_featured_topics: "Número de tópicos em destaque na página da categoria pai:"
       all_topics_wiki: "Tornar novos tópicos wikis por padrão."
-      sort_order: "Ordenação Padrão:"
+      subcategory_list_style: "Estilo da lista de subcategorias"
+      sort_order: "Classificar lista de tópicos:"
+      default_view: "Lista padrão de tópicos"
       allow_badges_label: "Permitir a concessão de emblemas nessa categoria"
       edit_permissions: "Editar Permissões"
       add_permission: "Adicionar Permissões"
@@ -1808,6 +1824,11 @@ pt_BR:
         created: "Criado"
       sort_ascending: 'Ascendente'
       sort_descending: 'Descendente'
+      subcategory_list_styles:
+        rows: "Linhas"
+        rows_with_featured_topics: "Linhas com Tópicos em destaque"
+        boxes: "Caixas"
+        boxes_with_featured_topics: "Caixas com tópicos em destaque"
     flagging:
       title: 'Obrigado por ajudar a manter a civilidade da nossa comunidade!'
       action: 'Sinalizar resposta'
@@ -1909,7 +1930,7 @@ pt_BR:
     history: "Histórico"
     changed_by: "por {{author}}"
     raw_email:
-      title: "Email Raw"
+      title: "Detalhes dos Emails Recebidos"
       not_available: "Não disponível!"
     categories_list: "Lista de categorias"
     filters:
@@ -2312,6 +2333,8 @@ pt_BR:
         add_owners: Adicionar proprietários
         incoming_email: "Endereço de email de entrada personalizado"
         incoming_email_placeholder: "Insira um endereço de email"
+        none_selected: "Selecione um grupo para começar"
+        no_custom_groups: "Crie um novo grupo"
       api:
         generate_master: "Gerar chave Mestra de API"
         none: "Não existem chaves API ativas no momento."
@@ -2447,7 +2470,8 @@ pt_BR:
             without_uploads: "Sim (não inclua arquivos)"
           download:
             label: "Download"
-            title: "Download do backup"
+            title: "Enviar email com link para download"
+            alert: "Um link para fazer o download deste backup foi enviado a você por email."
           destroy:
             title: "Remove o backup"
             confirm: "Tem certeza de que quer destruir este backup?"
@@ -2478,32 +2502,12 @@ pt_BR:
       customize:
         title: "Personalizar"
         long_title: "Personalizações do Site"
-        css: "CSS"
-        header: "Cabeçalho"
-        top: "Superior"
-        footer: "Rodapé"
-        embedded_css: "CSS Incorporada"
-        head_tag:
-          text: "</head>"
-          title: "HTML que será inserido antes da tag </head>"
-        body_tag:
-          text: "</body>"
-          title: "HTML que será inserido antes da tag </body>"
-        override_default: "Sobrepor padrão?"
-        enabled: "Habilitado?"
         preview: "pré-visualização"
-        undo_preview: "remover preview"
-        rescue_preview: "estilo padrão"
-        explain_preview: "Ver o site com o estilo personalizado"
-        explain_undo_preview: "Voltar para o estilo personalizado atual"
-        explain_rescue_preview: "Ver o site com o estilo padrão"
         save: "Guardar"
         new: "Novo"
         new_style: "Novo Estilo"
         import: "Importar"
-        import_title: "Selecione um arquivo ou cole texto"
         delete: "Apagar"
-        delete_confirm: "Apagar esta personalização?"
         about: "Modificar o CSS e HTML do cabeçalho do site. Adicione uma customização para começar."
         color: "Cor"
         opacity: "Opacidade"
@@ -2516,13 +2520,9 @@ pt_BR:
           none_selected: "Selecione um modelo de e-mail para iniciar a edição."
           revert: "Reverter Alterações"
           revert_confirm: "Tem certeza de que deseja reverter as alterações?"
-        css_html:
-          title: "CSS/HTML"
-          long_title: "Customizações CSS e HTML"
         colors:
           title: "Cores"
           long_title: "Esquema de Cores"
-          about: "Modifique as cores usadas no site sem escrever CSS. Adicione um esquema para começar."
           new_name: "Novo Esquema de Cor"
           copy_name_prefix: "Copiar de"
           delete_confirm: "Apagar esse esquema de cor?"
@@ -2661,8 +2661,6 @@ pt_BR:
             change_trust_level: "modificou nível de confiança"
             change_username: "mudar nome de usuário"
             change_site_setting: "alterar configurações do site"
-            change_site_customization: "alterar personalização do site"
-            delete_site_customization: "remover personalização do site"
             change_site_text: "alterar texto do site"
             suspend_user: "suspender usuário"
             unsuspend_user: "readmitir usuário"
@@ -2797,12 +2795,11 @@ pt_BR:
         blocked: "Bloqueado?"
         staged: "Testado?"
         show_admin_profile: "Admin"
-        edit_title: "Editar Título"
-        save_title: "Salvar Título"
         refresh_browsers: "Forçar atualização da página no browser"
         refresh_browsers_message: "Mensagem enviada para todos os clientes!"
         show_public_profile: "Mostrar Perfil Público"
         impersonate: 'Personificar'
+        action_logs: "Registro de Atividades"
         ip_lookup: "Pesquisa do IP"
         log_out: "Log Out"
         logged_out: "Usuário foi desconectado em todos os dipositivos"

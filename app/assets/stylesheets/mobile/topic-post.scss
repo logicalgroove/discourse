@@ -475,7 +475,9 @@ button.select-post {
 
 
 .deleted {
-  background-color: dark-light-diff(rgba($danger,.7), $secondary, 50%, -60%);
+  .topic-body {
+    background-color: dark-light-diff(rgba($danger,.7), $secondary, 50%, -60%);
+  }
 }
 
 .deleted-user-avatar {
@@ -553,11 +555,6 @@ span.highlighted {
   button {
     margin-right: 7px;
   }
-}
-
-.gap.jagged-border {
-  margin-left: -10px;
-  margin-right: -10px;
 }
 
 .popup-menu {

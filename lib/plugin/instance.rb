@@ -238,6 +238,10 @@ class Plugin::Instance
     DiscoursePluginRegistry.custom_html.merge!(hash)
   end
 
+  def register_html_builder(name, &block)
+    DiscoursePluginRegistry.register_html_builder(name, &block)
+  end
+
   def register_asset(file, opts=nil)
     full_path = File.dirname(path) << "/assets/" << file
     assets << [full_path, opts]
@@ -356,11 +360,12 @@ JS
     public_data = File.dirname(path) + "/public"
     if Dir.exists?(public_data)
       target = Rails.root.to_s + "/public/plugins/"
-      `mkdir -p #{target}`
+
+      Discourse::Utils.execute_command('mkdir', '-p', target)
       target << name.gsub(/\s/,"_")
       # TODO a cleaner way of registering and unregistering
-      `rm -f #{target}`
-      `ln -s #{public_data} #{target}`
+      Discourse::Utils.execute_command('rm', '-f', target)
+      Discourse::Utils.execute_command('ln', '-s', public_data, target)
     end
   end
 
