@@ -179,7 +179,8 @@ const ApplicationRoute = Discourse.Route.extend(OpenComposer, {
   handleShowLogin() {
     if (this.siteSettings.enable_sso) {
       const returnPath = encodeURIComponent(window.location.pathname);
-      window.location = Discourse.getURL('/session/sso?return_path=' + returnPath);
+      var url = Discourse.getURL('/session/sso?return_path=' + returnPath);
+      this._ssoModal('sso-login', 'sso-login-modal');
     } else {
       this._autoLogin('login', 'login-modal', () => this.controllerFor('login').resetForm());
     }
@@ -192,6 +193,11 @@ const ApplicationRoute = Discourse.Route.extend(OpenComposer, {
     } else {
       this._autoLogin('createAccount', 'create-account');
     }
+  },
+
+  _ssoModal(modal, modalClass) {
+    showModal(modal);
+    this.controllerFor('modal').set('modalClass', modalClass);
   },
 
   _autoLogin(modal, modalClass, notAuto) {

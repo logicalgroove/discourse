@@ -1,0 +1,6 @@
+{{#login-modal screenX=lastX screenY=lastY loginName=loginName loginPassword=loginPassword action="login"}}
+  {{#d-modal-body title="login.title" class="login-modal"}}
+    <iframe src="/session/sso?return_path=%2F" width='520px' height='455px' frameborder="0"></iframe>
+    {{conditional-loading-spinner condition=showSpinner size="small"}}
+  {{/d-modal-body}}
+{{/login-modal}}

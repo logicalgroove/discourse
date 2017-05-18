@@ -39,6 +39,18 @@
     });
   <%- end %>
 
+  function closeModal() {
+    $('#discourse-modal').modal('hide').hide();
+  }
+
+  function ssoCheckLogin() {
+    if($('#discourse-modal', window.parent.document).hasClass('in')){
+      window.parent.closeModal();
+      window.parent.location.reload();
+    }
+  }
+
+
   (function() {
     var ps = require('preload-store').default;
 
@@ -49,6 +61,8 @@
     Discourse.SiteSettings = ps.get('siteSettings');
     Discourse.LetterAvatarVersion = '<%= LetterAvatar.version %>';
     I18n.defaultLocale = '<%= SiteSetting.default_locale %>';
+
+    ssoCheckLogin();
     Discourse.start();
     Discourse.set('assetVersion','<%= Discourse.assets_digest %>');
     Discourse.Session.currentProp("disableCustomCSS", <%= loading_admin? %>);

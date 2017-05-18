@@ -209,3 +209,18 @@ button {
   box-shadow: none !important;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
+
+
+
+div#discourse-modal.sso-login-modal.modal{
+  .modal-inner-container{
+    max-width: 520px;
+  }
+  .modal-header{
+    display: none;
+  }
+  .modal-body{
+    padding: 0;
+    max-height: initial;
+  }
+}
