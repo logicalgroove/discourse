@@ -217,7 +217,15 @@ div#discourse-modal.sso-login-modal.modal{
     max-width: 520px;
   }
   .modal-header{
-    display: none;
+    position: relative;
+    h3{
+      display: none;
+    }
+    .modal-close{
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
   }
   .modal-body{
     padding: 0;
