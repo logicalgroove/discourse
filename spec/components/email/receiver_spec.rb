@@ -160,6 +160,13 @@ describe Email::Receiver do
       expect(topic.posts.last.raw).to eq("This is a **HTML** reply ;)")
     end
 
+    it "doesn't process email with same message-id more than once" do
+      expect do
+        process(:text_reply)
+        process(:text_reply)
+      end.to change { topic.posts.count }.by(1)
+    end
+
     it "handles different encodings correctly" do
       expect { process(:hebrew_reply) }.to change { topic.posts.count }
       expect(topic.posts.last.raw).to eq("שלום! מה שלומך היום?")
@@ -515,6 +522,35 @@ describe Email::Receiver do
       SiteSetting.email_in_min_trust = 4
       Fabricate(:user, email: "tl3@bar.com", trust_level: TrustLevel[3])
       expect { process(:tl3_user) }.to raise_error(Email::Receiver::InsufficientTrustLevelError)
+    end
+
+  end
+
+  context "#reply_by_email_address_regex" do
+
+    before do
+      SiteSetting.reply_by_email_address = nil
+      SiteSetting.alternative_reply_by_email_addresses = nil
+    end
+
+    it "is empty by default" do
+      expect(Email::Receiver.reply_by_email_address_regex).to eq(//)
+    end
+
+    it "uses 'reply_by_email_address' site setting" do
+      SiteSetting.reply_by_email_address = "foo+%{reply_key}@bar.com"
+      expect(Email::Receiver.reply_by_email_address_regex).to eq(/foo\+(\h{32})@bar\.com/)
+    end
+
+    it "uses 'alternative_reply_by_email_addresses' site setting" do
+      SiteSetting.alternative_reply_by_email_addresses = "alt.foo+%{reply_key}@bar.com"
+      expect(Email::Receiver.reply_by_email_address_regex).to eq(/alt\.foo\+(\h{32})@bar\.com/)
+    end
+
+    it "combines both 'reply_by_email' settings" do
+      SiteSetting.reply_by_email_address = "foo+%{reply_key}@bar.com"
+      SiteSetting.alternative_reply_by_email_addresses = "alt.foo+%{reply_key}@bar.com"
+      expect(Email::Receiver.reply_by_email_address_regex).to eq(/foo\+(\h{32})@bar\.com|alt\.foo\+(\h{32})@bar\.com/)
     end
 
   end

@@ -119,6 +119,7 @@ sk:
           other: "%{count} rokov neskôr"
       previous_month: 'Predchádzajúci mesiac'
       next_month: 'Nasledujúci mesiac'
+      placeholder: Zvoľte dátum
     share:
       topic: 'zdieľaj odkaz na túto tému'
       post: 'príspevok #%{postNumber}'
@@ -1163,10 +1164,8 @@ sk:
         dismiss_new: "Zahodiť. Nová"
         toggle: "prepnuť hromadne vybrané témy"
         actions: "Hromadné akcie"
-        change_category: "Zmeň kategóriu"
         close_topics: "Uzavrieť tému"
         archive_topics: "Archivuj témy"
-        notification_level: "Zmeň úroveň upozorňovania"
         choose_new_category: "Vyberte pre tému novú kategóriu:"
         selected:
           one: "Označíli ste <b>1</b> tému."
@@ -1981,7 +1980,6 @@ sk:
       granted_on: "Udelený dňa %{date}"
       others_count: "Ostatní s týmto odznakom (%{count})"
       title: Odznaky
-      allow_title: "dostupný názov"
       granted:
         one: "1 udelený"
         few: "%{count} udelené"

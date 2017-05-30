@@ -14,6 +14,7 @@ export default MountWidget.extend(Docking, {
       topic: this.get('topic'),
       topicTrackingState: this.topicTrackingState,
       enteredIndex: this.get('enteredIndex'),
+      dockAt: this.dockAt,
       dockBottom: this.dockBottom,
       mobileView: this.get('site.mobileView')
     };
@@ -36,6 +37,11 @@ export default MountWidget.extend(Docking, {
   @observes('topic.highest_post_number', 'loading')
   newPostAdded() {
     this.queueRerender(() => this.queueDockCheck());
+  },
+
+  @observes('topic.details.notification_level')
+  _queueRerender() {
+    this.queueRerender();
   },
 
   dockCheck(info) {

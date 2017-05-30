@@ -140,7 +140,6 @@ group :test, :development do
   gem 'spork-rails'
   gem 'pry-nav'
   gem 'byebug', require: ENV['RM_INFO'].nil?
-  gem "bundler-audit", require: false
 end
 
 group :development do
@@ -193,4 +192,5 @@ gem 'sassc', require: false
 if ENV["IMPORT"] == "1"
   gem 'mysql2'
   gem 'redcarpet'
+  gem 'sqlite3', '~> 1.3.13'
 end

@@ -5,9 +5,8 @@ class UploadsController < ApplicationController
   skip_before_filter :preload_json, :check_xhr, :redirect_to_login_if_required, only: [:show]
 
   def create
-    type = params.require(:type)
-
-    raise Discourse::InvalidAccess.new unless Upload::UPLOAD_TYPES.include?(type)
+    # 50 characters ought to be enough for the upload type
+    type = params.require(:type).parameterize("_")[0..50]
 
     if type == "avatar" && (SiteSetting.sso_overrides_avatar || !SiteSetting.allow_uploaded_avatars)
       return render json: failed_json, status: 422
@@ -56,14 +55,18 @@ class UploadsController < ApplicationController
   protected
 
   def render_404
-    render nothing: true, status: 404
+    raise Discourse::NotFound
   end
 
   def create_upload(file, url, type)
     if file.nil?
       if url.present? && is_api?
         maximum_upload_size = [SiteSetting.max_image_size_kb, SiteSetting.max_attachment_size_kb].max.kilobytes
-        tempfile = FileHelper.download(url, maximum_upload_size, "discourse-upload-#{type}") rescue nil
+        tempfile = FileHelper.download(
+          url,
+          max_file_size: maximum_upload_size,
+          tmp_file_name: "discourse-upload-#{type}"
+        ) rescue nil
         filename = File.basename(URI.parse(url).path)
       end
     else
