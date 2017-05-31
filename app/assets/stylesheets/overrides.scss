@@ -1,3 +1,5 @@
+$mobile-breakpoint: 700px;
+
 // Hide button 'Create topic'
 body:not([class*='category-']) #create-topic {
   display: none;
@@ -217,6 +219,7 @@ div#discourse-modal.sso-login-modal.modal{
     max-width: 520px;
   }
   .modal-header{
+    padding: 0;
     position: relative;
     h3{
       display: none;
@@ -230,5 +233,8 @@ div#discourse-modal.sso-login-modal.modal{
   .modal-body{
     padding: 0;
     max-height: initial;
+  }
+  @media (max-width: $mobile-breakpoint) {
+    z-index: 12321;
   }
 }
