@@ -3,7 +3,8 @@ const RestModel = Ember.Object.extend({
   isCreated: Ember.computed.equal('__state', 'created'),
   isSaving: false,
 
-  afterUpdate: Ember.K,
+  beforeCreate() { },
+  afterUpdate() { },
 
   update(props) {
     if (this.get('isSaving')) { return Ember.RSVP.reject(); }
@@ -33,6 +34,8 @@ const RestModel = Ember.Object.extend({
     if (this.get('isSaving')) { return Ember.RSVP.reject(); }
 
     props = props || this.createProperties();
+
+    this.beforeCreate(props);
 
     const type = this.get('__type'),
           store = this.get('store'),

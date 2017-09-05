@@ -123,19 +123,19 @@ tr_TR:
     bootstrap_mode_disabled: "Bootstrap modu önümüzdeki 24 saat içinde edilgen olacaktır."
     s3:
       regions:
-        us_east_1: "US East (N. Virginia)"
-        us_west_1: "US West (N. California)"
-        us_west_2: "US West (Oregon)"
-        us_gov_west_1: "AWS GovCloud (US)"
-        eu_west_1: "EU (Ireland)"
-        eu_central_1: "EU (Frankfurt)"
-        ap_southeast_1: "Asia Pacific (Singapore)"
-        ap_southeast_2: "Asia Pacific (Sydney)"
-        ap_south_1: "Asia Pacific (Mumbai)"
         ap_northeast_1: "Asia Pacific (Tokyo)"
         ap_northeast_2: "Asia Pacific (Seoul)"
-        sa_east_1: "South America (Sao Paulo)"
+        ap_south_1: "Asia Pacific (Mumbai)"
+        ap_southeast_1: "Asia Pacific (Singapore)"
+        ap_southeast_2: "Asia Pacific (Sydney)"
         cn_north_1: "China (Beijing)"
+        eu_central_1: "EU (Frankfurt)"
+        eu_west_1: "EU (Ireland)"
+        sa_east_1: "South America (Sao Paulo)"
+        us_east_1: "US East (N. Virginia)"
+        us_gov_west_1: "AWS GovCloud (US)"
+        us_west_1: "US West (N. California)"
+        us_west_2: "US West (Oregon)"
     edit: 'bu konunun başlığını ve kategorisini düzenleyin'
     not_implemented: "Bu özellik henüz geliştirilmedi, üzgünüz!"
     no_value: "Hayır"
@@ -317,11 +317,7 @@ tr_TR:
         full_name: 'Tam İsim'
         add_members: "Üyeleri ekle"
         delete_member_confirm: "'%{username}' adlı kullanıcıyı '%{group}' grubundan çıkart?"
-      request_membership_pm:
-        title: "Üyelik isteği"
-        body: "@%{groupName} adlı gruba üye olarak başvurmak istiyorum."
       name_placeholder: "Grup adı, kullanıcı adındaki gibi boşluksuz olmalı"
-      public: "Kullanıcıların gruptan serbest bir şekilde ayrılıp/katılmasına izin ver (grubun görünür olması gerekmekte)"
       empty:
         posts: "Bu grubun üyelerinden konu yok."
         members: "Bu grupta üye bulunmamaktır."
@@ -342,7 +338,6 @@ tr_TR:
       bio: "Grup Hakkında"
       selector_placeholder: "Üye ekle"
       owner: "sahip"
-      visible: "Grup tüm kullanıcılar tarafından görüntülenebiliyor"
       index:
         title: "Gruplar"
         empty: "Görünen hiç bir grup bulunmamaktadır."
@@ -355,7 +350,6 @@ tr_TR:
       mentions: "Bahsetmeler"
       messages: "İletiler"
       alias_levels:
-        title: "Kimler bu gruba ileti gönderebilir ve gruptan @bahsedebilir?"
         nobody: " Hiç Kimse"
         only_admins: "Sadece Yöneticiler"
         mods_and_admins: "Sadece Moderatörler ve Yöneticiler"
@@ -449,7 +443,7 @@ tr_TR:
       mute: "Sustur"
       edit: "Tercihleri Düzenle"
       download_archive:
-        button_text: "Gönderilerimi İndir"
+        button_text: "Hepsini İndir"
         confirm: "Gönderilerinizi indirmek istediğinize emin misiniz?"
         success: "İndirme başlatıldı, İşlem tamamlandığında mesaj ile bilgilendirileceksiniz."
         rate_limit_error: "Gönderiler günde bir kez indirilebilir, lütfen yarın tekrar deneyin."
@@ -568,7 +562,6 @@ tr_TR:
         title: "Kullanıcı Adını Değiştir"
         confirm: "Kullanıcı adınızı değiştirmeniz halinde, eski gönderilerinizden yapılan tüm alıntılar ve @eskiadınızdaki bahsetmeler bozulacak. Bunu yapmak istediğinize gerçekten emin misiniz?"
         taken: "Üzgünüz, bu kullanıcı adı alınmış."
-        error: "Kullanıcı adınızı değiştirirken bir hata oluştu."
         invalid: "Bu kullanıcı adı geçersiz. Sadece sayı ve harf içermelidir."
       change_email:
         title: "E-posta Adresini Değiştirin"
@@ -1096,8 +1089,6 @@ tr_TR:
       select_all: "Tümünü Seç"
       clear_all: "Tümünü Temizle"
       too_short: "Aradığın terim çok kısa."
-      result_count:
-        other: "<span class='term'>\"{{term}}\"</span> için {{count}} sonuç "
       title: "konu, gönderi, kullanıcı veya kategori ara"
       no_results: "Hiç bir sonuç bulunamadı."
       no_more_results: "Başka sonuç yok."
@@ -1589,9 +1580,6 @@ tr_TR:
       delete:
         confirm:
           other: "Tüm bu gönderileri silmek istediğinize emin misiniz?"
-      merge:
-        confirm:
-          other: "{{count}} adet gönderiyi birleştirmek istediğinize emin misiniz?"
       revisions:
         controls:
           first: "İlk revizyon"
@@ -1625,8 +1613,6 @@ tr_TR:
       settings: 'Ayarlar'
       topic_template: "Konu Şablonu"
       tags: "Etiketler"
-      tags_allowed_tags: "Sadece bu kategoride kullanılabilir etiketler:"
-      tags_allowed_tag_groups: "Yalnızca bu kategoride kullanılabilir etiket grupları:"
       tags_placeholder: "(Seçmeli) izin verilen etiketlerin listesi"
       tag_groups_placeholder: "(Seçmeli) izin verilen etiket gruplarının listesi"
       topic_featured_link_allowed: " Featured link'lere bu kategoride izin ver"
@@ -1897,7 +1883,6 @@ tr_TR:
         hamburger_menu: '<b>=</b> Hamburger menüyü aç'
         user_profile_menu: '<b>p</b> Kullanıcı menüsünü aç'
         show_incoming_updated_topics: '<b>.</b> Güncellenmiş konuları göster'
-        search: '<b>/</b> Ara'
         help: '<b>?</b> Klavye yardım sayfasını aç'
         dismiss_new_posts: '<b>x</b>, <b>r</b> Yeni Konuları/Gönderileri Yoksay'
         dismiss_topics: '<b>x</b>, <b>t</b> Konuları yoksay'
@@ -2478,7 +2463,6 @@ tr_TR:
           do_nothing: "hiçbir şey yapma"
         staff_actions:
           title: "Görevli Eylemleri"
-          instructions: "Kullanıcı adları ve eylemlere tıklayarak listeyi süz. Profil resimlerine tıklayarak kullanıcı sayfalarına git."
           clear_filters: "Hepsini Göster"
           staff_user: "Görevli Kullanıcı"
           target_user: "Hedef Kullanıcı"
@@ -2561,6 +2545,11 @@ tr_TR:
             title: "En az 'min_ban_entries_for_roll_up' adet giriş olduğu takdirde yeni subnet engelleme girişleri yaratır."
         logster:
           title: "Hata Kayıtları"
+      watched_words:
+        form:
+          label: 'Yeni Kelime: '
+          add: 'Ekle'
+          upload: "Yükle"
       impersonate:
         title: "Rolüne gir"
         help: "Hata bulma ve giderme amaçları için, bu aracı kullanarak kullanıcının rolüne girin. İşiniz bitince sistemdne çıkış yapmanız gerekecek."
@@ -2944,8 +2933,6 @@ tr_TR:
       upload: "Yükle"
       uploading: "Yükleniyor..."
       quit: "Belki Sonra"
-      staff_count:
-        other: "Topluluğunuzda %{count} görevli üye var."
       invites:
         add_user: "ekle"
         none_added: "Herhangi bir görevli davet etmediniz. Devam etmek istediğinize emin misiniz?"

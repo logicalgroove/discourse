@@ -25,6 +25,9 @@
 @import "mobile/group";
 @import "overrides";
 
+// Import all component-specific files
+@import "mobile/components/*";
+
 /* These files doesn't actually exist, they are injected by Stylesheet::Compiler. */
 
 @import "plugins";

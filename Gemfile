@@ -36,6 +36,7 @@ end
 
 gem 'mail'
 gem 'mime-types', require: 'mime/types/columnar'
+gem 'mini_mime'
 
 gem 'hiredis'
 gem 'redis', require:  ["redis", "redis/connection/hiredis"]
@@ -48,10 +49,9 @@ gem 'onebox'
 gem 'http_accept_language', '~>2.0.5', require: false
 
 gem 'ember-rails', '0.18.5'
-gem 'ember-source', '2.10.0'
+gem 'ember-source'
 gem 'ember-handlebars-template', '0.7.5'
 gem 'barber'
-gem 'babel-transpiler'
 
 gem 'message_bus'
 
@@ -61,28 +61,31 @@ gem 'fast_xs'
 
 gem 'fast_xor'
 
-gem 'fastimage', '2.1.0'
+# Forked until https://github.com/sdsykes/fastimage/pull/93 is merged
+gem 'discourse_fastimage', require: 'fastimage'
+
 gem 'aws-sdk', require: false
 gem 'excon', require: false
 gem 'unf', require: false
 
-gem 'email_reply_trimmer', '0.1.6'
+gem 'email_reply_trimmer', '0.1.7'
 
-# TODO Use official image_optim gem once https://github.com/toy/image_optim/pull/149
-# is merged.
+# Forked until https://github.com/toy/image_optim/pull/149 is merged
 gem 'discourse_image_optim', require: 'image_optim'
 gem 'multi_json'
 gem 'mustache'
 gem 'nokogiri'
+
+# this may end up deprecating nokogiri
+gem 'oga', require: false
+
 gem 'omniauth'
 gem 'omniauth-openid'
 gem 'openid-redis-store'
 gem 'omniauth-facebook'
 gem 'omniauth-twitter'
 gem 'omniauth-instagram'
-
-# forked while https://github.com/intridea/omniauth-github/pull/41 is being upstreamd
-gem 'omniauth-github-discourse', require: 'omniauth-github'
+gem 'omniauth-github'
 
 gem 'omniauth-oauth2', require: false
 
@@ -94,21 +97,20 @@ gem 'r2', '~> 0.2.5', require: false
 gem 'rake'
 
 gem 'thor', require: false
-gem 'rest-client'
 gem 'rinku'
 gem 'sanitize'
 gem 'sidekiq'
 
 # for sidekiq web
-gem 'sinatra', require: false
+gem 'tilt', require: false
+
 gem 'execjs', require: false
 gem 'mini_racer'
 gem 'highline', require: false
 gem 'rack-protection' # security
 
-# Gems used only for assets and not required
-# in production environments by default.
-# allow everywhere for now cause we are allowing asset debugging in prd
+# Gems used only for assets and not required in production environments by default.
+# Allow everywhere for now cause we are allowing asset debugging in production
 group :assets do
   gem 'uglifier'
   gem 'rtlit', require: false # for css rtling
@@ -118,7 +120,6 @@ group :test do
   gem 'webmock', require: false
   gem 'fakeweb', '~> 1.3.0', require: false
   gem 'minitest', require: false
-  gem 'timecop'
   # TODO: Remove once we upgrade to Rails 5.
   gem 'test_after_commit'
 end
@@ -137,9 +138,9 @@ group :test, :development do
   gem 'rspec-rails', require: false
   gem 'shoulda', require: false
   gem 'rspec-html-matchers'
-  gem 'spork-rails'
   gem 'pry-nav'
   gem 'byebug', require: ENV['RM_INFO'].nil?
+  gem 'rubocop', require: false
 end
 
 group :development do
@@ -153,7 +154,7 @@ end
 # this is an optional gem, it provides a high performance replacement
 # to String#blank? a method that is called quite frequently in current
 # ActiveRecord, this may change in the future
-gem 'fast_blank' #, github: "SamSaffron/fast_blank"
+gem 'fast_blank'
 
 # this provides a very efficient lru cache
 gem 'lru_redux'
@@ -175,22 +176,21 @@ gem 'airbrake'
 gem 'wtf_lang'
 
 # required for feed importing and embedding
-#
 gem 'ruby-readability', require: false
 gem 'simple-rss', require: false
 
 gem 'stackprof', require: false, platform: :mri
 gem 'memory_profiler', require: false, platform: :mri
 
-gem 'rmmseg-cpp', require: false
+gem 'cppjieba_rb', require: false
 
 gem 'logster'
 
 gem 'sassc', require: false
 
-
 if ENV["IMPORT"] == "1"
   gem 'mysql2'
   gem 'redcarpet'
   gem 'sqlite3', '~> 1.3.13'
+  gem 'ruby-bbcode-to-md', github: 'nlalonde/ruby-bbcode-to-md'
 end

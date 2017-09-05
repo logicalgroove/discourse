@@ -10,7 +10,6 @@ class Array
   end
 end
 
-
 # based on https://gist.github.com/zaius/2643079
 def unbundled_require(gem)
   if defined?(::Bundler)
@@ -63,8 +62,8 @@ unless Rails.env == "profile"
   exit
 end
 
-# by default, Discourse has a "system" account
-if User.count > 1
+# by default, Discourse has a "system" and `discobot` account
+if User.count > 2
   puts "Only run this script against an empty DB"
   exit
 end
@@ -111,4 +110,3 @@ end
 # no sidekiq so update some stuff
 Category.update_stats
 Jobs::PeriodicalUpdates.new.execute(nil)
-

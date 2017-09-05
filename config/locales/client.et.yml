@@ -141,19 +141,19 @@ et:
     bootstrap_mode_disabled: "Käivitusrežiim lülitub välja järgmise 24 tunni jooksul."
     s3:
       regions:
-        us_east_1: "US Ida (N. Virginia)"
-        us_west_1: "US Lääs (N. California)"
-        us_west_2: "US Lääs (Oregon)"
-        us_gov_west_1: "AWS GovCloud (US)"
-        eu_west_1: "EL (Iirimaa)"
-        eu_central_1: "EL (Frankfurt)"
-        ap_southeast_1: "Aasia ja Vaikne ookean (Singapur)"
-        ap_southeast_2: "Aasia ja Vaikne ookean (Sydney)"
-        ap_south_1: "Aasia ja Vaikse Ookeani (Mumbai)"
         ap_northeast_1: "Aasia ja Vaikne ookean (Tokyo)"
         ap_northeast_2: "Aasia ja Vaikne ookean (Seoul)"
-        sa_east_1: "Lõuna-Ameerika (Sao Paulo)"
+        ap_south_1: "Aasia ja Vaikse Ookeani (Mumbai)"
+        ap_southeast_1: "Aasia ja Vaikne ookean (Singapur)"
+        ap_southeast_2: "Aasia ja Vaikne ookean (Sydney)"
         cn_north_1: "Hiina (Beijing)"
+        eu_central_1: "EL (Frankfurt)"
+        eu_west_1: "EL (Iirimaa)"
+        sa_east_1: "Lõuna-Ameerika (Sao Paulo)"
+        us_east_1: "US Ida (N. Virginia)"
+        us_gov_west_1: "AWS GovCloud (US)"
+        us_west_1: "US Lääs (N. California)"
+        us_west_2: "US Lääs (Oregon)"
     edit: 'muuda teema pealkirja ja foorumit'
     not_implemented: "Seda omadust pole veel rakendatud, vabandame!"
     no_value: "Ei"
@@ -343,11 +343,7 @@ et:
         full_name: 'Täisnimi'
         add_members: "Lisa liikmed"
         delete_member_confirm: "Eemalda '%{username}' grupist '%{group}'?"
-      request_membership_pm:
-        title: "Liikmelisuse taotlus"
-        body: "Soovin liituda grupiga @%{groupName}."
       name_placeholder: "Grupi nimi, tühikuteta, vastab kasutajanime reeglitele"
-      public: "Luba kasutajatel vabalt grupiga liituda/sellest lahkuda (nõuab, et grupp oleks nähtav)"
       empty:
         posts: "Selle grupi liikmetelt ei ole postitusi."
         members: "Sellel grupil liikmed puuduvad."
@@ -368,7 +364,6 @@ et:
       bio: "Grupist"
       selector_placeholder: "Lisa liikmeid"
       owner: "omanik"
-      visible: "Grupp on kõigile kasutajatele nähtav."
       index:
         title: "Grupid"
         empty: "Ühtegi nähtavat gruppi pole."
@@ -382,7 +377,6 @@ et:
       mentions: "Mainimisi"
       messages: "Sõnumid"
       alias_levels:
-        title: "Kes saab siia gruppi sõnumeid saata ja @mention?"
         nobody: "Mitte keegi"
         only_admins: "Vaid adminid"
         mods_and_admins: "Vaid moderaatorid ja adminnid"
@@ -478,7 +472,6 @@ et:
       mute: "Vaigista"
       edit: "Muuda Eelistusi"
       download_archive:
-        button_text: "Lae Minu Postitused alla"
         confirm: "Oled kindel, et soovid enda postitused alla laadida?"
         success: "Allalaadimine käivitatud. Protsessi lõppemisel saadetakse Sulle teade."
         rate_limit_error: "Postitusi saab alla laadida üks kord ööpäevas. Palun proovi homme uuesti."
@@ -595,7 +588,6 @@ et:
         title: "Muuda kasutajanime"
         confirm: "Muutes oma kasutajanime, katkevad kõik varasemad viited sinu postitustele ja @name mainimised. Oled täiesti veendunud, et soovid seda?"
         taken: "Vabandust, see kasutajanimi on võetud."
-        error: "Kasutajanime muutmisel tekkis tõrge."
         invalid: "Selline kasutajanimi ei ole lubatud. Kasutada tohib ainult numbreid ja tähti"
       change_email:
         title: "Muuda meiliaadressi"
@@ -965,7 +957,6 @@ et:
       your_email: "Teie konto meiliaadress on <b>%{email}</b>."
       accept_invite: "Võta kutse vastu"
       success: "Teie konto on loodud ning olete nüüd sisse logitud."
-      password_label: "Määra parool (mittekohustuslik)"
     password_reset:
       continue: "Edasi saidile %{site_name}"
     emoji_set:
@@ -1142,9 +1133,6 @@ et:
       select_all: "Vali kõik"
       clear_all: "Puhasta kõik"
       too_short: "Otsitav tekst on liiga lühike."
-      result_count:
-        one: "1 tulemus <span class='term'>\"{{term}}\"</span> kohta"
-        other: "{{count}} tulemust <span class='term'>\"{{term}}\"</span> kohta"
       title: "otsi teemasid, postitusi, kasutajaid, või foorumeid"
       no_results: "Ei leidnud midagi."
       no_more_results: "Rohkem vasteid pole."
@@ -1680,10 +1668,6 @@ et:
         confirm:
           one: "Oled kindel, et soovid selle postituse kustutada?"
           other: "Oled kindel, et soovid kõik need postitused kustutada?"
-      merge:
-        confirm:
-          one: "Oled kindel, et soovid need postitused ühendada?"
-          other: "Oled kindel, et soovid need {{count}} postitust ühendada?"
       revisions:
         controls:
           first: "Esimene redaktsioon"
@@ -1718,8 +1702,6 @@ et:
       settings: 'Sätted'
       topic_template: "Teema mall"
       tags: "Sildid"
-      tags_allowed_tags: "Sildid, mida saab kasutada vaid selles foorumis:"
-      tags_allowed_tag_groups: "Siltide grupid, mida saab kasutada vaid selles foorumis:"
       tags_placeholder: "(Valikuline) loetelu lubatud silte"
       tag_groups_placeholder: "(Valikuline) loetelu lubatud siltide gruppe"
       topic_featured_link_allowed: "Luba selles foorumis esiletõstetud linke "
@@ -2006,7 +1988,6 @@ et:
         hamburger_menu: '<b>=</b> Ava rippmenüü'
         user_profile_menu: '<b>p</b> Ava kasutajamenüü'
         show_incoming_updated_topics: '<b>.</b> Näita uuendatud teemasid'
-        search: '<b>/</b> Otsi'
         help: '<b>?</b> Ava klaviatuuri abimenüü'
         dismiss_new_posts: '<b>x</b>, <b>r</b> Ignoreeri uusi/postitusi'
         dismiss_topics: '<b>x</b>, <b>t</b> Ignoreeri teemasid'
@@ -2600,7 +2581,6 @@ et:
           do_nothing: "ära tee midagi"
         staff_actions:
           title: "Tiimi tegevused"
-          instructions: "Kliki kasutajanimedele ja tegevustele nimekirja filtreerimiseks. Kliki profiilipiltidele, et minna kasutajalehtedele."
           clear_filters: "Näita kõike"
           staff_user: "Meeskonnaliige"
           target_user: "Sihtkasutaja"
@@ -3076,9 +3056,6 @@ et:
       upload: "Lae üles"
       uploading: "Laen üles..."
       quit: "Võib-olla hiljem"
-      staff_count:
-        one: "Sinu kommuunis on 1 tiimi liige."
-        other: "Sinu kommuunis on %{count} tiimi liiget."
       invites:
         add_user: "lisa"
         none_added: "Sa ei ole kutsunud ühtegi tiimi liiget. Oled Sa kindel, et soovid jätkata?"

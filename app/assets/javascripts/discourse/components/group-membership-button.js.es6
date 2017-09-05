@@ -1,11 +1,16 @@
 import { default as computed } from 'ember-addons/ember-computed-decorators';
 import { popupAjaxError } from 'discourse/lib/ajax-error';
-import Group from 'discourse/models/group';
+import showModal from 'discourse/lib/show-modal';
 
 export default Ember.Component.extend({
-  @computed("model.public")
-  canJoinGroup(publicGroup) {
-    return publicGroup;
+  @computed("model.public_admission", "userIsGroupUser")
+  canJoinGroup(publicAdmission, userIsGroupUser) {
+    return publicAdmission && !userIsGroupUser;
+  },
+
+  @computed("model.public_exit", "userIsGroupUser")
+  canLeaveGroup(publicExit, userIsGroupUser) {
+    return publicExit && userIsGroupUser;
   },
 
   @computed("model.is_group_user", "model.id", "groupUserIds")
@@ -49,16 +54,9 @@ export default Ember.Component.extend({
       });
     },
 
-    requestMembership() {
+    showRequestMembershipForm() {
       if (this.currentUser) {
-        const groupName = this.get('model.name');
-
-        Group.loadOwners(groupName).then(result => {
-          const names = result.map(owner => owner.username).join(",");
-          const title = I18n.t('groups.request_membership_pm.title');
-          const body = I18n.t('groups.request_membership_pm.body', { groupName });
-          this.sendAction("createNewMessageViaParams", names, title, body);
-        });
+        showModal("request-group-membership-form", { model: this.get('model') });
       } else {
         this._showLoginModal();
       }

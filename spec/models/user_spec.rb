@@ -5,15 +5,15 @@ describe User do
 
   context 'validations' do
     it { is_expected.to validate_presence_of :username }
+    it { is_expected.to validate_presence_of :primary_email }
 
     describe 'emails' do
       let(:user) { Fabricate.build(:user) }
 
-      it { is_expected.to validate_presence_of :email }
-
       describe 'when record has a valid email' do
         it "should be valid" do
           user.email = 'test@gmail.com'
+
           expect(user).to be_valid
         end
       end
@@ -21,7 +21,19 @@ describe User do
       describe 'when record has an invalid email' do
         it 'should not be valid' do
           user.email = 'test@gmailcom'
+
           expect(user).to_not be_valid
+          expect(user.errors.messages).to include(:primary_email)
+        end
+      end
+
+      describe 'when user is staged' do
+        it 'should still validate presence of primary_email' do
+          user.staged = true
+          user.email = nil
+
+          expect(user).to_not be_valid
+          expect(user.errors.messages).to include(:primary_email)
         end
       end
     end
@@ -30,19 +42,18 @@ describe User do
   describe '#count_by_signup_date' do
     before(:each) do
       User.destroy_all
-      Timecop.freeze
+      freeze_time
       Fabricate(:user)
       Fabricate(:user, created_at: 1.day.ago)
       Fabricate(:user, created_at: 1.day.ago)
       Fabricate(:user, created_at: 2.days.ago)
       Fabricate(:user, created_at: 4.days.ago)
     end
-    after(:each) { Timecop.return }
-    let(:signups_by_day) { {1.day.ago.to_date => 2, 2.days.ago.to_date => 1, Time.now.utc.to_date => 1} }
+    let(:signups_by_day) { { 1.day.ago.to_date => 2, 2.days.ago.to_date => 1, Time.now.utc.to_date => 1 } }
 
     it 'collect closed interval signups' do
       expect(User.count_by_signup_date(2.days.ago, Time.now)).to include(signups_by_day)
-      expect(User.count_by_signup_date(2.days.ago, Time.now)).not_to include({4.days.ago.to_date => 1})
+      expect(User.count_by_signup_date(2.days.ago, Time.now)).not_to include(4.days.ago.to_date => 1)
     end
   end
 
@@ -84,7 +95,7 @@ describe User do
     let(:admin) { Fabricate(:admin) }
 
     it "enqueues a 'signup after approval' email if must_approve_users is true" do
-      SiteSetting.stubs(:must_approve_users).returns(true)
+      SiteSetting.must_approve_users = true
       Jobs.expects(:enqueue).with(
         :critical_user_email, has_entries(type: :signup_after_approval)
       )
@@ -92,15 +103,20 @@ describe User do
     end
 
     it "doesn't enqueue a 'signup after approval' email if must_approve_users is false" do
-      SiteSetting.stubs(:must_approve_users).returns(false)
+      SiteSetting.must_approve_users = false
       Jobs.expects(:enqueue).never
       user.approve(admin)
     end
 
-    it 'triggers a extensibility event' do
+    it 'triggers extensibility events' do
       user && admin # bypass the user_created event
-      DiscourseEvent.expects(:trigger).with(:user_approved, user).once
-      user.approve(admin)
+      user_updated_event, user_approved_event = DiscourseEvent.track_events { user.approve(admin) }
+
+      expect(user_updated_event[:event_name]).to eq(:user_updated)
+      expect(user_updated_event[:params].first).to eq(user)
+
+      expect(user_approved_event[:event_name]).to eq(:user_approved)
+      expect(user_approved_event[:params].first).to eq(user)
     end
 
     context 'after approval' do
@@ -121,7 +137,6 @@ describe User do
       end
     end
   end
-
 
   describe 'bookmark' do
     before do
@@ -199,8 +214,10 @@ describe User do
     end
 
     it 'triggers an extensibility event' do
-      DiscourseEvent.expects(:trigger).with(:user_created, subject).once
-      subject.save!
+      event = DiscourseEvent.track_events { subject.save! }.first
+
+      expect(event[:event_name]).to eq(:user_created)
+      expect(event[:params].first).to eq(subject)
     end
 
     context 'after_save' do
@@ -296,7 +313,6 @@ describe User do
       end
 
     end
-
 
   end
 
@@ -467,12 +483,12 @@ describe User do
     end
 
     it "should not allow saving if username is reused" do
-       @codinghorror.username = @user.username
+      @codinghorror.username = @user.username
        expect(@codinghorror.save).to eq(false)
     end
 
     it "should not allow saving if username is reused in different casing" do
-       @codinghorror.username = @user.username.upcase
+      @codinghorror.username = @user.username.upcase
        expect(@codinghorror.save).to eq(false)
     end
   end
@@ -617,7 +633,7 @@ describe User do
 
     it 'email whitelist should be used when email is being changed' do
       SiteSetting.email_domains_whitelist = 'vaynermedia.com'
-      u = Fabricate(:user, email: 'good@vaynermedia.com')
+      u = Fabricate(:user_single_email, email: 'good@vaynermedia.com')
       u.email = 'nope@mailinator.com'
       expect(u).not_to be_valid
     end
@@ -625,7 +641,10 @@ describe User do
     it "doesn't validate email address for staged users" do
       SiteSetting.email_domains_whitelist = "foo.com"
       SiteSetting.email_domains_blacklist = "bar.com"
-      expect(Fabricate.build(:user, staged: true, email: "foo@bar.com")).to be_valid
+
+      user = Fabricate.build(:user, staged: true, email: "foo@bar.com")
+
+      expect(user.save).to eq(true)
     end
   end
 
@@ -662,8 +681,8 @@ describe User do
     let!(:third_visit_date) { 5.hours.from_now }
 
     before do
-      SiteSetting.stubs(:active_user_rate_limit_secs).returns(0)
-      SiteSetting.stubs(:previous_visit_timeout_hours).returns(1)
+      SiteSetting.active_user_rate_limit_secs = 0
+      SiteSetting.previous_visit_timeout_hours = 1
     end
 
     it "should act correctly" do
@@ -729,12 +748,8 @@ describe User do
       let!(:date) { Time.zone.now }
 
       before do
-        Timecop.freeze(date)
+        freeze_time date
         user.update_last_seen!
-      end
-
-      after do
-        Timecop.return
       end
 
       it "updates last_seen_at" do
@@ -753,14 +768,10 @@ describe User do
       context "called twice" do
 
         before do
-          Timecop.freeze(date)
+          freeze_time date
           user.update_last_seen!
           user.update_last_seen!
           user.reload
-        end
-
-        after do
-          Timecop.return
         end
 
         it "doesn't increase days_visited twice" do
@@ -773,12 +784,8 @@ describe User do
         let!(:future_date) { 3.days.from_now }
 
         before do
-          Timecop.freeze(future_date)
+          freeze_time future_date
           user.update_last_seen!
-        end
-
-        after do
-          Timecop.return
         end
 
         it "should log a second visited_at record when we log an update later" do
@@ -808,7 +815,7 @@ describe User do
 
     context 'when user has no email tokens for some reason' do
       it 'should return false' do
-        user.email_tokens.each {|t| t.destroy}
+        user.email_tokens.each { |t| t.destroy }
         user.reload
         expect(user.email_confirmed?).to eq(true)
       end
@@ -903,8 +910,8 @@ describe User do
 
   describe "#new_user_posting_on_first_day?" do
 
-    def test_user?(opts={})
-      Fabricate.build(:user, {created_at: Time.zone.now}.merge(opts)).new_user_posting_on_first_day?
+    def test_user?(opts = {})
+      Fabricate.build(:user, { created_at: Time.zone.now }.merge(opts)).new_user_posting_on_first_day?
     end
 
     it "handles when user has never posted" do
@@ -983,7 +990,7 @@ describe User do
 
     before do
       # To make testing easier, say 1 reply is too much
-      SiteSetting.stubs(:newuser_max_replies_per_topic).returns(1)
+      SiteSetting.newuser_max_replies_per_topic = 1
       UserActionCreator.enable
     end
 
@@ -1133,7 +1140,6 @@ describe User do
     end
   end
 
-
   describe "automatic avatar creation" do
     it "sets a system avatar for new users" do
       SiteSetting.external_system_avatars_enabled = false
@@ -1166,7 +1172,7 @@ describe User do
       user.save
       user = User.find(user.id)
 
-      expect(user.custom_fields).to eq({"jack" => "jill"})
+      expect(user.custom_fields).to eq("jack" => "jill")
     end
   end
 
@@ -1194,6 +1200,15 @@ describe User do
       expect(all_users.include?(user)).to eq(true)
       expect(all_users.include?(inactive)).to eq(true)
       expect(all_users.include?(inactive_old)).to eq(false)
+    end
+
+    it "does nothing if purge_unactivated_users_grace_period_days is 0" do
+      SiteSetting.purge_unactivated_users_grace_period_days = 0
+      User.purge_unactivated
+      all_users = User.all
+      expect(all_users.include?(user)).to eq(true)
+      expect(all_users.include?(inactive)).to eq(true)
+      expect(all_users.include?(inactive_old)).to eq(true)
     end
   end
 
@@ -1234,29 +1249,16 @@ describe User do
       )
     }
 
-    it "doesn't automatically add inactive users" do
-      inactive_user = Fabricate(:user, active: false, email: "wat@wat.com")
-      group.reload
-      expect(group.users.include?(inactive_user)).to eq(false)
-    end
-
-    it "doesn't automatically add users with unconfirmed email" do
-      unconfirmed_email_user = Fabricate(:user, active: true, email: "wat@wat.com")
-      unconfirmed_email_user.email_tokens.create(email: unconfirmed_email_user.email)
-      group.reload
-      expect(group.users.include?(unconfirmed_email_user)).to eq(false)
-    end
-
     it "doesn't automatically add staged users" do
       staged_user = Fabricate(:user, active: true, staged: true, email: "wat@wat.com")
+      EmailToken.confirm(staged_user.email_tokens.last.token)
       group.reload
       expect(group.users.include?(staged_user)).to eq(false)
     end
 
     it "is automatically added to a group when the email matches" do
       user = Fabricate(:user, active: true, email: "foo@bar.com")
-      email_token = user.email_tokens.create(email: user.email).token
-      EmailToken.confirm(email_token)
+      EmailToken.confirm(user.email_tokens.last.token)
       group.reload
       expect(group.users.include?(user)).to eq(true)
 
@@ -1277,8 +1279,7 @@ describe User do
 
       user.password_required!
       user.save!
-      email_token = user.email_tokens.create(email: user.email).token
-      EmailToken.confirm(email_token)
+      EmailToken.confirm(user.email_tokens.last.token)
       user.reload
 
       expect(user.title).to eq("bars and wats")
@@ -1430,7 +1431,7 @@ describe User do
     let(:user) { Fabricate(:user) }
 
     it 'should publish the right message' do
-      message = MessageBus.track_publish { user.logged_out }.first
+      message = MessageBus.track_publish { user.logged_out }.find { |m| m.channel == '/logout' }
 
       expect(message.channel).to eq('/logout')
       expect(message.data).to eq(user.id)
@@ -1525,7 +1526,7 @@ describe User do
 
   describe '.human_users' do
     it 'should only return users with a positive primary key' do
-      Fabricate(:user, id: -2)
+      Fabricate(:user, id: -1979)
       user = Fabricate(:user)
 
       expect(User.human_users).to eq([user])

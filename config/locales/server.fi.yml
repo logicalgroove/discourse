@@ -56,6 +56,7 @@ fi:
         topic_closed_error: "Näin käy, kun vastauksen saapuessa ketju, johon viesti oli tarkoitettu, on suljettu."
         bounced_email_error: "Sähköposti on palautetun sähköpostin raportti"
         screened_email_error: "Näin käy, kun lähettäjän sähköpostiosoite on jo seulottu."
+      unrecognized_error: "Tuntematon virhe"
   errors: &errors
     format: '%{attribute} %{message}'
     messages:
@@ -171,10 +172,12 @@ fi:
   too_many_links:
     one: "Pahoittelut, uudet käyttäjät voivat laittaa vain yhden linkin viestiin."
     other: "Pahoittelut, uusi käyttäjä voi laittaa vain %{count} linkkiä viestiin."
+  contains_blocked_words: "Viestissäsi on kielletty sanoja."
   spamming_host: "Pahoittelut, linkit tuolle sivulle eivät ole sallittuja."
   user_is_suspended: "Hyllytetyt käyttäjät eivät saa luoda viestejä."
   topic_not_found: "Jotain on mennyt pieleen. Ehkä tämä ketju on suljettu tai poistettu sillä välin, kun katselit sitä?"
   not_accepting_pms: "Pahoittelut, %{username} ei ota vastaan yksityisviestejä tällä hetkellä."
+  max_pm_recepients: "Pahoittelut, voit lähettää viestin enintään %{recipients_limit} vastaanottajalle."
   just_posted_that: "on liian samanlainen kuin aiempi viestisi"
   invalid_characters: "sisältää epäkelpoja merkkejä"
   is_invalid: "vaikuttaa epäselvältä, olihan se kokonainen virke?"
@@ -222,6 +225,7 @@ fi:
       invalid_incoming_email: "'%{email}' ei ole käypä sähköpostiosoite."
       email_already_used_in_group: "'%{email}' on jo käytössä ryhmällä '%{group_name}'."
       email_already_used_in_category: "'%{email}' on jo käytössä alueella '%{category_name}'."
+      cant_allow_membership_requests: "Et voi sallia ryhmäjäsenyyden hakemista, jos ryhmällä ei ole isäntää."
     default_names:
       everyone: "kaikki"
       admins: "yllapitajat"
@@ -232,6 +236,8 @@ fi:
       trust_level_2: "luottamustaso_2"
       trust_level_3: "luottamustaso_3"
       trust_level_4: "luottamustaso_4"
+    request_membership_pm:
+      title: "Jäsenhakemus ryhmään @%{group_name}"
   education:
     until_posts:
       one: "ensimmäisen viestisi"
@@ -351,6 +357,14 @@ fi:
           attributes:
             execute_at:
               in_the_past: "täytyy olla tulevaisuudessa."
+        translation_overrides:
+          attributes:
+            value:
+              missing_interpolation_keys: 'Nämä interpolaatioavaimet puuttuvat: "%{keys}"'
+        watched_word:
+          attributes:
+            word:
+              too_many: "Toiminnolle on määritelty liian monta sanaa"
       <<: *errors
   user_profile:
     no_info_me: "<div class='missing-profile'>Tietoa minusta -kenttä käyttäjätiedoissasi on täyttämättä. <a href='/u/%{username_lower}/preferences/about-me'>Haluaisitko täyttää sen nyt?</a></div>"
@@ -362,7 +376,7 @@ fi:
   staff_category_name: "Henkilökunta"
   staff_category_description: "Yksityinen alue henkilökunnan keskusteluille. Ketjut näkyvät ainoastaan ylläpitäjille ja valvojille."
   assets_topic_title: "Sivuston designiin liittyviä hyödykkeitä"
-  assets_topic_body: "Tämä on pysyvä ketju, joka näkyy ainoastaan henkilökunnalle. Se on tarkoitettu sivuston käyttämien kuvien ja muiden tiedostojen tallentamiseen. Älä poista sitä!\n\n\nTässä ova ohjeet sen käyttämiseen:\n\n\n1. Vastaa tähän ketjuun.\n2. Lataa kaikki kuvat, joita haluat käyttää logoina, faviconina jne tänne. (Käytä viestieditorin työkalupalkin painiketta, tai raahaa tai liitä kuvat).\n3. Lähetä viesti\n4. Klikkaa hiiren oikealla näppäimellä, tai klikkaa muokkaa-näppäintä muokataksesi viestiäsi, jotta saat kuvien polun näkyviin. Kopioi talteen polut kuviin.\n5. Liitä kuvien polut [perusasetuksiin](/admin/site_settings/category/required).\n\n\nLisäksi, jos sinun täytyy sallia uusia tiedostomuotoja, muokkaa `sallitut tiedostopäätteet` listaa [tiedostojen asetuksissa](/admin/site_settings/category/files)."
+  assets_topic_body: "Tämä ketju näkyy ainoastaan henkilökunnalle, ja se on tarkoitettu sivuston tyyliin liittyvien kuvien ja muiden tiedostojen säilömiseen. Älä poista sitä!\n\n\nTässä ohjeet sen käyttämiseen:\n\n\n1. Vastaa ketjuun.\n2. Lataa kaikki kuvat, joita haluat käyttää logoina, faviconina jne tänne. (Käytä viestieditorin työkalupalkin painiketta, tai raahaa tai liitä kuvat).\n3. Julkaise viesti.\n4. Klikkaa kuvia hiiren oikealla näppäimellä tai klikkaa viestin muokkauspainiketta, jotta saat kuvien polun näkyviin. Kopioi talteen polut kuviin.\n5. Liitä kuvien polut [perusasetuksiin](/admin/site_settings/category/required).\n\n\nJos sinun täytyy sallia uusia tiedostomuotoja, muokkaa `authorized_extensions`-listaa [tiedostojen asetuksissa](/admin/site_settings/category/files)."
   discourse_welcome_topic:
     title: "Tervetuloa käyttämään Discoursea"
     body: |2
@@ -413,6 +427,7 @@ fi:
       invalid_email_in: "'%{email}' ei ole käypä sähköpostiosoite"
       email_already_used_in_group: "'%{email}' on jo käytössä ryhmällä '%{group_name}'."
       email_already_used_in_category: "'%{email}' on jo käytössä alueella '%{category_name}'."
+      description_incomplete: "Alueen kuvauksessa on oltava ainakin yksi kappale."
     cannot_delete:
       uncategorized: "Alueettomat-aluetta ei voi poistaa"
       has_subcategories: "Aluetta ei voi poistaa, koska sillä on tytäralueita."
@@ -646,7 +661,7 @@ fi:
         remove: "Tämä ketju ei ole enää banneri. Sitä ei näytetä enää jokaisen sivun ylälaidassa."
   unsubscribed:
     title: "Tilaus peruttu!"
-    description: "Tilauksesi on peruttu. Voit muuttaa sähköpostiasetuksia <a href='%{url}'>käyttäjäasetuksissasi</a>."
+    description: "Tilaus osoitteeseen <b>%{email}</b> on peruttu. Voit muuttaa sähköpostiasetuksia <a href='%{url}'>käyttäjäasetuksissasi</a>."
     topic_description: "Tilaa %{link} uudelleen ketjun alla tai oikealla puolen sijaitsevan ilmoitusvalikon kautta."
   unsubscribe:
     title: "Peru tilaus"
@@ -857,15 +872,16 @@ fi:
     search_tokenize_chinese_japanese_korean: "Pakota haku käsittelemään kiinaa/japania/koreaa myös muunkielisillä sivustoilla"
     search_prefer_recent_posts: "Jos hakeminen suurelta palstaltasi on hidasta, tämä asetus kokeilee hakemistorakennetta, jossa tuoreimmat viestit ovat ensin"
     search_recent_posts_size: "Kuinka monta tuoretta viestiä pidetään hakemistossa"
+    log_search_queries: "Pidä lokia käyttäjien tekemistä hauista"
+    search_query_log_max_size: "Kuinka monta hakukyselyä säilötään enintään"
     allow_uncategorized_topics: "Salli ketjujen luominen valitsematta aluetta. VAROITUS: Alueettomat ketjut täytyy siirtää jollekin alueelle ennen kuin poistat asetuksen käytöstä."
     allow_duplicate_topic_titles: "Salli ketjun luominen identtisellä otsikolla."
     unique_posts_mins: "Kuinka monen minuutin kuluttua käyttäjä voi lähettää uudestaan samansisältöisen viestin"
     educate_until_posts: "Näytä uuden käyttäjän ohje, kun käyttäjä alkaa kirjoittamaan ensimmäistä (n) viestiään viestikenttään."
     title: "Palstan nimi, käytetään title tagissa."
     site_description: "Kuvaile sivustoa yhdellä lauseella, jota käytetään meta description tagissa."
-    contact_email: "Sähköpostiosoite, josta sivuston henkilökunnan saa tavoitettua. Tänne lähetetään sivuston kriittiset ilmoitukset, kuten käsittelemättömät liput ja näytetään /about sivun yhteystietona."
+    contact_email: "Sivustosta vastaavan henkilön sähköpostiosoite. Siihen lähetetään kriittiset ilmoitukset ja se näkyy /about-sivulla kiireellisiä yhteydenottoja varten."
     contact_url: "Verkko-osoiteyhteystieto sivustolle. Näytetään /about sivun yhteystietona kiireellisiin asioihin liittyen."
-    queue_jobs: "VAIN KEHITTÄJILLE! VAROITUS! Oletusarvona tehtävät asetetaan sidekiq jonoon. Jos poistetaan käytöstä, sivusto ei enää toimi."
     crawl_images: "Lataa linkatut kuvat kuvan dimensioiden määrittamiseksi."
     download_remote_images_to_local: "Muunna linkatut kuvat liitetiedostoiksi lataamalla ne; tämä estää kuvien rikkoontumisen vanhentuneiden linkkien vuoksi."
     download_remote_images_threshold: "Vähin vapaa tila, jotta linkatut kuvat ladataan (prosenteissa)"
@@ -877,15 +893,15 @@ fi:
     delete_removed_posts_after: "Kirjoittajalta poistetut viestit poistetaan automaattisesti (n) tunnin kuluttua. Jos asetetaan 0, viestit poistetaan välittömästi."
     max_image_width: "Esikatselukuvan suurin sallittu leveys viestissä"
     max_image_height: "Esikatselukuvan suurin sallittu korkeus viestissä"
-    fixed_category_positions: "Jos tämä on valittuna, voit muokata alueiden järjestystä. Jos tätä ei valita, alueet järjetsetään aktiivisuuden mukaan."
+    fixed_category_positions: "Jos tämä on valittuna, voit muokata alueiden järjestystä. Jos tätä ei valita, alueet järjestetään aktiivisuuden mukaan."
     fixed_category_positions_on_create: "Jos tämä on valittuna, alueiden järjestys pysyy samana uuden ketjun luomisen dialogissa (edellyttää fixed_category_positions)"
     add_rel_nofollow_to_user_content: "Lisää rel nofollow kaikkeen käyttäjien lähettämään sisältöön, paitsi sivuston sisäisiin linkkeihin (sisältäen ylemmät verkkotunnukset). Jos muutat asetusta, sinun täytyy rakentaa viestit uudelleen komennolla: \"rake posts:rebake\""
-    exclude_rel_nofollow_domains: "Lista verkkotunnuksista, johon osoittaviin linkkeihin nofollow:ta ei lisätä. tld.com sallii automaattisesti myös sub.tld.comin. Sinun tulisi vähintäänkin lisätä tämän sivuston domain, jotta hakurobotit löytävät kaiken sisällön. Jos sivustosi muut osat ovat toisen domainin takan, lisää myös ne."
     post_excerpt_maxlength: "Viestin katkelman merkkien maksimimäärä."
     show_pinned_excerpt_mobile: "Näytä katkelma kiinnitetyistä ketjuista mobiilinäkymässä."
     show_pinned_excerpt_desktop: "Näytä katkelma kiinnitetyistä ketjuista työpöytänäkymässä."
     post_onebox_maxlength: "Discourse-viestin Onebox-esikatselun merkkien maksimimäärä."
     onebox_domains_blacklist: "Verkko-osoitteet, joista ei luoda Onebox-esikatselua"
+    inline_onebox_domains_whitelist: "Verkko-osoitteet, joista luodaan Onebox-esikatselu, jos niihin linkitetään määrittämättä otsikkoa."
     max_oneboxes_per_post: "Oneboxien enimmäismäärä yhdessä viestissä"
     logo_url: "Logo sivustosi vasemmassa yläkulmassa. Sen pitäisi olla leveä suorakulmio muodoltaan. Jos jätetään tyhjäksi, näytetään sivuston otsikkoteksti."
     digest_logo_url: "Vaihtoehtoinen logo, jota käytetään sähköpostikoosteessa. Muodoltaan sen tulisi olla leveä suorakulmio, eikä se saa olla SVG-muodossa. Jos ei aseteta, käytetään `logo_url`-kuvaa."
@@ -923,7 +939,7 @@ fi:
     notify_mods_when_user_blocked: "Jos käyttäjä estetään automaattisesti, lähetä viesti kaikille valvojille."
     flag_sockpuppets: "Jos uuden käyttäjän luomaan ketjuun vastaa toinen uusi käyttäjä samasta IP-osoitteesta, liputa molemmat viestit mahdolliseksi roskapostiksi."
     traditional_markdown_linebreaks: "Käytä perinteisiä rivinvaihtoja Markdownissa, joka vaatii kaksi perättäistä välilyöntiä rivin vaihtoon."
-    allow_html_tables: "Salli taulukoiden syöttäminen Markdowniin käyttäen HTML tageja. TABLE, THEAD, TD, TR, TH valkolistataan (edellyttää kaikkien taulukoita sisältävien vanhojen viestien uudelleen rakentamisen)"
+    enable_markdown_typographer: "Käytetään tavanomaisia typografisia sääntöjä parantamaan tekstikappaleiden luettavuutta, (c), (tm) ym. korvataan symboleilla, kysymysmerkkien määrää vähennetään jne."
     post_undo_action_window_mins: "Kuinka monta minuuttia käyttäjällä on aikaa perua viestiin kohdistuva toimi (tykkäys, liputus, etc)."
     must_approve_users: "Henkilökunnan täytyy hyväksyä kaikki uudet tilit, ennen uusien käyttäjien päästämistä sivustolle. VAROITUS: tämän asetuksen valitseminen poistaa pääsyn kaikilta jo olemassa olevilta henkilökuntaan kuulumattomilta käyttäjiltä."
     pending_users_reminder_delay: "Ilmoita valvojille, jos uusi käyttäjä on odottanut hyväksyntää kauemmin kuin näin monta tuntia. Aseta -1, jos haluat kytkeä ilmoitukset pois päältä."
@@ -965,8 +981,6 @@ fi:
     log_out_strict: "Kun kirjaudutaan ulos, kirjaa käyttäjä ulos kaikilta laitteilta"
     version_checks: "Pingaa Discourse Hubia päivityksistä ja näytä viesti /admin hallintapaneelissa kun uusi versio on saatavilla"
     new_version_emails: "Lähetä sähköposti contact_email osoitteeseen kun uusi versio Discoursesta on saatavilla."
-    port: "VAIN KEHITTÄJILLE! VAROITUS! Käytä tätä HTTP porttia portin 80 sijaan. Jätä tyhjäksi jos haluat käyttää oletusporttia 80."
-    force_hostname: "VAIN KEHITTÄJILLE! VAROITUS! Määrittele isäntänimi URL:ssa. Jätä tyhjäksi käyttääksesi oletusarvoa."
     invite_expiry_days: "Kuinka monta päivää käyttäjäkutsujen avaimet ovat voimassa"
     invite_passthrough_hours: "Kuinka pitkään käyttäjä voi käyttää vastatun kutsun avainta kirjautuakseen sisään, tunneissa"
     invite_only: "Julkinen rekisteröityminen ei ole käytössä, uuden tilin luominen vaatii kutsun henkilökunnalta."
@@ -1049,7 +1063,6 @@ fi:
     clean_up_uploads: "Poista orpoutuneet liitetiedostot, joita ei käytetä viesteissä, laittoman hostauksen estämiseksi. VAROITUS: kannattaa varmuuskopioida /uploads kansio ennen tämän asetuksen ottamista käyttöön."
     clean_orphan_uploads_grace_period_hours: "Varoaika (tunteina) kunnes orpoutuneet liitetiedostot poistetaan"
     purge_deleted_uploads_grace_period_days: "Varoaika (päivinä) kunnes poistettu liitetiedosto tuhotaan."
-    purge_unactivated_users_grace_period_days: "Varoaika (päivinä) kunnes aktivoimaton käyttäjätili tuhotaan."
     enable_s3_uploads: "Lataa liitetiedostot Amazon S3:een. Tärkeää: edellyttää toimivat S3 kirjautumistiedot (access key id ja secret access key)."
     s3_use_iam_profile: 'Käytä AWS EC2 IAM roolia avainten hakuun. HUOM: käyttöönotto korvaa "s3 access key id" ja "s3 secret access key" asetukset.'
     s3_upload_bucket: "Amazon S3 bucket, jonne lataukset sijoitetaan. VAROITUS: täytyy olla pienillä kirjaimilla, ei pisteitä, ei alaviivoja."
@@ -1064,6 +1077,7 @@ fi:
     twitter_summary_large_image_url: "Oletuksena käytettävän Twitter-tiivistelmäkortin kuva (tulisi olla leveydeltään ainakin 280 px leveä ja 150 px korkea)."
     allow_all_attachments_for_group_messages: "Salli kaikki sähköpostiliitteet ryhmäviesteissä."
     png_to_jpg_quality: "Muunnetun JPG-tiedoston laatu (1 on huonoin laatu, 99 on paras laatu, 100 ottaa pois käytöstä)."
+    allow_staff_to_upload_any_file_in_pm: "Salli henkilökunnan ladata minkätyyppisiä liitteitä tahansa yksityisviesteihin."
     enable_flash_video_onebox: "Ota käyttöön swf- ja flv-linkkien (Adobe Flash) onebox-tuki. VAROITUS: saattaa lisätä tietoturvariskejä."
     default_invitee_trust_level: "Oletus luottamustaso (0-4) kutsutuille käyttäjille."
     default_trust_level: "Uusien käyttäjien oletusarvoinen luottamustaso (0-4). VAROITUS! Tämän muuttaminen altistaa roskapostille."
@@ -1258,16 +1272,10 @@ fi:
     warn_reviving_old_topic_age: "Kun käyttäjä alkaa kirjoittamaan vastausta ketjuun, jonka uusin viesti on tätä vanhempi päivissä, näytetään varoitus. Poista käytöstä asettamalla arvoksi 0."
     autohighlight_all_code: "Pakota koodin korostus kaikkiin esimuotoiltuihin tekstiblokkeihin, vaikka käyttäjä ei määrittelisi kieltä."
     highlighted_languages: "Käytettävät syntaksinkorostussäännöt. (Varoitus: liian monen ohjelmointikielen käyttö voi vaikuttaa suorituskykyyn) ks. demo https://highlightjs.org/static/demo/"
-    feed_polling_enabled: "VAIN UPOTUS: Upotetaanko RSS/ATOM syöte viesteinä."
-    feed_polling_url: "VAIN UPOTUS: RSS/ATOM syötteen URL."
-    embed_by_username: "Sen käyttäjän Discourse käyttäjänimi, joka luo upotetut ketjut."
-    embed_username_key_from_feed: "Avain, jolla erotetaan Discourse-käyttäjänimi syötteestä."
     embed_truncate: "Typistä upotetut viestit."
     allowed_href_schemes: "Linkeissä sallitut skeemat http:n ja https:n lisäksi."
     embed_post_limit: "Upotettavien viestien maksimimäärä."
     embed_username_required: "Käyttäjänimi vaaditaan ketjun luomiseksi."
-    embed_whitelist_selector: "CSS valitsin elementeille, jotka sallitaan upotetuissa viesteissä."
-    embed_blacklist_selector: "CSS valitstin elementeille, jotka poistetaan upotetuista viesteistä."
     notify_about_flags_after: "Jos liputusta ei ole käsitelty näin monessa tunnissa, lähetä yksityisviesti henkilökunnalle. Aseta 0 ottaaksesi pois käytöstä."
     show_create_topics_notice: "Jos palstalla on vähemmän kuin 5 julkista ketjua, huomauta ylläpitäjiä ketjujen luonnista."
     delete_drafts_older_than_n_days: Poista yli (n) päivää vanhat luonnokset.
@@ -1284,6 +1292,7 @@ fi:
     auto_close_messages_post_count: "Maksimimäärä viestejä yksityisketjussa, kunnes se suljetaan automaattisesti (0 poistaaksesi käytöstä)"
     auto_close_topics_post_count: "Maksimimäärä viestejä ketjussa, kunnes se suljetaan automaattisesti (0 poistaaksesi käytöstä)"
     code_formatting_style: "Viestikentän koodipainike käyttää oletuksena tätä koodimuotoilutyyliä"
+    max_allowed_message_recipients: "Kuinka monta vastaanottajaa yksityisviestillä voi olla."
     default_email_digest_frequency: "Kuinka usein käyttäjille lähetetään sähköpostikooste oletuksena."
     default_include_tl0_in_digests: "Sisällytä uusien käyttäjien viestit sähköpostikoosteisiin oletuksena. Tätä voi muuttaa käyttäjäasetuksissa."
     default_email_private_messages: "Lähetä oletuksena sähköposti, kun joku lähettää käyttäjälle viestin."
@@ -1352,6 +1361,8 @@ fi:
       email_polling_disabled: "Sinun täytyy ottaa käyttöön joko manuaalinen tai POP3 pollaus ennen sähköpostivastauksia."
       user_locale_not_enabled: "'allow user locale' täytyy olla asetettuna ennen tämän asetuksen ottamista käyttöön."
       invalid_regex: "Säännöllinen lauseke ei kelpaa tai ei ole sallittu."
+      email_editable_enabled: "Asetus 'email editable' on otettava pois käytöstä ennen tämän asetuksen käyttöönottoa."
+      enable_sso_disabled: "Asetus 'enable sso' on otettava käyttöön ennen tämän asetuksen käyttöönottoa."
   search:
     within_post: "#%{post_number} käyttäjältä %{username}"
     types:
@@ -1388,7 +1399,7 @@ fi:
       one: "Yksi viesti siirrettiin toiseen ketjuun: %{topic_link}"
       other: "%{count} viestiä siirrettiin toiseen ketjuun: %{topic_link}"
   change_owner:
-    post_revision_text: "Omistus vaihdettu käyttäjältä %{old_user} käyttäjälle %{new_user}"
+    post_revision_text: "Omistus siirrettiin käyttäjältä %{old_user} käyttäjälle %{new_user}"
     deleted_user: "poistettu käyttäjä"
   topic_statuses:
     archived_enabled: "Tämä ketju on arkistoitu. Se on jäädytetty eikä sitä voi muuttaa millään tavalla."
@@ -1516,42 +1527,9 @@ fi:
   invite_mailer:
     title: "Kutsu keskusteluun"
     subject_template: "%{invitee_name} kutsui sinut ketjuun '%{topic_title}' sivustolla %{site_domain_name}"
-    text_body_template: |+
-      %{invitee_name} kutsui sinut keskusteluun
-
-      > **%{topic_title}**
-      >
-      > %{topic_excerpt}
-
-      keskustelupalstalla
-
-      > %{site_title} -- %{site_description}
-
-      Jos kiinnostuit, klikkaa alla olevaa linkkiä:
-
-      %{invite_link}
-
   custom_invite_mailer:
     title: "Kutsu keskusteluun saatesanoilla"
     subject_template: "%{invitee_name} kutsui sinut ketjuun '%{topic_title}' sivustolla %{site_domain_name}"
-    text_body_template: |
-      %{invitee_name} kutsui sinut keskusteluun
-
-      > **%{topic_title}**
-      >
-      > %{topic_excerpt}
-
-      keskustelupalstalla
-
-      > %{site_title} -- %{site_description}
-
-      tällaisin saatesanoin:
-
-      > %{user_custom_message}
-
-      Jos kiinnostuit, klikkaa alla olevaa linkkiä:
-
-      %{invite_link}
   invite_forum_mailer:
     title: "Kutsu palstalle"
     subject_template: "%{invitee_name} kutsui sinut sivustolle %{site_domain_name}"
@@ -1715,20 +1693,6 @@ fi:
     post_hidden:
       title: "Viesti piilotettu"
       subject_template: "Yhteisön piiloon liputtama viesti"
-      text_body_template: |
-        Hei,
-
-        Tämä automaattinen viesti lähetettiin sivustolta %{site_name} kertoaksemme sinulle, että viestisi on piilotettu.
-
-        %{base_url}%{url}
-
-        %{flag_reason}
-
-        Usea sivuston käyttäjä on liputtanut viestin ennen sen piilottamista, joten harkitse miten voisit muokata sitä heidän antamansa palautteen pohjalta. **Voit muokata viestiäsi, kun %{edit_delay} minuuttia on kulunut, jonka jälkeen se tulee taas näkyviin.**
-
-        Kuitenkin, jos viesti piilotetaan toisen kerran, se pysyy piilotettuna, kunnes henkilökunta selvittää tilanteen – josta voi olla muita seuraumuksia, kuten tilisi hyllyttäminen.
-
-        Saadaksesi lisätietoja, lue [yhteisön säännöt](%{base_url}/guidelines).
     usage_tips:
       text_body_template: |
         [Tässä blogikirjoituksessa](https://blog.discourse.org/2016/12/discourse-new-user-tips-and-tricks/) on joitakin käteviä vinkkejä uudelle käyttäjälle.
@@ -1837,28 +1801,28 @@ fi:
     csv_export_failed:
       title: "CSV:n vienti epäonnistui"
       subject_template: "Datan vienti epäonnistui"
-      text_body_template: "Pahoittelemme, mutta datan vientisi epäonnistui. Tarkasta lokit tai ota yhteyttä henkilökuntaan."
+      text_body_template: "Pahoittelemme, mutta datan vienti epäonnistui. Tarkasta lokit tai [ota yhteyttä henkilökuntaan](%{base_url}/about)."
     email_reject_insufficient_trust_level:
       title: "Sähköposti hylätty - riittämätön luottamustaso"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- Riittämätön luottamustaso"
       text_body_template: |
-        Pahoittelut, sähköpostiviestiäsi tänne: %{destination} (otsikolla %{former_title}) ei voitu toimittaa.
+        Pahoittelut, sähköpostin lähettäminen kohteeseen %{destination} (otsikolla %{former_title}) ei onnistunut.
 
-        Tilisi luottamustaso ei ole riittävä, jotta saisit lähettää uusia ketjuja tähän sähköpostiosoitteeseen. Jos uskot, että tämä johtuu virheestä, ota yhteyttä henkilökuntaan.
+        Et voi lähettää uusia ketjun avauksia tähän sähköpostiosoitteeseen, koska luottamustasosi ei riitä. Jos uskot, että tämä johtuu virheestä, [ota yhteyttä henkilökuntaan](%{base_url}/about).
     email_reject_user_not_found:
       title: "Sähköposti hylätty - käyttäjää ei löytynyt"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- Käyttäjää ei löytynyt"
       text_body_template: |
-        Pahoittelemme, mutta sähköpostin lähettäminen tänne %{destination} (otsikolla %{former_title}) ei onnistunut.
+        Pahoittelemme, mutta sähköpostin lähettäminen kohteeseen %{destination} (otsikolla %{former_title}) ei onnistunut.
 
-        Vastauksesi lähetettiin tuntemattomasta sähköpostiosoitteesta. Yritä lähettää viesti toisesta osoitteesta, tai ota yhteyttä henkilökuntaan.
+        Vastauksesi lähetettiin tuntemattomasta sähköpostiosoitteesta. Yritä lähettää viesti toisesta osoitteesta tai [ota yhteyttä henkilökuntaan](%{base_url}/about).
     email_reject_screened_email:
       title: "Sähköposti hylätty - estetty sähköpostiosoite"
       subject_template: "[%{email_prefix}] Sähköpostiongelma-- Estetty sähköpostiosoite"
       text_body_template: |+
         Pahoittelemme, mutta sähköpostin lähettäminen tänne %{destination} (otsikolla %{former_title}) ei onnistunut.
 
-        Viestisi lähetettiin estetystä sähköpostiosoitteesta. Yritä lähettää viesti toisesta sähköpostiosoitteesta tai ota yhteyttä henkilökuntaan.
+        Vastauksesi lähetettiin estetystä sähköpostiosoitteesta. Yritä lähettää viesti toisesta sähköpostiosoitteesta tai  [ota yhteyttä henkilökuntaan](%{base_url}/about).
 
     email_reject_inactive_user:
       title: "Sähköposti hylätty - aktivoimaton käyttäjä"
@@ -1878,16 +1842,12 @@ fi:
       title: "Sähköposti hylätty - käyttäjä ei täsmää"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- Vastaus odottamattomasta osoitteesta"
       text_body_template: |
-        Pahoittelut, sähköpostiviestisi lähetys kohteeseen %{destination} (titled %{former_title}) ei onnistunut.
+        Pahoittelut, sähköpostin lähettäminen kohteeseen %{destination} (titled %{former_title}) ei onnistunut.
 
-        Viestisi ei saapunut siitä sähköpostiosoitteesta josta odotimme, joten emme voineet olla varmoja lähettäjästä. Kokeile lähettää viestisi toisesta sähköpostiosoitteesta tai ota yhteyttä henkilökuntaan.
+        Vastauksesi ei saapunut siitä sähköpostiosoitteesta kuin odotimme, joten emme voineet olla varmoja lähettäjästä. Kokeile lähettää viestisi toisesta sähköpostiosoitteesta tai [ota yhteyttä henkilökuntaan](%{base_url}/about).
     email_reject_no_account:
       title: "Sähköposti hylätty - ei käyttäjätiliä"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- Tuntematon tili"
-      text_body_template: |
-        Pahoittelut, sähköpostiviestisi lähetys kohteeseen %{destination} (titled %{former_title}) ei onnistunut.
-
-        Sähköpostiosoitteesi ei vastaa yhtäkään käyttäjistä. Kokeile lähettää viestisi toisesta sähköpostiosoitteesta tai ota yhteyttä henkilökuntaan.
     email_reject_empty:
       title: "Sähköposti hylätty - tyhjä"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- Ei sisältöä"
@@ -1908,17 +1868,9 @@ fi:
     email_reject_invalid_access:
       title: "Sähköposti hylätty - pääsy estetty"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- Ei pääsyoikeutta"
-      text_body_template: |
-        Pahoittelut, sähköpostiviestiäsi tänne: %{destination} (otsikolla %{former_title}) ei voitu toimittaa.
-
-        Tilisi luottamustaso ei ole riittävä, jotta saisit luoda uusia ketjuja tälle alueelle. Jos uskot, että tämä johtuu virheestä, ota yhteyttä henkilökuntaan.
     email_reject_strangers_not_allowed:
       title: "Sähköposti hylätty - vierailla ei pääsyä"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- Ei pääsyoikeutta"
-      text_body_template: |
-        Pahoittelut, sähköpostiviestisi lähetys kohteeseen %{destination} (otsikolla %{former_title}) ei onnistunut.
-
-        Alueelle jolle lähetit viestin voivat kirjoittaa ne, joilla on käypä käyttäjätunnus ja sähköpostiosoite. Jos uskot tämän olevan virhe, ota yhteyttä henkilökuntaan.
     email_reject_invalid_post:
       title: "Sähköposti hylätty - viesti ei kelpaa"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- Lähetysvirhe"
@@ -1947,38 +1899,18 @@ fi:
     email_reject_reply_key:
       title: "Sähköposti hylätty - vastausavain"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- Tuntematon vastausavain"
-      text_body_template: |
-        Pahoittelut, sähköpostiviestisi lähetys kohteeseen %{destination} (titled %{former_title}) ei onnistunut.
-
-        Sähköpostiviestin vastaustunniste, engl. 'reply key', ei ole kelvollinen, minkä vuoksi ei tiedetä, mihin asiaan viestisi oli tarkoitus vastata. Ota yhteyttä henkilökuntaan.
     email_reject_bad_destination_address:
       title: "Sähköposti hylätty - tuntematon vastaanottajaosoite"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- Tuntematon Vastaanottaja: -osoite"
-      text_body_template: |
-        Pahoittelut, sähköpostiviestisi lähetys kohteeseen %{destination} (titled %{former_title}) ei onnistunut.
-
-        Viestisi kohdesähköpostiosoitteet olivat tuntemattomia. Ole hyvä ja varmistu, että lähetit viestin oikeaan osoitteeseen.
     email_reject_topic_not_found:
       title: "Sähköposti hylätty - ketjua ei löytynyt"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- Ketjua ei löytynyt"
-      text_body_template: |
-        Pahoittelut, sähköpostiviestisi lähetys kohteeseen %{destination} (otsikolla %{former_title}) ei onnistunut.
-
-        Ketjua johon yritit kirjoittaa ei ole enää olemassa -- ehkä se poistettiin? Jos uskot tämän olevan virhe, ota yhteyttä henkilökuntaan.
     email_reject_topic_closed:
       title: "Sähköposti hylätty - ketju suljettu"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- Suljettu ketju"
-      text_body_template: |
-        Pahoittelut, sähköpostiviestiäsi tänne: %{destination} (otsikolla %{former_title}) ei voitu toimittaa.
-
-        Ketju, johon yritit vastata on tällä hetkellä suljettu, eikä siihen voi vastata. Jos uskot, että on tapahtunut virhe, ota yhteyttä palstan henkilökuntaan.
     email_reject_auto_generated:
       title: "Sähköposti hylätty - automaattivastaus"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- Automaattivastaus"
-      text_body_template: |
-        Pahoittelut, sähköpostiviestisi lähetys kohteeseen %{destination} (otsikolla %{former_title}) ei onnistunut.
-
-        Järjestelmä havaitsi viestisi olevan tietokoneen automaattisesti luoma, eikä ihmisen kirjoittama, eikä sitä voitu siksi hyväksyä. Jos uskot tämän olevan virhe, ota yhteyttä henkilökuntaan.
     email_error_notification:
       title: "Ilmoitus sähköpostivirheestä"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- virhe POP-autentikoinnissa"
@@ -2078,7 +2010,7 @@ fi:
       text_body_template: |
         Onneksi olkoon, olet ansainnut Kuukauden tulokas -palkinnon %{month_year}** :trophy:
 
-        Palkinto myönnetään vain kahdelle käyttäjälle joka kuukausi, ja se näkyy pysyvästi [käyttäjäsivullasi](/my/badges).
+        Palkinto myönnetään vain kahdelle käyttäjälle joka kuukausi, ja se näkyy pysyvästi [käyttäjäsivullasi](%{base_url}/my/badges).
 
         Sinusta on äkkiä tullut tärkeä osa yhteisöä. Kiitos kun liityit, ja jatka samaa rataa!
   unsubscribe_link: |
@@ -2106,26 +2038,6 @@ fi:
     visit_link_to_respond: "[Vieraile ketjussa](%{base_url}%{url}) vastataksesi."
     visit_link_to_respond_pm: "[Vieraile ketjussa](%{base_url}%{url}) vastataksesi."
     posted_by: "Käyttäjältä %{username} %{post_date}"
-    invited_to_private_message_body: |
-      %{username} kutsui sinut yksityiskeskusteluun
-
-      > **%{topic_title}**
-      >
-      > %{topic_excerpt}
-
-      sivustolla
-
-      > %{site_title} -- %{site_description}
-    invited_to_topic_body: |
-      %{username} kutsui sinut keskusteluun
-
-      > **%{topic_title}**
-      >
-      > %{topic_excerpt}
-
-      sivustolla
-
-      > %{site_title} -- %{site_description}
     user_invited_to_private_message_pm:
       title: "Käyttäjä kutsuttiin yksityiskeskusteluun"
       subject_template: "[%{email_prefix}] %{username} kutsui sinut yksityiskeskusteluun '%{topic_title}'"
@@ -2273,7 +2185,7 @@ fi:
       popular_posts: "Suosittuja viestejä"
       more_new: "Uutta sinulle"
       subject_template: "[%{email_prefix}] Kooste"
-      unsubscribe: "Tämä kooste lähetettiin sivustolta %{site_link}, koska emme ole nähneet sinua vähään aikaan. Jos et halua vastaanottaa näitä viestejä %{unsubscribe_link}."
+      unsubscribe: "Tämä kooste lähetettiin sivustolta %{site_link}, koska sinua ei ole näkynyt vähään aikaan. Voit perua tilauksen muuttamalla <a href='%{email_settings_url}'>sähköpostiasetuksiasi</a> tai %{unsubscribe_link}."
       click_here: "klikkaa tästä"
       from: "%{site_name} kooste"
       preheader: "Lyhyt yhteenveto tapahtumista viime vierailusi (%{last_seen_at}) jälkeen"
@@ -2374,10 +2286,6 @@ fi:
     see_more: "Lisää"
     search_title: "Etsi tältä sivustolta"
     search_google: "Google"
-  login_required:
-    welcome_message: |
-      #[Tervetuloa sivustolle %{title}](#welcome)
-      Käyttäjätunnus tarvitaan. Ole hyvä ja luo tunnus tai kirjaudu sisään jatkaaksesi.
   terms_of_service:
     title: "Käyttöehdot"
     signup_form_message: 'Olen lukenut ja ymmärtänyt <a href="/tos" target="_blank">Käyttöehdot</a>.'
@@ -2927,7 +2835,6 @@ fi:
             description: "Sinun tai organisaatiosi yleinen yhteydenottosivu. Näytetään <a href='/about' target='_blank'>Tietoja-sivulla</a>."
           site_contact:
             label: "Automaattiset viestit"
-            description: "Tämän käyttäjän nimissä Discourse lähettää käyttäjille kaikki automaattiset yksityisviestit, kuten uudelle käyttäjälle lähetettävän tervetulotoivotuksen. "
       corporate:
         title: "Organisaatio"
         description: "Nämä nimet näkyvät <a href='/privacy' target='blank'>rekisteriselosteen</a> ja <a href='/tos' target='blank'>käyttöehtojen</a> yhteydessä, joita voit milloin vain muokata henkilökunta-alueella. Jos taustalla ei ole yritystä, voit hypätä tämän vaiheen yli toistaiseksi."
@@ -2984,7 +2891,6 @@ fi:
         description: "Minkä emojityylin haluat yhteisöösi? Voit milloin vain lisätä mukautettuja emojeita navigoimalla Ylläpito --> Mukauta --> Emoji."
       invites:
         title: "Kutsu henkiökuntaa"
-        description: "Melkein valmista! Kutsutaan muutama henkilökuntalainen auttamaan <a href='https://blog.discourse.org/2014/08/building-a-discourse-community/' target='blank'>pohjustamaan keskusteluita</a> kiintoisilla ketjunavauksilla ja vastauksilla, jotta yhteisö pääsee alkuun."
       finished:
         title: "Discoursesi on valmis!"
         description: |

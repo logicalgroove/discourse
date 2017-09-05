@@ -4,7 +4,12 @@ require 'final_destination'
 describe FinalDestination do
 
   let(:opts) do
-    { # avoid IP lookups in test
+    {
+      ignore_redirects: ['https://ignore-me.com'],
+
+      force_get_hosts: ['https://force.get.com'],
+
+      # avoid IP lookups in test
       lookup_ip: lambda do |host|
         case host
         when 'eviltrout.com' then '52.84.143.152'
@@ -13,6 +18,8 @@ describe FinalDestination do
         when 'some_thing.example.com' then '104.25.152.10'
         when 'private-host.com' then '192.168.10.1'
         when 'internal-ipv6.com' then '2001:abc:de:01:3:3d0:6a65:c2bf'
+        when 'ignore-me.com' then '53.84.143.152'
+        when 'force.get.com' then '22.102.29.40'
         else
           as_ip = IPAddr.new(host) rescue nil
           raise "couldn't lookup #{host}" if as_ip.nil?
@@ -62,6 +69,13 @@ describe FinalDestination do
         expect(final.redirected?).to eq(false)
         expect(final.status).to eq(:resolved)
       end
+    end
+
+    it "ignores redirects" do
+      final = FinalDestination.new('https://ignore-me.com/some-url', opts)
+      expect(final.resolve.to_s).to eq('https://ignore-me.com/some-url')
+      expect(final.redirected?).to eq(false)
+      expect(final.status).to eq(:resolved)
     end
 
     context "underscores in URLs" do
@@ -118,6 +132,70 @@ describe FinalDestination do
         expect(final.resolve).to be_nil
         expect(final.redirected?).to eq(true)
         expect(final.status).to eq(:invalid_address)
+      end
+    end
+
+    context "GET can be forced" do
+      before do
+        stub_request(:head, 'https://force.get.com/posts?page=4')
+        stub_request(:get, 'https://force.get.com/posts?page=4')
+        stub_request(:head, 'https://eviltrout.com/posts?page=2')
+        stub_request(:get, 'https://eviltrout.com/posts?page=2')
+      end
+
+      it "will do a GET when forced" do
+        final = FinalDestination.new('https://force.get.com/posts?page=4', opts)
+        expect(final.resolve.to_s).to eq('https://force.get.com/posts?page=4')
+        expect(final.status).to eq(:resolved)
+        expect(WebMock).to have_requested(:get, 'https://force.get.com/posts?page=4')
+        expect(WebMock).to_not have_requested(:head, 'https://force.get.com/posts?page=4')
+      end
+
+      it "will do a HEAD if not forced" do
+        final = FinalDestination.new('https://eviltrout.com/posts?page=2', opts)
+        expect(final.resolve.to_s).to eq('https://eviltrout.com/posts?page=2')
+        expect(final.status).to eq(:resolved)
+        expect(WebMock).to_not have_requested(:get, 'https://eviltrout.com/posts?page=2')
+        expect(WebMock).to have_requested(:head, 'https://eviltrout.com/posts?page=2')
+      end
+    end
+
+    context "HEAD not supported" do
+      before do
+        stub_request(:get, 'https://eviltrout.com').to_return(
+          status: 301,
+          headers: {
+            "Location" => 'https://discourse.org',
+            'Set-Cookie' => 'evil=trout'
+          }
+        )
+        stub_request(:head, 'https://discourse.org').to_return(status: 200)
+      end
+
+      context "when the status code is 405" do
+        before do
+          stub_request(:head, 'https://eviltrout.com').to_return(status: 405)
+        end
+
+        it "will try a GET" do
+          final = FinalDestination.new('https://eviltrout.com', opts)
+          expect(final.resolve.to_s).to eq('https://discourse.org')
+          expect(final.status).to eq(:resolved)
+          expect(final.cookie).to eq('evil=trout')
+        end
+      end
+
+      context "when the status code is 501" do
+        before do
+          stub_request(:head, 'https://eviltrout.com').to_return(status: 501)
+        end
+
+        it "will try a GET" do
+          final = FinalDestination.new('https://eviltrout.com', opts)
+          expect(final.resolve.to_s).to eq('https://discourse.org')
+          expect(final.status).to eq(:resolved)
+          expect(final.cookie).to eq('evil=trout')
+        end
       end
     end
   end
@@ -198,8 +276,38 @@ describe FinalDestination do
       expect(fd("https://[2001:470:1:3a8::251]").is_dest_valid?).to eq(true)
     end
 
-    it "returns true for private ipv6" do
+    it "returns false for private ipv6" do
       expect(fd("https://[fdd7:b450:d4d1:6b44::1]").is_dest_valid?).to eq(false)
+    end
+
+    it "returns true for the base uri" do
+      SiteSetting.force_hostname = "final-test.example.com"
+      expect(fd("https://final-test.example.com/onebox").is_dest_valid?).to eq(true)
+    end
+
+    it "returns true for the S3 CDN url" do
+      SiteSetting.s3_cdn_url = "https://s3.example.com"
+      expect(fd("https://s3.example.com/some/thing").is_dest_valid?).to eq(true)
+    end
+
+    it "returns true for the CDN url" do
+      GlobalSetting.stubs(:cdn_url).returns("https://cdn.example.com/discourse")
+      expect(fd("https://cdn.example.com/some/asset").is_dest_valid?).to eq(true)
+    end
+
+    it 'supports whitelisting via a site setting' do
+      SiteSetting.whitelist_internal_hosts = 'private-host.com'
+      expect(fd("https://private-host.com/some/url").is_dest_valid?).to eq(true)
+    end
+  end
+
+  describe ".escape_url" do
+    it "correctly escapes url" do
+      fragment_url = "https://eviltrout.com/2016/02/25/fixing-android-performance.html#discourse-comments"
+
+      expect(fd(fragment_url).escape_url.to_s).to eq(fragment_url)
+      expect(fd("https://eviltrout.com?s=180&#038;d=mm&#038;r=g").escape_url.to_s).to eq("https://eviltrout.com?s=180&d=mm&r=g")
+      expect(fd("http://example.com/?a=\11\15").escape_url.to_s).to eq("http://example.com/?a=%09%0D")
     end
   end
 

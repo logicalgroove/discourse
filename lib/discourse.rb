@@ -63,7 +63,7 @@ module Discourse
   # When they don't have permission to do something
   class InvalidAccess < StandardError
     attr_reader :obj
-    def initialize(msg=nil, obj=nil)
+    def initialize(msg = nil, obj = nil)
       super(msg)
       @obj = obj
     end
@@ -83,6 +83,8 @@ module Discourse
 
   # Cross site request forgery
   class CSRF < StandardError; end
+
+  class Deprecation < StandardError; end
 
   def self.filters
     @filters ||= [:latest, :unread, :new, :read, :posted, :bookmarks]
@@ -115,7 +117,6 @@ module Discourse
     set
   end
 
-
   def self.activate_plugins!
     all_plugins = Plugin::Instance.find_all("#{Rails.root}/plugins")
 
@@ -144,11 +145,11 @@ module Discourse
   end
 
   def self.official_plugins
-    plugins.find_all{|p| p.metadata.official?}
+    plugins.find_all { |p| p.metadata.official? }
   end
 
   def self.unofficial_plugins
-    plugins.find_all{|p| !p.metadata.official?}
+    plugins.find_all { |p| !p.metadata.official? }
   end
 
   def self.assets_digest
@@ -214,6 +215,25 @@ module Discourse
     base_url_no_prefix + base_uri
   end
 
+  def self.route_for(uri)
+
+    uri = URI(uri) rescue nil unless (uri.is_a?(URI))
+    return unless uri
+
+    path = uri.path || ""
+    if (uri.host == Discourse.current_hostname &&
+      path.start_with?(Discourse.base_uri)) ||
+      !uri.host
+
+      path.slice!(Discourse.base_uri)
+      return Rails.application.routes.recognize_path(path)
+    end
+
+    nil
+  rescue ActionController::RoutingError
+    nil
+  end
+
   READONLY_MODE_KEY_TTL  ||= 60
   READONLY_MODE_KEY      ||= 'readonly_mode'.freeze
   PG_READONLY_MODE_KEY   ||= 'readonly_mode:postgres'.freeze
@@ -276,36 +296,59 @@ module Discourse
     last_read_only[$redis.namespace] = nil
   end
 
-  def self.request_refresh!
+  def self.request_refresh!(user_ids: nil)
     # Causes refresh on next click for all clients
     #
     # This is better than `MessageBus.publish "/file-change", ["refresh"]` because
     # it spreads the refreshes out over a time period
-    MessageBus.publish '/global/asset-version', 'clobber'
+    if user_ids
+      MessageBus.publish("/refresh_client", 'clobber', user_ids: user_ids)
+    else
+      MessageBus.publish('/global/asset-version', 'clobber')
+    end
   end
 
   def self.git_version
     return $git_version if $git_version
 
-    # load the version stamped by the "build:stamp" task
-    f = Rails.root.to_s + "/config/version"
-    require f if File.exists?("#{f}.rb")
-
-    begin
-      $git_version ||= `git rev-parse HEAD`.strip
-    rescue
-      $git_version = Discourse::VERSION::STRING
-    end
+    git_cmd = 'git rev-parse HEAD'
+    self.load_version_or_git(git_cmd, Discourse::VERSION::STRING) { $git_version }
   end
 
   def self.git_branch
     return $git_branch if $git_branch
+    git_cmd = 'git rev-parse --abbrev-ref HEAD'
+    self.load_version_or_git(git_cmd, 'unknown') { $git_branch }
+  end
 
-    begin
-      $git_branch ||= `git rev-parse --abbrev-ref HEAD`.strip
-    rescue
-      $git_branch = "unknown"
+  def self.full_version
+    return $full_version if $full_version
+    git_cmd = 'git describe --dirty --match "v[0-9]*"'
+    self.load_version_or_git(git_cmd, 'unknown') { $full_version }
+  end
+
+  def self.load_version_or_git(git_cmd, default_value)
+    version_file  = "#{Rails.root}/config/version.rb"
+    version_value = false
+
+    if File.exists?(version_file)
+      require version_file
+      version_value = yield
     end
+
+    # file does not exist or does not define the expected global variable
+    unless version_value
+      begin
+        version_value = `#{git_cmd}`.strip
+      rescue
+        version_value = default_value
+      end
+    end
+    if version_value.empty?
+      version_value = default_value
+    end
+
+    version_value
   end
 
   # Either returns the site_contact_username user or the first admin.
@@ -359,7 +402,7 @@ module Discourse
     Rails.cache.reconnect
     Logster.store.redis.reconnect
     # shuts down all connections in the pool
-    Sidekiq.redis_pool.shutdown{|c| nil}
+    Sidekiq.redis_pool.shutdown { |c| nil }
     # re-establish
     Sidekiq.redis = sidekiq_redis_config
     start_connection_reaper
@@ -383,7 +426,7 @@ module Discourse
           sleep GlobalSetting.connection_reaper_interval
           reap_connections(GlobalSetting.connection_reaper_age, GlobalSetting.connection_reaper_max_age)
         rescue => e
-          Discourse.handle_exception(e, {message: "Error reaping connections"})
+          Discourse.handle_exception(e, message: "Error reaping connections")
         end
       end
     end
@@ -391,7 +434,7 @@ module Discourse
 
   def self.reap_connections(idle, max_age)
     pools = []
-    ObjectSpace.each_object(ActiveRecord::ConnectionAdapters::ConnectionPool){|pool| pools << pool}
+    ObjectSpace.each_object(ActiveRecord::ConnectionAdapters::ConnectionPool) { |pool| pools << pool }
 
     pools.each do |pool|
       pool.drain(idle.seconds, max_age.seconds)
@@ -414,7 +457,7 @@ module Discourse
 
   def self.reset_active_record_cache_if_needed(e)
     last_cache_reset = Discourse.last_ar_cache_reset
-    if e && e.message =~ /UndefinedColumn/ && (last_cache_reset.nil?  || last_cache_reset < 30.seconds.ago)
+    if e && e.message =~ /UndefinedColumn/ && (last_cache_reset.nil? || last_cache_reset < 30.seconds.ago)
       Rails.logger.warn "Clear Active Record cache cause schema appears to have changed!"
       Discourse.last_ar_cache_reset = Time.zone.now
       Discourse.reset_active_record_cache
@@ -423,11 +466,10 @@ module Discourse
 
   def self.reset_active_record_cache
     ActiveRecord::Base.connection.query_cache.clear
-    (ActiveRecord::Base.connection.tables - %w[schema_migrations]).each do |table|
+    (ActiveRecord::Base.connection.tables - %w[schema_migrations versions]).each do |table|
       table.classify.constantize.reset_column_information rescue nil
     end
     nil
   end
-
 
 end

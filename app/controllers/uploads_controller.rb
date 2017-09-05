@@ -1,3 +1,4 @@
+require "mini_mime"
 require_dependency 'upload_creator'
 
 class UploadsController < ApplicationController
@@ -12,22 +13,37 @@ class UploadsController < ApplicationController
       return render json: failed_json, status: 422
     end
 
-    url  = params[:url]
-    file = params[:file] || params[:files]&.first
+    url    = params[:url]
+    file   = params[:file] || params[:files]&.first
+    pasted = params[:pasted] == "true"
+    for_private_message = params[:for_private_message] == "true"
 
     if params[:synchronous] && (current_user.staff? || is_api?)
-      data = create_upload(file, url, type)
-      render json: data.as_json
+      data = create_upload(file, url, type, for_private_message, pasted)
+      render json: serialize_upload(data)
     else
       Scheduler::Defer.later("Create Upload") do
         begin
-          data = create_upload(file, url, type)
+          data = create_upload(file, url, type, for_private_message, pasted)
         ensure
-          MessageBus.publish("/uploads/#{type}", (data || {}).as_json, client_ids: [params[:client_id]])
+          MessageBus.publish("/uploads/#{type}", serialize_upload(data), client_ids: [params[:client_id]])
         end
       end
       render json: success_json
     end
+  end
+
+  def lookup_urls
+    params.permit(short_urls: [])
+    uploads = []
+
+    if (params[:short_urls] && params[:short_urls].length > 0)
+      PrettyText::Helpers.lookup_image_urls(params[:short_urls]).each do |short_url, url|
+        uploads << { short_url: short_url, url: url }
+      end
+    end
+
+    render json: uploads.to_json
   end
 
   def show
@@ -41,7 +57,7 @@ class UploadsController < ApplicationController
       if upload = Upload.find_by(sha1: params[:sha]) || Upload.find_by(id: params[:id], url: request.env["PATH_INFO"])
         opts = {
           filename: upload.original_filename,
-          content_type: Rack::Mime.mime_type(File.extname(upload.original_filename)),
+          content_type: MiniMime.lookup_by_filename(upload.original_filename)&.content_type,
         }
         opts[:disposition]   = "inline" if params[:inline]
         opts[:disposition] ||= "attachment" unless FileHelper.is_image?(upload.original_filename)
@@ -54,11 +70,18 @@ class UploadsController < ApplicationController
 
   protected
 
+  def serialize_upload(data)
+    # as_json.as_json is not a typo... as_json in AM serializer returns keys as symbols, we need them
+    # as strings here
+    serialized = UploadSerializer.new(data, root: nil).as_json.as_json if Upload === data
+    serialized ||= (data || {}).as_json
+  end
+
   def render_404
     raise Discourse::NotFound
   end
 
-  def create_upload(file, url, type)
+  def create_upload(file, url, type, for_private_message, pasted)
     if file.nil?
       if url.present? && is_api?
         maximum_upload_size = [SiteSetting.max_image_size_kb, SiteSetting.max_attachment_size_kb].max.kilobytes
@@ -77,7 +100,14 @@ class UploadsController < ApplicationController
 
     return { errors: [I18n.t("upload.file_missing")] } if tempfile.nil?
 
-    upload = UploadCreator.new(tempfile, filename, type: type, content_type: content_type).create_for(current_user.id)
+    opts = {
+      type: type,
+      content_type: content_type,
+      for_private_message: for_private_message,
+      pasted: pasted,
+    }
+
+    upload = UploadCreator.new(tempfile, filename, opts).create_for(current_user.id)
 
     if upload.errors.empty? && current_user.admin?
       retain_hours = params[:retain_hours].to_i

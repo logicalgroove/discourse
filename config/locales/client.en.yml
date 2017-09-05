@@ -6,7 +6,7 @@
 # To work with us on translations, see: https://www.transifex.com/projects/p/discourse-org/
 #
 # This is a "source" file, which is used by Transifex to get translations for other languages.
-# After this file is changed, ift needs to be pushed by a maintainer to Transifex:
+# After this file is changed, it needs to be pushed by a maintainer to Transifex:
 #
 #   tx push -s
 #
@@ -180,20 +180,21 @@ en:
 
     s3:
       regions:
-        us_east_1: "US East (N. Virginia)"
-        us_west_1: "US West (N. California)"
-        us_west_2: "US West (Oregon)"
-        us_gov_west_1: "AWS GovCloud (US)"
-        eu_west_1: "EU (Ireland)"
-        eu_west_2: "EU (London)"
-        eu_central_1: "EU (Frankfurt)"
-        ap_southeast_1: "Asia Pacific (Singapore)"
-        ap_southeast_2: "Asia Pacific (Sydney)"
-        ap_south_1: "Asia Pacific (Mumbai)"
         ap_northeast_1: "Asia Pacific (Tokyo)"
         ap_northeast_2: "Asia Pacific (Seoul)"
-        sa_east_1: "South America (Sao Paulo)"
+        ap_south_1: "Asia Pacific (Mumbai)"
+        ap_southeast_1: "Asia Pacific (Singapore)"
+        ap_southeast_2: "Asia Pacific (Sydney)"
         cn_north_1: "China (Beijing)"
+        eu_central_1: "EU (Frankfurt)"
+        eu_west_1: "EU (Ireland)"
+        eu_west_2: "EU (London)"
+        sa_east_1: "South America (Sao Paulo)"
+        us_east_1: "US East (N. Virginia)"
+        us_east_2: "US East (Ohio)"
+        us_gov_west_1: "AWS GovCloud (US)"
+        us_west_1: "US West (N. California)"
+        us_west_2: "US West (Oregon)"
 
     edit: 'edit the title and category of this topic'
     not_implemented: "That feature hasn't been implemented yet, sorry!"
@@ -410,11 +411,9 @@ en:
         full_name: 'Full Name'
         add_members: "Add Members"
         delete_member_confirm: "Remove '%{username}' from the '%{group}' group?"
-      request_membership_pm:
-        title: "Membership Request"
-        body: "I would like to apply for membership in @%{groupName}."
       name_placeholder: "Group name, no spaces, same as username rule"
-      public: "Allow users to join/leave the group freely (Requires group to be visible)"
+      public_admission: "Allow users to join the group freely (Requires publicly visible group)"
+      public_exit: "Allow users to leave the group freely"
       empty:
         posts: "There are no posts by members of this group."
         members: "There are no members in this group."
@@ -426,23 +425,29 @@ en:
       join: "Join Group"
       leave: "Leave Group"
       request: "Request to Join Group"
+      message: "Message"
       automatic_group: Automatic Group
       closed_group: Closed Group
       is_group_user: "You are a member of this group"
       allow_membership_requests: "Allow users to send membership requests to group owners"
+      membership_request_template: "Custom template to display to users when sending a membership request"
+      membership_request:
+        submit: "Submit Request"
+        title: "Request to join @%{group_name}"
+        reason: "Let the group owners know why you belong in this group"
+
       membership: "Membership"
       name: "Name"
       user_count: "Number of Members"
       bio: "About Group"
       selector_placeholder: "Add members"
       owner: "owner"
-      visible: "Group is visible to all users"
       index:
         title: "Groups"
         empty: "There are no visible groups."
       title:
-        one: "group"
-        other: "groups"
+        one: "Group"
+        other: "Groups"
       activity: "Activity"
       members: "Members"
       topics: "Topics"
@@ -450,8 +455,15 @@ en:
       mentions: "Mentions"
       messages: "Messages"
       notification_level: "Default notification level for group messages"
+      visibility_levels:
+        title: "Who can see this group?"
+        public: "Everyone"
+        members: "Group owners, members and admins"
+        staff: "Group owners and staff"
+        owners: "Group owners and admins"
       alias_levels:
-        title: "Who can message and @mention this group?"
+        mentionable: "Who can @mention this group?"
+        messageable: "Who can message this group?"
         nobody: "Nobody"
         only_admins: "Only admins"
         mods_and_admins: "Only moderators and Admins"
@@ -542,6 +554,7 @@ en:
       topics_entered: "topics entered"
       post_count: "# posts"
       confirm_delete_other_accounts: "Are you sure you want to delete these accounts?"
+      powered_by: "powered by <a href='https://ipinfo.io'>ipinfo.io</a>"
 
     user_fields:
       none: "(select an option)"
@@ -552,7 +565,7 @@ en:
       mute: "Mute"
       edit: "Edit Preferences"
       download_archive:
-        button_text: "Download My Posts"
+        button_text: "Download All"
         confirm: "Are you sure you want to download your posts?"
         success: "Download initiated, you will be notified via message when the process is complete."
         rate_limit_error: "Posts can be downloaded once per day, please try again tomorrow."
@@ -625,6 +638,7 @@ en:
 
       muted_categories: "Muted"
       muted_categories_instructions: "You will not be notified of anything about new topics in these categories, and they will not appear in latest."
+      no_category_access: "As a moderator you have limited category access, save is disabled."
       delete_account: "Delete My Account"
       delete_account_confirm: "Are you sure you want to permanently delete your account? This action cannot be undone!"
       deleted_yourself: "Your account has been deleted successfully."
@@ -690,7 +704,6 @@ en:
         title: "Change Username"
         confirm: "If you change your username, all prior quotes of your posts and @name mentions will be broken. Are you absolutely sure you want to?"
         taken: "Sorry, that username is taken."
-        error: "There was an error changing your username."
         invalid: "That username is invalid. It must only include numbers and letters"
 
       change_email:
@@ -698,6 +711,7 @@ en:
         taken: "Sorry, that email is not available."
         error: "There was an error changing your email. Perhaps that address is already in use?"
         success: "We've sent an email to that address. Please follow the confirmation instructions."
+        success_staff: "We've sent an email to your current address. Please follow the confirmation instructions."
 
       change_avatar:
         title: "Change your profile picture"
@@ -842,6 +856,9 @@ en:
         expired: "This invite has expired."
         rescind: "Remove"
         rescinded: "Invite removed"
+        rescind_all: "Remove all Invites"
+        rescinded_all: "All Invites removed!"
+        rescind_all_confirm: "Are you sure you want to remove all invites?"
         reinvite: "Resend Invite"
         reinvite_all: "Resend all Invites"
         reinvite_all_confirm: "Are you sure you want to resend all invites?"
@@ -1042,6 +1059,9 @@ en:
 
       complete_username_not_found: "No account matches the username <b>%{username}</b>"
       complete_email_not_found: "No account matches <b>%{email}</b>"
+      help: "Email not arriving? Be sure to check your spam folder first.<p>Not sure which email address you used? Enter an email address and we’ll let you know if it exists here.</p><p>If you no longer have access to the email address on your account, please contact <a href='/about'>our helpful staff.</a></p>"
+      button_ok: "OK"
+      button_help: "Help"
     login:
       title: "Log In"
       username: "User"
@@ -1103,8 +1123,8 @@ en:
       accept_invite: "Accept Invitation"
       success: "Your account has been created and you're now logged in."
       name_label: "Name"
-      name_label_optional: "Name (optional)"
-      password_label: "Set Password (optional)"
+      password_label: "Set Password"
+      optional_description: "(optional)"
 
     password_reset:
       continue: "Continue to %{site_name}"
@@ -1115,6 +1135,8 @@ en:
       twitter: "Twitter"
       emoji_one: "Emoji One"
       win10: "Win10"
+      google_classic: "Google Classic"
+      facebook_messenger: "Facebook Messenger"
 
     category_page_style:
       categories_only: "Categories Only"
@@ -1126,12 +1148,36 @@ en:
       ctrl: 'Ctrl'
       alt: 'Alt'
 
+    select_box:
+      default_header_text: Select...
+      no_content: No matches found
+      filter_placeholder: Search...
+
+    emoji_picker:
+      filter_placeholder: Search for emoji
+      people: People
+      nature: Nature
+      food: Food
+      activity: Activity
+      travel: Travel
+      objects: Objects
+      celebration: Celebration
+      custom: Custom emojis
+      recent: Recently used
+      default_tone: No skin tone
+      light_tone: Light skin tone
+      medium_light_tone: Medium light skin tone
+      medium_tone: Medium skin tone
+      medium_dark_tone: Medium dark skin tone
+      dark_tone: Dark skin tone
+
     composer:
       emoji: "Emoji :)"
       more_emoji: "more..."
       options: "Options"
       whisper: "whisper"
       unlist: "unlisted"
+      blockquote_text: "Blockquote"
 
       add_warning: "This is an official warning."
       toggle_whisper: "Toggle Whisper"
@@ -1304,14 +1350,21 @@ en:
       clear_all: "Clear All"
       too_short: "Your search term is too short."
       result_count:
-        one: "1 result for <span class='term'>\"{{term}}\"</span>"
-        other: "{{count}} results for <span class='term'>\"{{term}}\"</span>"
+        one: "1 result for <span class='term'>{{term}}</span>"
+        other: "{{count}} results for <span class='term'>{{term}}</span>"
       title: "search topics, posts, users, or categories"
       no_results: "No results found."
       no_more_results: "No more results found."
       searching: "Searching ..."
       post_format: "#{{post_number}} by {{username}}"
       results_page: "Search Results"
+      more_results: "There are more results. Please narrow your search criteria."
+      cant_find: "Can’t find what you’re looking for?"
+      start_new_topic: "Perhaps start a new topic?"
+      or_search_google: "Or try searching with Google instead:"
+      search_google: "Try searching with Google instead:"
+      search_google_button: "Google"
+      search_google_title: "Search this site"
 
       context:
         user: "Search posts by @{{username}}"
@@ -1345,6 +1398,8 @@ en:
           seen: I've read
           unseen: I've not read
           wiki: are wiki
+          images: includes image(s)
+          all_tags: Contains all tags
         statuses:
           label: Where topics
           open: are open
@@ -1714,6 +1769,7 @@ en:
         success_email: "We mailed out an invitation to <b>{{emailOrUsername}}</b>. We'll notify you when the invitation is redeemed. Check the invitations tab on your user page to keep track of your invites."
         success_username: "We've invited that user to participate in this topic."
         error: "Sorry, we couldn't invite that person. Perhaps they have already been invited? (Invites are rate limited)"
+        success_existing_email: "A user with email <b>{{emailOrUsername}}</b> already exists. We've invited that user to participate in this topic."
 
       login_reply: 'Log In to Reply'
 
@@ -1850,6 +1906,7 @@ en:
         has_liked: "you've liked this post"
         undo_like: "undo like"
         edit: "edit this post"
+        edit_action: "Edit"
         edit_anonymous: "Sorry, but you need to be logged in to edit this post."
         flag: "privately flag this post for attention or send a private notification about it"
         delete: "delete this post"
@@ -1959,7 +2016,7 @@ en:
 
       merge:
         confirm:
-          one: "Are you sure you want merge those posts?"
+          one: "Are you sure you want to merge those posts?"
           other: "Are you sure you want to merge those {{count}} posts?"
 
       revisions:
@@ -2009,8 +2066,8 @@ en:
       settings: 'Settings'
       topic_template: "Topic Template"
       tags: "Tags"
-      tags_allowed_tags: "Tags that can only be used in this category:"
-      tags_allowed_tag_groups: "Tag groups that can only be used in this category:"
+      tags_allowed_tags: "Only allow these tags to be used in this category:"
+      tags_allowed_tag_groups: "Only allow tags from these groups to be used in this category:"
       tags_placeholder: "(Optional) list of allowed tags"
       tag_groups_placeholder: "(Optional) list of allowed tag groups"
       topic_featured_link_allowed: "Allow featured links in this category"
@@ -2325,7 +2382,7 @@ en:
         hamburger_menu: '<b>=</b> Open hamburger menu'
         user_profile_menu: '<b>p</b> Open user menu'
         show_incoming_updated_topics: '<b>.</b> Show updated topics'
-        search: '<b>/</b> Search'
+        search: '<b>/</b> or <b>ctrl</b>+<b>shift</b>+<b>s</b> Search'
         help: '<b>?</b> Open keyboard help'
         dismiss_new_posts: '<b>x</b>, <b>r</b> Dismiss New/Posts'
         dismiss_topics: '<b>x</b>, <b>t</b> Dismiss Topics'
@@ -2879,7 +2936,7 @@ en:
           add: "Add"
           commits_behind:
             one: "Theme is 1 commit behind!"
-            other: "Theme is {{count}} commit behind!"
+            other: "Theme is {{count}} commits behind!"
           scss:
             text: "CSS"
             title: "Enter custom CSS, we accept all valid CSS and SCSS styles"
@@ -3028,8 +3085,9 @@ en:
           block: "block"
           do_nothing: "do nothing"
         staff_actions:
+          all: "all"
+          filter: "Filter:"
           title: "Staff Actions"
-          instructions: "Click usernames and actions to filter the list. Click profile pictures to go to user pages."
           clear_filters: "Show Everything"
           staff_user: "Staff User"
           target_user: "Target User"
@@ -3082,6 +3140,8 @@ en:
             change_readonly_mode: "change readonly mode"
             backup_download: "download backup"
             backup_destroy: "destroy backup"
+            reviewed_post: "reviewed post"
+            custom_staff: "plugin custom action"
         screened_emails:
           title: "Screened Emails"
           description: "When someone tries to create a new account, the following email addresses will be checked and the registration will be blocked, or some other action performed."
@@ -3114,6 +3174,32 @@ en:
             title: "Creates new subnet ban entries if there are at least 'min_ban_entries_for_roll_up' entries."
         logster:
           title: "Error Logs"
+
+      watched_words:
+        title: "Watched Words"
+        search: "search"
+        clear_filter: "Clear"
+        show_words: "show words"
+        word_count:
+          one: "1 word"
+          other: "%{count} words"
+        actions:
+          block: 'Block'
+          censor: 'Censor'
+          require_approval: 'Require Approval'
+          flag: 'Flag'
+        action_descriptions:
+          block: 'Prevent posts containing these words from being posted. The user will see an error message when they try to submit their post.'
+          censor: 'Allow posts containing these words, but replace them with characters that hide the censored words.'
+          require_approval: 'Posts containing these words will require approval by staff before they can be seen.'
+          flag: 'Allow posts containing these words, but flag them as inappropriate so moderators can review them.'
+        form:
+          label: 'New Word:'
+          placeholder: 'full word or * as wildcard'
+          add: 'Add'
+          success: 'Success'
+          upload: "Upload"
+          upload_successful: "Upload successful. Words have been added."
 
       impersonate:
         title: "Impersonate"
@@ -3529,8 +3615,8 @@ en:
       quit: "Maybe Later"
 
       staff_count:
-        one: "Your community has 1 staff member. "
-        other: "Your community has %{count} staff members."
+        one: "Your community has 1 staff (you). "
+        other: "Your community has %{count} staff, including you."
 
       invites:
         add_user: "add"

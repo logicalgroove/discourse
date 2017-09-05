@@ -1,7 +1,7 @@
-import { acceptance } from "helpers/qunit-helpers";
+import { acceptance, logIn } from "helpers/qunit-helpers";
 acceptance("Search");
 
-test("search", (assert) => {
+QUnit.test("search", (assert) => {
   visit("/");
 
   click('#search-button');
@@ -25,29 +25,41 @@ test("search", (assert) => {
   });
 });
 
-test("search scope checkbox", () => {
+QUnit.test("search for a tag", (assert) => {
+  visit("/");
+
+  click('#search-button');
+
+  fillIn('#search-term', 'evil');
+  keyEvent('#search-term', 'keyup', 16);
+  andThen(() => {
+    assert.ok(exists('.search-menu .results ul li'), 'it shows results');
+  });
+});
+
+QUnit.test("search scope checkbox", assert => {
   visit("/c/bug");
   click('#search-button');
   andThen(() => {
-    ok(exists('.search-context input:checked'), 'scope to category checkbox is checked');
+    assert.ok(exists('.search-context input:checked'), 'scope to category checkbox is checked');
   });
   click('#search-button');
 
   visit("/t/internationalization-localization/280");
   click('#search-button');
   andThen(() => {
-    not(exists('.search-context input:checked'), 'scope to topic checkbox is not checked');
+    assert.not(exists('.search-context input:checked'), 'scope to topic checkbox is not checked');
   });
   click('#search-button');
 
   visit("/u/eviltrout");
   click('#search-button');
   andThen(() => {
-    ok(exists('.search-context input:checked'), 'scope to user checkbox is checked');
+    assert.ok(exists('.search-context input:checked'), 'scope to user checkbox is checked');
   });
 });
 
-test("Search with context", assert => {
+QUnit.test("Search with context", assert => {
   visit("/t/internationalization-localization/280/1");
 
   click('#search-button');
@@ -71,5 +83,51 @@ test("Search with context", assert => {
 
   andThen(() => {
     assert.ok(!$('.search-context input[type=checkbox]').is(":checked"));
+  });
+});
+
+QUnit.test("Right filters are shown to anonymous users", assert => {
+  visit("/search?expanded=true");
+
+  andThen(() => {
+    assert.ok(exists('select#in option[value=first]'));
+    assert.ok(exists('select#in option[value=pinned]'));
+    assert.ok(exists('select#in option[value=unpinned]'));
+    assert.ok(exists('select#in option[value=wiki]'));
+    assert.ok(exists('select#in option[value=images]'));
+
+    assert.notOk(exists('select#in option[value=unseen]'));
+    assert.notOk(exists('select#in option[value=posted]'));
+    assert.notOk(exists('select#in option[value=watching]'));
+    assert.notOk(exists('select#in option[value=tracking]'));
+    assert.notOk(exists('select#in option[value=bookmarks]'));
+
+    assert.notOk(exists('.search-advanced-options .in-likes'));
+    assert.notOk(exists('.search-advanced-options .in-private'));
+    assert.notOk(exists('.search-advanced-options .in-seen'));
+  });
+});
+
+QUnit.test("Right filters are shown to logged-in users", assert => {
+  logIn();
+  Discourse.reset();
+  visit("/search?expanded=true");
+
+  andThen(() => {
+    assert.ok(exists('select#in option[value=first]'));
+    assert.ok(exists('select#in option[value=pinned]'));
+    assert.ok(exists('select#in option[value=unpinned]'));
+    assert.ok(exists('select#in option[value=wiki]'));
+    assert.ok(exists('select#in option[value=images]'));
+
+    assert.ok(exists('select#in option[value=unseen]'));
+    assert.ok(exists('select#in option[value=posted]'));
+    assert.ok(exists('select#in option[value=watching]'));
+    assert.ok(exists('select#in option[value=tracking]'));
+    assert.ok(exists('select#in option[value=bookmarks]'));
+
+    assert.ok(exists('.search-advanced-options .in-likes'));
+    assert.ok(exists('.search-advanced-options .in-private'));
+    assert.ok(exists('.search-advanced-options .in-seen'));
   });
 });

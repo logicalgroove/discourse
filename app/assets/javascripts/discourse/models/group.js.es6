@@ -2,7 +2,6 @@ import { ajax } from 'discourse/lib/ajax';
 import { default as computed, observes } from "ember-addons/ember-computed-decorators";
 import GroupHistory from 'discourse/models/group-history';
 import RestModel from 'discourse/models/rest';
-import { popupAjaxError } from 'discourse/lib/ajax-error';
 
 const Group = RestModel.extend({
   limit: 50,
@@ -86,9 +85,9 @@ const Group = RestModel.extend({
 
   addOwners(usernames) {
     var self = this;
-    return ajax('/admin/groups/' + this.get('id') + '/owners.json', {
+    return ajax(`/admin/groups/${this.get('id')}/owners.json`, {
       type: "PUT",
-      data: { usernames: usernames }
+      data: { group: { usernames: usernames } }
     }).then(function() {
       self.findMembers();
     });
@@ -109,28 +108,32 @@ const Group = RestModel.extend({
     return this.get('flair_color') ? this.get('flair_color').replace(new RegExp("[^0-9a-fA-F]", "g"), "") : null;
   },
 
-  @computed('alias_level')
-  canEveryoneMention(aliasLevel) {
-    return aliasLevel === '99';
+  @computed('mentionable_level')
+  canEveryoneMention(mentionableLevel) {
+    return mentionableLevel === '99';
   },
 
-  @observes("visible", "canEveryoneMention")
+  @observes("visibility_level", "canEveryoneMention")
   _updateAllowMembershipRequests() {
-    if (!this.get('visible') || !this.get('canEveryoneMention')) {
+    if (this.get('visibility_level') !== 0 || !this.get('canEveryoneMention')) {
       this.set ('allow_membership_requests', false);
     }
   },
 
-  @observes("visible")
+  @observes("visibility_level")
   _updatePublic() {
-    if (!this.get('visible')) this.set('public', false);
+    if (this.get('visibility_level') !== 0) {
+      this.set('public', false);
+      this.set('allow_membership_requests', false);
+    }
   },
 
   asJSON() {
-    return {
+    const attrs = {
       name: this.get('name'),
-      alias_level: this.get('alias_level'),
-      visible: !!this.get('visible'),
+      mentionable_level: this.get('mentionable_level'),
+      messageable_level: this.get('messageable_level'),
+      visibility_level: this.get('visibility_level'),
       automatic_membership_email_domains: this.get('emailDomains'),
       automatic_membership_retroactive: !!this.get('automatic_membership_retroactive'),
       title: this.get('title'),
@@ -141,18 +144,33 @@ const Group = RestModel.extend({
       flair_bg_color: this.get('flairBackgroundHexColor'),
       flair_color: this.get('flairHexColor'),
       bio_raw: this.get('bio_raw'),
-      public: this.get('public'),
+      public_admission: this.get('public_admission'),
+      public_exit: this.get('public_exit'),
       allow_membership_requests: this.get('allow_membership_requests'),
       full_name: this.get('full_name'),
-      default_notification_level: this.get('default_notification_level')
+      default_notification_level: this.get('default_notification_level'),
+      membership_request_template: this.get('membership_request_template')
     };
+
+    if (!this.get('id')) {
+      attrs['usernames'] = this.get('usernames');
+      attrs['owner_usernames'] = this.get('ownerUsernames');
+    }
+
+    return attrs;
   },
 
   create() {
-    var self = this;
-    return ajax("/admin/groups", { type: "POST", data:  { group: this.asJSON() } }).then(function(resp) {
-      self.set('id', resp.basic_group.id);
-    });
+    return ajax("/admin/groups", { type: "POST", data:  { group: this.asJSON() } })
+      .then(resp => {
+        this.setProperties({
+          id: resp.basic_group.id,
+          usernames: null,
+          ownerUsernames: null
+        });
+
+        this.findMembers();
+      });
   },
 
   save() {
@@ -202,22 +220,25 @@ const Group = RestModel.extend({
       data: { notification_level, user_id: userId },
       type: "POST"
     });
-  }
+  },
+
+  requestMembership(reason) {
+    return ajax(`/groups/${this.get('name')}/request_membership`, {
+      type: "POST",
+      data: { reason: reason }
+    });
+  },
 });
 
 Group.reopenClass({
   findAll(opts) {
-    return ajax("/admin/groups.json", { data: opts }).then(function (groups){
+    return ajax("/groups/search.json", { data: opts }).then(groups => {
       return groups.map(g => Group.create(g));
     });
   },
 
   find(name) {
     return ajax("/groups/" + name + ".json").then(result => Group.create(result.basic_group));
-  },
-
-  loadOwners(name) {
-    return ajax('/groups/' + name + '/owners.json').catch(popupAjaxError);
   },
 
   loadMembers(name, offset, limit, params) {

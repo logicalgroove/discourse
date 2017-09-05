@@ -57,6 +57,10 @@
     }
   }
 
+  .user-fields {
+    border-top: 1px solid $primary-low;
+    padding-top: 20px;
+  }
 }
 
 .password-reset, .invites-show {
@@ -97,7 +101,13 @@
     }
   }
   form {
-    label, .input {
+    .controls, .input {
+      margin-left: 20px;
+    }
+    input, label {
+      margin-bottom: 0;
+    }
+    .user-field .control-label:not(.checkbox-label) {
       margin-left: 20px;
     }
   }

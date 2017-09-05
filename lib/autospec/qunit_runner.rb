@@ -144,7 +144,7 @@ module Autospec
     end
 
     def try_to_find_module_name(file)
-      file,_ = file.split(/:\d+$/)
+      file, _ = file.split(/:\d+$/)
       return unless File.exists?(file)
       File.open(file, "r").each_line do |line|
         if m = /module\(['"]([^'"]+)/i.match(line)
@@ -156,7 +156,15 @@ module Autospec
         if m = /acceptance\(['"]([^"']+)/i.match(line)
           return "Acceptance: #{m[1]}"
         end
+        if m = /moduleFor\(['"]([^'"]+)/i.match(line)
+          return m[1]
+        end
+        if m = /moduleForComponent\(['"]([^"']+)/i.match(line)
+          return m[1]
+        end
       end
+
+      nil
     end
 
   end

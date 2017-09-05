@@ -3,7 +3,7 @@ class TableMigrationHelper
     ActiveRecord::Base.exec_sql <<-SQL
     CREATE OR REPLACE FUNCTION raise_read_only() RETURNS trigger AS $rro$
       BEGIN
-        RAISE EXCEPTION 'Table is read only';
+        RAISE EXCEPTION 'Discourse: Table is read only';
         RETURN null;
       END
     $rro$ LANGUAGE plpgsql;
@@ -45,7 +45,7 @@ SQL
                                         new_name: new_name,
                                         delay: "#{delay.to_i || 0} seconds",
                                         after_migration: after_migration).to_a.length > 0
-        on_drop&.call
+      on_drop&.call
 
         ActiveRecord::Base.exec_sql("DROP TABLE #{old_name}")
     end

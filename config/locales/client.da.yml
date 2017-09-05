@@ -148,20 +148,20 @@ da:
       default_description: "Standard"
     s3:
       regions:
-        us_east_1: "US East (N. Virginia)"
-        us_west_1: "US West (N. California)"
-        us_west_2: "US West (Oregon)"
-        us_gov_west_1: "AWS GovCloud (US)"
-        eu_west_1: "EU (Irland)"
-        eu_west_2: "EU (London)"
-        eu_central_1: "EU (Frankfurt)"
-        ap_southeast_1: "Asien (Singapore)"
-        ap_southeast_2: "Asien (Sydney)"
-        ap_south_1: "Asien (Mumbai)"
         ap_northeast_1: "Asien (Tokyo)"
         ap_northeast_2: "Asien (Seoul)"
-        sa_east_1: "Sydamerika (Sao Paulo)"
+        ap_south_1: "Asien (Mumbai)"
+        ap_southeast_1: "Asien (Singapore)"
+        ap_southeast_2: "Asien (Sydney)"
         cn_north_1: "Kina (Beijing)"
+        eu_central_1: "EU (Frankfurt)"
+        eu_west_1: "EU (Irland)"
+        eu_west_2: "EU (London)"
+        sa_east_1: "Sydamerika (Sao Paulo)"
+        us_east_1: "US East (N. Virginia)"
+        us_gov_west_1: "AWS GovCloud (US)"
+        us_west_1: "US West (N. California)"
+        us_west_2: "US West (Oregon)"
     edit: 'redigér titel og kategori for dette emne'
     not_implemented: "Beklager, denne feature er ikke blevet implementeret endnu."
     no_value: "Nej"
@@ -351,11 +351,7 @@ da:
         full_name: 'Fulde Navn'
         add_members: "Tilføj Medlemmer"
         delete_member_confirm: "Fjern '%{username}' fra '%{group}' gruppen?"
-      request_membership_pm:
-        title: "Medlemskabsanmodning"
-        body: "Jeg vil gerne ansøge om medlemskab i @%{groupName}."
       name_placeholder: "Gruppe navn, ingen mellemrum, samme som reglen for brugernavn"
-      public: "Tillad at brugere frit kan tilmelde sig/forlade gruppen (Kræver at gruppen er synlig)"
       empty:
         posts: "Der er ingen indlæg skrevet af medlemmer i denne gruppe."
         members: "Der er ingen medlemmer i denne gruppe."
@@ -377,7 +373,6 @@ da:
       bio: "Om Grupper"
       selector_placeholder: "Tilføj medlemmer"
       owner: "ejer"
-      visible: "Gruppen er synlige for alle brugere"
       index:
         title: "Grupper"
         empty: "Der er ingen synlige grupper"
@@ -392,7 +387,6 @@ da:
       messages: "Beskeder"
       notification_level: "Standard notifikationsniveau for gruppebeskeder"
       alias_levels:
-        title: "Hvem kan sende beskeder til og @nævne denne gruppe?"
         nobody: "Ingen"
         only_admins: "Kun administratore"
         mods_and_admins: "Kun moderatore og administratore"
@@ -488,7 +482,6 @@ da:
       mute: "Mute"
       edit: "Redigér indstillinger"
       download_archive:
-        button_text: "Download Mine Indlæg"
         confirm: "Er du sikker på, at du vil downloade dine indlæg?"
         success: "Downloaden er startet. Du vil blive notificeret via en besked, når processen er færdig."
         rate_limit_error: "Indlæg kan downloades en gang om dagen, prøv igen i morgen."
@@ -616,7 +609,6 @@ da:
         title: "Skift brugernavn"
         confirm: "Hvis du ændrer dit brugernavn, vil alle tidligere citeringer af dine indlæg ikke længere kunne vises. Er du helt sikker på at du ønsker at ændre brugernavn?"
         taken: "Beklager, det brugernavn er optaget."
-        error: "Der skete en fejl i forbindelse med skift af dit brugernavn."
         invalid: "Det brugernavn er ugyldigt. Det må kun bestå af bogstaver og tal."
       change_email:
         title: "Skift e-mail-adresse"
@@ -991,7 +983,6 @@ da:
       your_email: "E-mail-adressen knyttet til kontoen er <b>%{email}</b>."
       accept_invite: "Accepter Invitation"
       success: "Din konto er blevet oprettet, og du er nu logget ind."
-      password_label: "Angiv Kodeord (valgfrit)"
     password_reset:
       continue: "Fortsæt til %{site_name}"
     emoji_set:
@@ -1169,9 +1160,6 @@ da:
       select_all: "Vælg alle"
       clear_all: "Ryd alle"
       too_short: "Dit søgekriterie er for kort."
-      result_count:
-        one: "1 resultat for <span class='term'>\"{{term}}\"</span>"
-        other: "{{count}} resultater for <span class='term'>\"{{term}}\"</span>"
       title: "søg efter emner, indlæg, brugere eller kategorier"
       no_results: "Ingen resultater fundet."
       no_more_results: "Ikke flere resultater."
@@ -1749,10 +1737,6 @@ da:
         confirm:
           one: "Er du sikker på, at du vil slette indlægget?"
           other: "Er du sikker på, at du vil slette alle de valgte indlæg?"
-      merge:
-        confirm:
-          one: "Er du sikker på du vil flette de indlæg?"
-          other: "Er du sikker på at du vil flette disse {{count}} indlæg?"
       revisions:
         controls:
           first: "Første udgave"
@@ -1798,8 +1782,6 @@ da:
       settings: 'Indstillinger'
       topic_template: "Skabelon for emne"
       tags: "Tags"
-      tags_allowed_tags: "Mærker der kun kan bruges i denne kategori:"
-      tags_allowed_tag_groups: "Mærke grupper der kun kan bruges i denne kategori:"
       tags_placeholder: "(Valgfri) liste af tiladte mærker"
       tag_groups_placeholder: "(Valgfri) liste af tiladte mærke grupper"
       topic_featured_link_allowed: "Tillad fremhævede links i denne kategori"
@@ -2098,7 +2080,6 @@ da:
         hamburger_menu: '<b>=</b> Åben hamburger menu'
         user_profile_menu: '<b>p</b> Åben bruger menu'
         show_incoming_updated_topics: '<b>.</b> Vis opdaterede emner'
-        search: '<b>/</b> Søg'
         help: '<b>?</b> Åben tastaturhjælp'
         dismiss_new_posts: '<b>x</b>, <b>r</b> Afvis Nyt/Indlæg'
         dismiss_topics: '<b>x</b>, <b>t</b> Afvis emner'
@@ -2611,9 +2592,6 @@ da:
           updating: "Opdaterer..."
           up_to_date: "Tema er opdateret, senest tjekket:"
           add: "Tilføj"
-          commits_behind:
-            one: "Temaet er 1 integrering bagud!"
-            other: "Temaet er {{count}} integreringer bagud!"
           scss:
             text: "CSS"
             title: "Angiv tilpasset CSS - vi accepterer alle gyldige CSS og SCSS-former"
@@ -2761,7 +2739,6 @@ da:
           do_nothing: "gør intet"
         staff_actions:
           title: "Handlinger"
-          instructions: "Klik på brugernavne og handlinger for at filtrere listen. Klik på profilbillederne for at gå til brugersiderne."
           clear_filters: "Vis alt"
           staff_user: "Bruger"
           target_user: "Bruger"
@@ -3240,9 +3217,6 @@ da:
       upload: "Upload"
       uploading: "Uploader..."
       quit: "Måske senere"
-      staff_count:
-        one: "Dit fællesskab har 1 hjælper"
-        other: "Dit fællesskab har %{count} hjælpere."
       invites:
         add_user: "tilføj"
         none_added: "Du har ikke inviteret nogen til hjælperteamet. Er du sikker på, at du vil fortsætte?"
