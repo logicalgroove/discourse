@@ -484,6 +484,9 @@ a.star {
     table-layout: fixed;
     margin-top: 10px;
   }
+  .topic-list{
+    width: auto;
+  }
 
   // this forces category to take less space in suggested topics
   // as the poster list is not present at all there.
