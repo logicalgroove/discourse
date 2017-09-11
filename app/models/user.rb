@@ -213,6 +213,10 @@ class User < ActiveRecord::Base
   EMAIL = %r{([^@]+)@([^\.]+)}
   ONLINE_PERIOD = 120
 
+  def online?
+    last_visit_at && Time.now - last_visit_at < ONLINE_PERIOD
+  end
+
   def self.new_from_params(params)
     user = User.new
     user.name = params[:name]
