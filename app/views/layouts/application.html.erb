@@ -43,7 +43,6 @@
       <%= raw theme_lookup("head_tag") %>
     <%- end %>
 
-    <%= render_google_universal_analytics_code %>
     <link rel="manifest" href="<%= Discourse.base_uri %>/manifest.json">
 
     <%- if SiteSetting.native_app_install_banner? %>
@@ -59,32 +58,9 @@
   </head>
 
   <body class="<%= body_classes %>">
-    <%= render_google_tag_manager_code %>
 
     <div class='debug-eyeline'></div>
 
-    <noscript data-path="<%= request.env['PATH_INFO'] %>">
-      <%= render partial: 'header' %>
-      <div id="main-outlet" class="wrap">
-        <!-- preload-content: -->
-        <%= yield %>
-        <!-- :preload-content -->
-        <footer>
-          <nav itemscope itemtype='http://schema.org/SiteNavigationElement'>
-            <a href='<%= path "/" %>'><%= t 'home_title' %></a>
-            <%= link_to t('js.filters.categories.title'), path("/categories") %>
-            <%= link_to t('guidelines_topic.title'), path("/guidelines") %>
-            <%= link_to t('tos_topic.title'), path("/tos") %>
-            <%= link_to t('privacy_topic.title'), path("/privacy") %>
-            <%= link_to t('contacts_topic.title'), path("/contacts") %>
-          </nav>
-        </footer>
-      </div>
-
-      <footer id='noscript-footer'>
-        <p><%= t 'powered_by_html' %></p>
-      </footer>
-    </noscript>
 
     <%- unless customization_disabled? || loading_admin? %>
       <%= theme_lookup("header") %>
@@ -121,11 +97,36 @@
 
     <%= render :partial => "common/discourse_javascript" %>
 
-    <%= render_google_analytics_code %>
 
     <%- unless customization_disabled? %>
       <%= raw theme_lookup("body_tag") %>
     <%- end %>
     <%= raw build_plugin_html 'server:before-body-close' %>
+    <noscript data-path="<%= request.env['PATH_INFO'] %>">
+      <%= render partial: 'header' %>
+      <div id="main-outlet" class="wrap">
+        <!-- preload-content: -->
+        <%= yield %>
+        <!-- :preload-content -->
+        <footer>
+          <nav itemscope itemtype='http://schema.org/SiteNavigationElement'>
+            <a href='<%= path "/" %>'><%= t 'home_title' %></a>
+            <%= link_to t('js.filters.categories.title'), path("/categories") %>
+            <%= link_to t('guidelines_topic.title'), path("/guidelines") %>
+            <%= link_to t('tos_topic.title'), path("/tos") %>
+            <%= link_to t('privacy_topic.title'), path("/privacy") %>
+            <%= link_to t('contacts_topic.title'), path("/contacts") %>
+          </nav>
+        </footer>
+      </div>
+
+      <footer id='noscript-footer'>
+        <p><%= t 'powered_by_html' %></p>
+      </footer>
+    </noscript>
+    <%= render_google_tag_manager_code %>
+    <%= render_fb_pixel_code %>
+    <%= render_google_analytics_code %>
+    <%= render_google_universal_analytics_code %>
   </body>
 </html>
