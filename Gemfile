@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 # if there is a super emergency and rubygems is playing up, try
 #source 'http://production.cf.rubygems.org'
 
+ruby '2.4.1'
 # does not install in linux ATM, so hack this for now
 gem 'bootsnap', require: false
 
