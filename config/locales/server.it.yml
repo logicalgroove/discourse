@@ -46,6 +46,7 @@ it:
         no_message_id_error: "Succede quando l'email non ha l'intestazione 'Message-Id'."
         auto_generated_email_error: "Succede quando l'intestazione 'precedence' è impostata su: list, junk, bulk oppure auto_reply, oppure quando qualunque altra intestazione contiene: auto-submitted, auto-replied o auto-generated."
         no_body_detected_error: "Succede quando non si riesce ad estrapolare il corpo del messaggio e non ci sono allegati. "
+        no_sender_detected_error: "Succede quando non abbiamo trovato un indirizzo email valido nell'intestazione From."
         inactive_user_error: "Succede quando il mittente non è attivo."
         blocked_user_error: "Succede quando il mittente è stato bloccato."
         bad_destination_address: "Succede quando nessuno degli indirizzi email presente nei campi A/Cc/Bcc corrisponde ad alcun indirizzo email entrante tra quelli configurati."
@@ -452,6 +453,10 @@ it:
     leader:
       title: "veterano"
     change_failed_explanation: "Hai cercato di degradare %{user_name} a '%{new_trust_level}'. Comunque il suo livello di esperienza è già '%{current_trust_level}'. %{user_name} resterà a '%{current_trust_level}' - se vuoi degradarlo, prima blocca il suo livello di esperienza"
+  post:
+    image_placeholder:
+      broken: "Questa immagine è assente"
+      large: "Questa immagine è troppo grande da visualizzare; clicca per vederla"
   rate_limiter:
     slow_down: "Hai eseguito questa operazione troppe volte, riprova più tardi."
     too_many_requests: "C'è un limite giornaliero su quante volte si può fare questa azione. Per favore attendi %{time_left} prima di riprovare."
@@ -967,6 +972,7 @@ it:
     use_admin_ip_whitelist: "Gli amministratori possono connettersi soltanto se hanno un indirizzo IP definito nell'elenco degli IP scansionati (Amministrazione > Log > IP scansionati). "
     blacklist_ip_blocks: "Un elenco di blocchi di IP privati che non dovrebbero mai essere scansionati da Discourse"
     whitelist_internal_hosts: "Un elenco di host interni di cui Discourse può eseguire la scansione in modo sicuro per la funzione di onebox e altri scopi"
+    allowed_iframes: "Un elenco di prefissi di dominio src iframe che discourse può consentire in modo sicuro nei messaggi"
     top_menu: "Determina quali oggetti appaiono nella navigazione della pagina iniziale, e in quale ordine. Esempio latest|new|unread|categories|top|read|posted|bookmarks"
     post_menu: "Determina quali elementi vengono mostrati nel menu del messaggio, e in quale ordine. Esempio like|edit|flag|delete|share|bookmark|reply"
     post_menu_hidden_items: "Le voci di menu da nascondere per difetto nel menu di composizione del messaggio, a meno che non vengano premuti i punti di sospensione per espanderle."
@@ -1178,6 +1184,7 @@ it:
     user_profile_view_duration_hours: "Conteggia una nuova visita del profilo utente una volta per IP/Utente ogni N ore"
     levenshtein_distance_spammer_emails: "Quanti caratteri di differenza faranno comunque scattare una corrispondenza approssimativa nell'analisi delle email di spam. "
     max_new_accounts_per_registration_ip: "Se vi sono già (n) account con livello di esperienza 0 da questo IP (e nessuno è membro dello staff o TL2 o superiore), non accettare nuove iscrizioni utente da questo IP."
+    min_ban_entries_for_roll_up: "Quando si clicca il pulsante Riassumi Argomento , verrà creata una nuova voce di blocco se sono presenti almeno (N) voci."
     max_age_unmatched_emails: "Elimina le voci di email scansionate senza corrispondenza dopo (N) giorni."
     max_age_unmatched_ips: "Elimina le voci di IP scansionati senza corrispondenza dopo (N) giorni."
     num_flaggers_to_close_topic: "Il numero minimo di segnalatori univoci richiesto affinché un argomento venga messo in pausa fino all'intervento di un moderatore"
@@ -1226,7 +1233,7 @@ it:
     pop3_polling_username: "Il nome utente dell'account POP3 per la ricezione di email."
     pop3_polling_password: "La password dell'account POP3 per la ricezione di email."
     log_mail_processing_failures: "Traccia tutti i fallimenti di lavorazione delle email all'indirizzo http://tuosito.com/logs "
-    email_in: "Permetti agli utenti di pubblicare nuovi argomenti per email (richiede il pop3 polling). Configura gli indirizzi nella scheda \"Impostazioni\" di ciascuna categoria."
+    email_in: "Permetti agli utenti di pubblicare nuovi argomenti via email (richiede il polling manuale o pop3). Configura gli indirizzi nella scheda \"Impostazioni\" di ciascuna categoria. "
     email_in_min_trust: "Livello di esperienza minimo necessario affinché un utente possa pubblicare nuovi argomenti via email."
     email_prefix: "La [etichetta] utilizzata nell'oggetto delle email. Se non impostata sarà 'titolo'."
     email_site_title: "Il titolo del sito utilizzato come mittente delle email dal sito. Impostazione di default a 'titolo' se non impostata. Se il tuo 'titolo' contiene caratteri non consentiti nelle stringhe del mittente email, utilizza questa impostazione."
@@ -1279,6 +1286,7 @@ it:
     topic_page_title_includes_category: "Il titolo dell'argomento sulla pagina include il nome della categoria."
     native_app_install_banner: "Domanda ai visitatori ricorrenti di installare l'app nativa di Discourse."
     share_anonymized_statistics: "Condividi statistiche anonime di utilizzo."
+    auto_handle_queued_age: "Gestisci automaticamente i record che sono in attesa di essere rivisti dopo tale numero di giorni. Le segnalazioni saranno ignorate. I messaggi in attesa e gli utenti saranno rifiutati. Imposta a 0 per disattivare questa funzionalità."
     max_prints_per_hour_per_user: "Numero massimo di impressioni /pagine di stampa (imposta a 0 per disattivare)"
     full_name_required: "Il nome completo è un campo obbligatorio del profilo utente."
     enable_names: "Mostra il nome completo dell'utente su profilo, scheda utente e email. Disabilita per nascondere il nome completo ovunque."
@@ -1528,6 +1536,7 @@ it:
       max_new_accounts_per_registration_ip: "Le nuove iscrizioni non sono consentite dal tuo indirizzo IP (limite massimo raggiunto). Contatta un membro dello staff."
     website:
       domain_not_allowed: "Il sito web non è valido. I domini consentiti sono: %{domains}"
+    auto_rejected: "Rifiutato automaticamente a causa dell'età. Vedi l'impostazione del sito auto_handle_queued_age."
   flags_reminder:
     flags_were_submitted:
       one: "Flags were submitted over 1 hour ago. [Please review them](/admin/flags)."
@@ -1718,15 +1727,6 @@ it:
       ### Note di rilascio
 
       %{notes}
-  queued_posts_reminder:
-    title: "Promemoria Messaggi in Coda"
-    subject_template:
-      one: "[%{email_prefix}] 1 post waiting to be reviewed"
-      other: "[%{email_prefix}] %{count} messaggi in attesa di essere revisionati"
-    text_body_template: |
-      Ciao,
-
-      I messaggi di nuovi utenti sono stati trattenuti per la moderazione e attualmente sono in attesa di essere rivisti.  [Approvali o rifiutali qui](%{base_url}/queued-posts).
   flag_reasons:
     off_topic: "Il tuo messaggio è stato segnalato come **fuori tema**: la comunità pensa non riguardi l'argomento, come attualmente definito dal titolo e dal contenuto del primo messaggio."
     inappropriate: "Il tuo messaggio è stato segnalato come **inappropriato**: la comunità lo ritiene offensivo, ingiurioso o una violazione delle [linee guida della comunità](/guidelines)."
@@ -2118,6 +2118,15 @@ it:
         Questo premio viene assegnato solo a due nuovi utenti al mese e sarà visibile permanentemente sulla [tua pagina utente](%{base_url}/my/badges).
 
         Sei diventato velocemente un membro prezioso della nostra comunità. Grazie per l'adesione e continua a fare un buon lavoro!
+    queued_posts_reminder:
+      title: "Promemoria Messaggi in Coda"
+      subject_template:
+        one: "messaggi in attesa di essere revisionati "
+        other: "%{count} messaggi in attesa di essere revisionati"
+      text_body_template: |
+        Ciao,
+
+        dei messaggi di nuovi utenti sono stati trattenuti per la moderazione e attualmente sono in attesa di essere rivisti. [Approvali o rifiutali qui](%{base_url}/queued-posts).
   unsubscribe_link: |
     Per annullare l'iscrizione a queste email, [clicca qui](%{unsubscribe_url}).
   unsubscribe_link_and_mail: |
@@ -2276,6 +2285,7 @@ it:
 
         %{respond_instructions}
     user_posted:
+      title: "Utente Pubblicato"
       subject_template: "[%{email_prefix}]%{topic_title}"
       text_body_template: |
         %{header_instructions}
@@ -2286,6 +2296,7 @@ it:
 
         %{respond_instructions}
     user_watching_first_post:
+      title: "Utente Osservando Primo Messaggio"
       subject_template: "[%{email_prefix}]%{topic_title}"
       text_body_template: |
         %{header_instructions}
@@ -3034,6 +3045,18 @@ it:
       description: Contributi eccezionali nel loro primo mese
       long_description: |
         Questo distintivo è assegnato per congratularsi con due nuovi utenti ogni mese per i loro ottimi contributi globali, misurati sulla frequenza dei like ricevuti per i loro messaggi e da chi li ha dati.
+    enthusiast:
+      name: Appassionato
+      description: 10 giorni di frequenza
+      long_description: Questo distintivo è assegnato per aver frequentato il sito per 10 giorni consecutivi. Grazie per essere stato con noi per più di una settimana!
+    aficionado:
+      name: Amatoriale
+      description: 100 giorni di frequenza
+      long_description: Questo distintivo è assegnato per aver frequentato il sito per 100 giorni consecutivi. Sono più di tre mesi!
+    devotee:
+      name: Devoto
+      description: 365 giorni di frequenza
+      long_description: Questo distintivo è assegnato per aver frequentato il sito per 365 giorni consecutivi. Wow, un anno intero!
     badge_title_metadata: "%{display_name}distintivo su %{site_title}"
   admin_login:
     success: "email Inviata"

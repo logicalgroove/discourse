@@ -83,7 +83,7 @@ class User < ActiveRecord::Base
   validates :name, user_full_name: true, if: :name_changed?, length: { maximum: 255 }
   validates :ip_address, allowed_ip_address: { on: :create, message: :signup_not_allowed }
   validates :primary_email, presence: true
-  validates_associated :primary_email
+  validates_associated :primary_email, message: -> (_, user_email) { user_email[:value]&.errors[:email]&.first }
 
   after_initialize :add_trust_level
 
@@ -712,17 +712,15 @@ class User < ActiveRecord::Base
   end
 
   def activate
-    if email_token = self.email_tokens.active.first
+    if email_token = self.email_tokens.active.where(email: self.email).first
       EmailToken.confirm(email_token.token)
     else
-      self.active = true
-      save
+      self.update!(active: true)
     end
   end
 
   def deactivate
-    self.active = false
-    save
+    self.update!(active: false)
   end
 
   def change_trust_level!(level, opts = nil)

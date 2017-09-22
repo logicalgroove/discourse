@@ -193,6 +193,7 @@ ja:
               common: "は10000最も一般的なパスワードのいずれかである。より安全なパスワードを使用してください。"
               same_as_username: "はあなたのユーザー名と同じです。より安全なパスワードを使用してください"
               same_as_email: "はあなたのメールアドレスと同じです。より安全なパスワードを使用してください"
+              same_as_current: "はあなたの現在のパスワードと同じです。"
             ip_address:
               signup_not_allowed: "このアカウントからのサインアップできません。"
         color_scheme_color:
@@ -785,7 +786,6 @@ ja:
     pop3_polling_username: "ポーリングを行うPOS3アカウントのユーザ名"
     pop3_polling_password: "ポーリングを行うPOS3アカウントのパスワード"
     log_mail_processing_failures: "Eメールの失敗ログをhttp://yoursitename.com/logs に保存する"
-    email_in: "ユーザにメールでのトピック作成を許可する(POP3ポーリングが必須) 。設定タブでカテゴリ毎に設定してください"
     email_in_min_trust: "メールでのトピック作成を許可する最低トラストレベル"
     email_prefix: "メールのタイトルに使用される[ラベル]。空白の場合、タイトルがデフォルトで使用されます"
     email_site_title: "サイトからのメールの送信者として使用されるタイトル。 空白の場合、タイトルがデフォルトで使用されます。タイトルにメールの送信者として使用できない文字列が含まれている場合、この設定を使用します"

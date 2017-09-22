@@ -360,7 +360,7 @@ zh_CN:
         title: "群组"
         empty: "没有可见的群组。"
       title:
-        other: "群组"
+        other: "小组"
       activity: "活动"
       members: "成员"
       topics: "主题"
@@ -375,6 +375,8 @@ zh_CN:
         staff: "小组创建者及工作人员"
         owners: "小组创建者及管理员"
       alias_levels:
+        mentionable: "谁能@该小组"
+        messageable: "谁能私信此小组"
         nobody: "没有人"
         only_admins: "管理员"
         mods_and_admins: "版主与管理员"
@@ -480,7 +482,7 @@ zh_CN:
       preferences: "设置"
       expand_profile: "展开"
       bookmarks: "收藏"
-      bio: "个人信息"
+      bio: "我是谁"
       invited_by: "邀请人"
       trust_level: "信任等级"
       notifications: "通知"
@@ -577,7 +579,7 @@ zh_CN:
         select_all: "全选"
       preferences_nav:
         account: "帐号"
-        profile: "个人档案"
+        profile: "个人信息"
         emails: "邮件"
         notifications: "通知"
         categories: "分类"
@@ -619,10 +621,10 @@ zh_CN:
         image_is_not_a_square: "注意：图片不是正方形的，我们裁剪了部分图像。"
         cache_notice: "更改了头像成功，但是鉴于浏览器缓存可能需要一段时间后才会生效。"
       change_profile_background:
-        title: "个人资料背景"
+        title: "个人档背景"
         instructions: "显示在个人资料页面中，上传的图片将被居中且默认宽度为 850px。"
       change_card_background:
-        title: "用户卡片背景"
+        title: "用户卡背景"
         instructions: "显示在用户卡片中，上传的图片将被居中且默认宽度为 590px。"
       email:
         title: "邮箱"
@@ -665,7 +667,7 @@ zh_CN:
       location: "地点"
       card_badge:
         title: "用户卡片徽章"
-      website: "网站"
+      website: "网址"
       email_settings: "邮箱"
       like_notification_frequency:
         title: "用户被赞时通知提醒"
@@ -992,6 +994,8 @@ zh_CN:
       ctrl: 'Ctrl'
       alt: 'Alt'
     select_box:
+      default_header_text: 选择...
+      no_content: 无符合的结果
       filter_placeholder: 搜索……
     emoji_picker:
       filter_placeholder: 查找表情符号
@@ -1103,27 +1107,6 @@ zh_CN:
       empty: "未发现通知"
       more: "看历史通知"
       total_flagged: "被标记帖子的总数"
-      mentioned: "<i title='被提及' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
-      group_mentioned: "<i title='群组被提及' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
-      quoted: "<i title='引用' class='fa fa-quote-right'></i><p><span>{{username}}</span> {{description}}</p>"
-      replied: "<i title='回复' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      posted: "<i title='回复' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      edited: "<i title='编辑' class='fa fa-pencil'></i><p><span>{{username}}</span> {{description}}</p>"
-      liked: "<i title='赞' class='fa fa-heart'></i><p><span>{{username}}</span> {{description}}</p>"
-      liked_2: "<i title='赞' class='fa fa-heart'></i><p><span>{{username}}、{{username2}}</span> {{description}}</p>"
-      liked_many:
-        other: "<i title='赞' class='fa fa-heart'></i><p><span>{{username}}、{{username2}}</span>和其他 {{count}} 人</span>{{description}}</p>"
-      private_message: "<i title='私信' class='fa fa-envelope-o'></i><p><span>{{username}}</span>{{description}}</p>"
-      invited_to_private_message: "<i title='私信' class='fa fa-envelope-o'></i><p><span>{{username}}</span>{{description}}</p>"
-      invited_to_topic: "<i title='邀请至主题' class='fa fa-heart'></i><p><span>{{username}}</span>{{description}}</p>"
-      invitee_accepted: "<i title='已接受你的邀请' class='fa fa-user'></i><p><span>{{username}}</span>已接受你的邀请</p>"
-      moved_post: "<i title='移动了帖子' class='fa fa-sign-out'></i><p><span>{{username}}</span>移动了{{description}}</p>"
-      linked: "<i title='关联帖子' class='fa fa-link'></i><p><span>{{username}}</span>{{description}}</p>"
-      granted_badge: "<i title='徽章授予' class='fa fa-certificate'></i><p>获得“{{description}}”</p>"
-      topic_reminder: "<i title='topic reminder' class='fa fa-hand-o-right'></i><p><span>{{username}}</span> {{description}}</p>"
-      watching_first_post: "<i title='近期主题' class='fa fa-dot-circle-o'></i><p><span>近期主题</span>{{description}}</p>"
-      group_message_summary:
-        other: "<i title='群组收件箱中的私信' class='fa fa-group'></i><p> {{count}} 条私信在{{group_name}}组的收件箱中</p>"
       alt:
         mentioned: "被提及"
         quoted: "被引用"

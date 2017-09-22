@@ -71,6 +71,7 @@ en:
         no_message_id_error: "Happens when the mail has no 'Message-Id' header."
         auto_generated_email_error: "Happens when the 'precedence' header is set to: list, junk, bulk or auto_reply, or when any other header contains: auto-submitted, auto-replied or auto-generated."
         no_body_detected_error: "Happens when we couldn't extract a body and there were no attachments."
+        no_sender_detected_error: "Happens when we couldn't find a valid email address in the From header."
         inactive_user_error: "Happens when the sender is not active."
         blocked_user_error: "Happens when the sender has been blocked."
         bad_destination_address: "Happens when none of the email addresses in To/Cc/Bcc fields matched a configured incoming email address."
@@ -519,6 +520,10 @@ en:
       title: "leader"
     change_failed_explanation: "You attempted to demote %{user_name} to '%{new_trust_level}'. However their trust level is already '%{current_trust_level}'. %{user_name} will remain at '%{current_trust_level}' - if you wish to demote user lock trust level first"
 
+  post:
+    image_placeholder:
+      broken: "This image is broken"
+      large: "This image is too large to display here; click to view"
 
   rate_limiter:
     slow_down: "You have performed this action too many times, try again later."
@@ -1472,6 +1477,8 @@ en:
 
     share_anonymized_statistics: "Share anonymized usage statistics."
 
+    auto_handle_queued_age: "Automatically handle records that are waiting to be reviewed after this many days. Flags will be deferred. Queued posts and users will be rejected. Set to 0 to disable this feature."
+
     max_prints_per_hour_per_user: "Maximum number of /print page impressions (set to 0 to disable)"
 
     full_name_required: "Full name is a required field of a user's profile."
@@ -1753,6 +1760,7 @@ en:
       max_new_accounts_per_registration_ip: "New registrations are not allowed from your IP address (maximum limit reached). Contact a staff member."
     website:
       domain_not_allowed: "Website is invalid. Allowed domains are: %{domains}"
+    auto_rejected: "Rejected automatically due to age. See auto_handle_queued_age site setting."
 
   flags_reminder:
     flags_were_submitted:
@@ -1955,16 +1963,6 @@ en:
       ### Release notes
 
       %{notes}
-
-  queued_posts_reminder:
-    title: "Queued Posts Reminder"
-    subject_template:
-      one: "[%{email_prefix}] 1 post waiting to be reviewed"
-      other: "[%{email_prefix}] %{count} posts waiting to be reviewed"
-    text_body_template: |
-      Hello,
-
-      Posts from new users were held for moderation and are currently waiting to be reviewed. [Approve or reject them here](%{base_url}/queued-posts).
 
   flag_reasons:
     off_topic: "Your post was flagged as **off-topic**: the community feels it is not a good fit for the topic, as currently defined by the title and the first post."
@@ -2401,6 +2399,18 @@ en:
         This award is only granted to two new users per month, and it will be permanently visible on [your user page](%{base_url}/my/badges).
 
         You've quickly become a valuable member of our community. Thanks for joining, and keep up the great work!
+
+    queued_posts_reminder:
+      title: "Queued Posts Reminder"
+      subject_template:
+        one: "1 post waiting to be reviewed"
+        other: "%{count} posts waiting to be reviewed"
+      text_body_template: |
+        Hello,
+
+        Posts from new users were held for moderation and are currently waiting to be reviewed. [Approve or reject them here](%{base_url}/queued-posts).
+
+
 
   unsubscribe_link: |
     To unsubscribe from these emails, [click here](%{unsubscribe_url}).
@@ -3399,6 +3409,18 @@ en:
       description: Outstanding contributions in their first month
       long_description: |
         This badge is granted to congratulate two new users each month for their excellent overall contributions, as measured by how often their posts were liked, and by whom.
+    enthusiast:
+      name: Enthusiast
+      description:  Visited 10 days
+      long_description: This badge is granted for visiting 10 consecutive days. Thanks for sticking with us for over a week!
+    aficionado:
+      name: Aficionado
+      description: Visited 100 days
+      long_description: This badge is granted for visiting 100 consecutive days. That's more than three months!
+    devotee:
+      name: Devotee
+      description: Visited 365 days
+      long_description: This badge is granted for visiting 365 consecutive days. Wow, an entire year!
     badge_title_metadata: "%{display_name} badge on %{site_title}"
 
   admin_login:
