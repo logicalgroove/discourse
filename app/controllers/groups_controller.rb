@@ -1,6 +1,6 @@
 class GroupsController < ApplicationController
 
-  before_filter :ensure_logged_in, only: [
+  before_action :ensure_logged_in, only: [
     :set_notifications,
     :mentionable,
     :messageable,
@@ -11,7 +11,7 @@ class GroupsController < ApplicationController
     :search
   ]
 
-  skip_before_filter :preload_json, :check_xhr, only: [:posts_feed, :mentions_feed]
+  skip_before_action :preload_json, :check_xhr, only: [:posts_feed, :mentions_feed]
 
   def index
     unless SiteSetting.enable_group_directory?
@@ -125,15 +125,17 @@ class GroupsController < ApplicationController
       order = "#{params[:order]} #{dir} NULLS LAST"
     end
 
-    total = group.users.count
-    members = group.users
+    users = group.users.human_users
+
+    total = users.count
+    members = users
       .order('NOT group_users.owner')
       .order(order)
       .order(username_lower: dir)
       .limit(limit)
       .offset(offset)
 
-    owners = group.users
+    owners = users
       .order(order)
       .order(username_lower: dir)
       .where('group_users.owner')

@@ -22,13 +22,7 @@ module PrettyText
       return "" unless user.present?
 
       # TODO: Add support for ES6 and call `avatar-template` directly
-      if !user.uploaded_avatar_id
-        avatar_template = User.default_template(username)
-      else
-        avatar_template = user.avatar_template
-      end
-
-      UrlHelper.schemaless UrlHelper.absolute avatar_template
+      UrlHelper.schemaless(UrlHelper.absolute(user.avatar_template))
     end
 
     def mention_lookup(name)
@@ -91,7 +85,8 @@ module PrettyText
 
       if !is_tag && category = Category.query_from_hashtag_slug(text)
         [category.url_with_id, text]
-      elsif is_tag && tag = Tag.find_by_name(text.gsub!("#{tag_postfix}", ''))
+      elsif (!is_tag && tag = Tag.find_by(name: text)) ||
+            (is_tag && tag = Tag.find_by(name: text.gsub!("#{tag_postfix}", '')))
         ["#{Discourse.base_url}/tags/#{tag.name}", text]
       else
         nil

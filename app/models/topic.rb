@@ -7,7 +7,10 @@ require_dependency 'text_cleaner'
 require_dependency 'archetype'
 require_dependency 'html_prettify'
 require_dependency 'discourse_tagging'
-require_dependency 'search'
+require_dependency 'search_indexer'
+require_dependency 'list_controller'
+require_dependency 'topic_posters_summary'
+require_dependency 'topic_featured_users'
 
 class Topic < ActiveRecord::Base
   class UserExists < StandardError; end
@@ -83,7 +86,8 @@ class Topic < ActiveRecord::Base
 
   validates :featured_link, allow_nil: true, format: URI::regexp(%w(http https))
   validate if: :featured_link do
-    errors.add(:featured_link, :invalid_category) unless !featured_link_changed? || Guardian.new.can_edit_featured_link?(category_id)
+    errors.add(:featured_link, :invalid_category) unless !featured_link_changed? ||
+      Guardian.new.can_edit_featured_link?(category_id)
   end
 
   before_validation do
@@ -101,8 +105,8 @@ class Topic < ActiveRecord::Base
   has_many :group_archived_messages, dependent: :destroy
   has_many :user_archived_messages, dependent: :destroy
 
-  has_many :allowed_group_users, through: :allowed_groups, source: :users
   has_many :allowed_groups, through: :topic_allowed_groups, source: :group
+  has_many :allowed_group_users, through: :allowed_groups, source: :users
   has_many :allowed_users, through: :topic_allowed_users, source: :user
   has_many :queued_posts
 
@@ -125,7 +129,7 @@ class Topic < ActiveRecord::Base
   has_many :topic_timers, dependent: :destroy
 
   has_one :user_warning
-  has_one :first_post, -> { where post_number: 1 }, class_name: Post
+  has_one :first_post, -> { where post_number: 1 }, class_name: 'Post'
   has_one :topic_search_data
   has_one :topic_embed, dependent: :destroy
 
@@ -196,7 +200,7 @@ class Topic < ActiveRecord::Base
   after_save do
     banner = "banner".freeze
 
-    if archetype_was == banner || archetype == banner
+    if archetype_before_last_save == banner || archetype == banner
       ApplicationController.banner_json_cache.clear
     end
 
@@ -268,7 +272,7 @@ class Topic < ActiveRecord::Base
   end
 
   def has_flags?
-    FlagQuery.flagged_post_actions("active")
+    FlagQuery.flagged_post_actions(filter: "active")
       .where("topics.id" => id)
       .exists?
   end
@@ -407,6 +411,7 @@ class Topic < ActiveRecord::Base
   def reload(options = nil)
     @post_numbers = nil
     @public_topic_timer = nil
+    @private_topic_timer = nil
     super(options)
   end
 
@@ -998,6 +1003,10 @@ SQL
     @public_topic_timer ||= topic_timers.find_by(deleted_at: nil, public_type: true)
   end
 
+  def private_topic_timer(user)
+    @private_topic_Timer ||= topic_timers.find_by(deleted_at: nil, public_type: false, user_id: user.id)
+  end
+
   def delete_topic_timer(status_type, by_user: Discourse.system_user)
     options = { status_type: status_type }
     options.merge!(user: by_user) unless TopicTimer.public_types[status_type]
@@ -1018,8 +1027,9 @@ SQL
   def set_or_create_timer(status_type, time, by_user: nil, timezone_offset: 0, based_on_last_post: false, category_id: SiteSetting.uncategorized_category_id)
     return delete_topic_timer(status_type, by_user: by_user) if time.blank?
 
-    topic_timer_options = { topic: self }
-    topic_timer_options.merge!(user: by_user) unless TopicTimer.public_types[status_type]
+    public_topic_timer = !!TopicTimer.public_types[status_type]
+    topic_timer_options = { topic: self, public_type: public_topic_timer }
+    topic_timer_options.merge!(user: by_user) unless public_topic_timer
     topic_timer = TopicTimer.find_or_initialize_by(topic_timer_options)
     topic_timer.status_type = status_type
 
@@ -1326,6 +1336,7 @@ end
 #  index_topics_on_bumped_at               (bumped_at)
 #  index_topics_on_created_at_and_visible  (created_at,visible)
 #  index_topics_on_id_and_deleted_at       (id,deleted_at)
+#  index_topics_on_lower_title             (lower((title)::text))
 #  index_topics_on_pinned_at               (pinned_at)
 #  index_topics_on_pinned_globally         (pinned_globally)
 #

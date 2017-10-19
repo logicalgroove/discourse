@@ -2,6 +2,7 @@ require 'rails_helper'
 require_dependency 'user'
 
 describe User do
+  let(:user) { Fabricate(:user) }
 
   context 'validations' do
     it { is_expected.to validate_presence_of :username }
@@ -754,6 +755,10 @@ describe User do
         user.update_last_seen!
       end
 
+      after do
+        $redis.flushall
+      end
+
       it "updates last_seen_at" do
         expect(user.last_seen_at).to be_within_one_second_of(date)
       end
@@ -1433,9 +1438,8 @@ describe User do
     let(:user) { Fabricate(:user) }
 
     it 'should publish the right message' do
-      message = MessageBus.track_publish { user.logged_out }.find { |m| m.channel == '/logout' }
+      message = MessageBus.track_publish('/logout') { user.logged_out }.first
 
-      expect(message.channel).to eq('/logout')
       expect(message.data).to eq(user.id)
     end
   end
@@ -1532,6 +1536,21 @@ describe User do
       user = Fabricate(:user)
 
       expect(User.human_users).to eq([user])
+    end
+  end
+
+  describe '#publish_notifications_state' do
+    it 'should publish the right message' do
+      notification = Fabricate(:notification, user: user)
+      notification2 = Fabricate(:notification, user: user, read: true)
+
+      message = MessageBus.track_publish("/notification/#{user.id}") do
+        user.publish_notifications_state
+      end.first
+
+      expect(message.data[:recent]).to eq([
+        [notification2.id, true], [notification.id, false]
+      ])
     end
   end
 end

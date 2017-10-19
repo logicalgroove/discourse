@@ -1033,7 +1033,7 @@ zh_CN:
       group_mentioned:
         other: "提及 {{group}} 时，你将通知 <a href='{{group_link}}'>{{count}} 人</a> － 确定吗？"
       cannot_see_mention:
-        category: "你提到了{{userrname}}，然而他们不能访问该分类，所以他们不会被通知。你需要把他们加入到能访问该分类的群组中。"
+        category: "你提到了 {{username}} ，然而他们不能访问该分类，所以他们不会被通知。你需要把他们加入到能访问该分类的群组中。"
         private: "你提到了{{userrname}}，然而他们不能访问该私信，所以他们不会被通知。你需要邀请他们至私信中。"
       duplicate_link: "好像<b>@{{username}}</b>在<a href='{{post_url}}'>{{ago}}</a>中前的回复中已经发了你的链接 <b>{{domain}}</b> － 你想再次发表链接吗？"
       error:
@@ -1107,6 +1107,27 @@ zh_CN:
       empty: "未发现通知"
       more: "看历史通知"
       total_flagged: "被标记帖子的总数"
+      mentioned: "<span>{{username}}</span> {{description}}"
+      group_mentioned: "<span>{{username}}</span> {{description}}"
+      quoted: "<span>{{username}}</span> {{description}}"
+      replied: "<span>{{username}}</span> {{description}}"
+      posted: "<span>{{username}}</span> {{description}}"
+      edited: "<span>{{username}}</span> {{description}}"
+      liked: "<span>{{username}}</span> {{description}}"
+      liked_2: "<span>{{username}}, {{username2}}</span> {{description}}"
+      liked_many:
+        other: "<span>{{username}}, {{username2}} 和其他 {{count}} 人</span> {{description}}"
+      private_message: "<span>{{username}}</span> {{description}}"
+      invited_to_private_message: "<p><span>{{username}}</span> {{description}}"
+      invited_to_topic: "<span>{{username}}</span> {{description}}"
+      invitee_accepted: "<span>{{username}}</span> 已接受你的邀请"
+      moved_post: "<span>{{username}}</span> 移动了 {{description}}"
+      linked: "<span>{{username}}</span> {{description}}"
+      granted_badge: "获得 “{{description}}”"
+      topic_reminder: "<span>{{username}}</span> {{description}}"
+      watching_first_post: "<span>新主题</span> {{description}}"
+      group_message_summary:
+        other: "{{count}} 条私信在{{group_name}}组的收件箱中"
       alt:
         mentioned: "被提及"
         quoted: "被引用"

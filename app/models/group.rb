@@ -30,7 +30,7 @@ class Group < ActiveRecord::Base
   after_save :update_title
 
   after_save :enqueue_update_mentions_job,
-    if: Proc.new { |g| g.name_was && g.name_changed? }
+    if: Proc.new { |g| g.name_before_last_save && g.saved_change_to_name? }
 
   after_save :expire_cache
   after_destroy :expire_cache
@@ -307,6 +307,7 @@ class Group < ActiveRecord::Base
   def self.ensure_consistency!
     reset_all_counters!
     refresh_automatic_groups!
+    refresh_has_messages!
   end
 
   def self.reset_all_counters!
@@ -328,6 +329,18 @@ class Group < ActiveRecord::Base
   def self.refresh_automatic_groups!(*args)
     args = AUTO_GROUPS.keys if args.empty?
     args.each { |group| refresh_automatic_group!(group) }
+  end
+
+  def self.refresh_has_messages!
+    exec_sql <<-SQL
+      UPDATE groups g SET has_messages = false
+      WHERE NOT EXISTS (SELECT tg.id
+                          FROM topic_allowed_groups tg
+                    INNER JOIN topics t ON t.id = tg.topic_id
+                         WHERE tg.group_id = g.id
+                           AND t.deleted_at IS NULL)
+      AND g.has_messages = true
+    SQL
   end
 
   def self.ensure_automatic_groups!
@@ -552,7 +565,7 @@ class Group < ActiveRecord::Base
     def update_title
       return if new_record? && !self.title.present?
 
-      if self.title_changed?
+      if self.saved_change_to_title?
         sql = <<-SQL.squish
           UPDATE users
              SET title = :title
@@ -561,14 +574,14 @@ class Group < ActiveRecord::Base
              AND id IN (SELECT user_id FROM group_users WHERE group_id = :id)
         SQL
 
-        self.class.exec_sql(sql, title: title, title_was: title_was, id: id)
+        self.class.exec_sql(sql, title: title, title_was: title_before_last_save, id: id)
       end
     end
 
     def update_primary_group
       return if new_record? && !self.primary_group?
 
-      if self.primary_group_changed?
+      if self.saved_change_to_primary_group?
         sql = <<~SQL
           UPDATE users
           /*set*/
@@ -613,7 +626,7 @@ class Group < ActiveRecord::Base
 
     def enqueue_update_mentions_job
       Jobs.enqueue(:update_group_mentions,
-        previous_name: self.name_was,
+        previous_name: self.name_before_last_save,
         group_id: self.id
       )
     end

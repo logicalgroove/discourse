@@ -154,9 +154,22 @@ describe Guardian do
       expect(Guardian.new(user).can_send_private_message?(user)).to be_truthy
     end
 
-    it "returns false when you are untrusted" do
-      user.trust_level = TrustLevel[0]
-      expect(Guardian.new(user).can_send_private_message?(another_user)).to be_falsey
+    context "when user is untrusted " do
+      before do
+        user.trust_level = TrustLevel[0]
+      end
+
+      it "returns false to another user" do
+        expect(Guardian.new(user).can_send_private_message?(another_user)).to be_falsey
+      end
+
+      it "returns true to moderator user" do
+        expect(Guardian.new(user).can_send_private_message?(moderator)).to be_truthy
+      end
+
+      it "returns true to moderator group" do
+        expect(Guardian.new(user).can_send_private_message?(Group[:moderators])).to be_truthy
+      end
     end
 
     it "returns true to another user" do
@@ -179,6 +192,10 @@ describe Guardian do
       it "returns true for staff member" do
         expect(Guardian.new(moderator).can_send_private_message?(another_user)).to be_truthy
         expect(Guardian.new(admin).can_send_private_message?(another_user)).to be_truthy
+      end
+
+      it "returns false even to a moderator" do
+        expect(Guardian.new(trust_level_4).can_send_private_message?(moderator)).to be_falsey
       end
     end
 
@@ -994,6 +1011,12 @@ describe Guardian do
 
     it 'returns false when not staff' do
       expect(Guardian.new(trust_level_4).can_convert_topic?(topic)).to be_falsey
+    end
+
+    it 'returns false for category definition topics' do
+      c = Fabricate(:category)
+      topic = Topic.find_by(id: c.topic_id)
+      expect(Guardian.new(admin).can_convert_topic?(topic)).to be_falsey
     end
 
     it 'returns true when a moderator' do
@@ -2538,6 +2561,34 @@ describe Guardian do
 
       it 'returns false if the category does not allow it' do
         expect(guardian.can_edit_featured_link?(category.id)).to eq(false)
+      end
+    end
+  end
+
+  context "suspension reasons" do
+    let(:user) { Fabricate(:user) }
+
+    it "will be shown by default" do
+      expect(Guardian.new.can_see_suspension_reason?(user)).to eq(true)
+    end
+
+    context "with hide suspension reason enabled" do
+      let(:moderator) { Fabricate(:moderator) }
+
+      before do
+        SiteSetting.hide_suspension_reasons = true
+      end
+
+      it "will not be shown to anonymous users" do
+        expect(Guardian.new.can_see_suspension_reason?(user)).to eq(false)
+      end
+
+      it "users can see their own suspensions" do
+        expect(Guardian.new(user).can_see_suspension_reason?(user)).to eq(true)
+      end
+
+      it "staff can see suspensions" do
+        expect(Guardian.new(moderator).can_see_suspension_reason?(user)).to eq(true)
       end
     end
   end

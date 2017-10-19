@@ -1,4 +1,3 @@
-require_dependency 'jobs/base'
 require_dependency 'pretty_text'
 require_dependency 'rate_limiter'
 require_dependency 'post_revisor'
@@ -86,11 +85,21 @@ class Post < ActiveRecord::Base
   scope :for_mailing_list, ->(user, since) {
     q = created_since(since)
       .joins(:topic)
-      .where(topic: Topic.for_digest(user, 100.years.ago)) # we want all topics with new content, regardless when they were created
+      .where(topic: Topic.for_digest(user, Time.at(0))) # we want all topics with new content, regardless when they were created
 
     q = q.where.not(post_type: Post.types[:whisper]) unless user.staff?
 
     q.order('posts.created_at ASC')
+  }
+  scope :raw_match, -> (pattern, type = 'string') {
+    type = type&.downcase
+
+    case type
+    when 'string'
+      where('raw ILIKE ?', "%#{pattern}%")
+    when 'regex'
+      where('raw ~ ?', pattern)
+    end
   }
 
   delegate :username, to: :user
@@ -200,7 +209,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.white_listed_image_classes
-    @white_listed_image_classes ||= ['avatar', 'favicon', 'thumbnail']
+    @white_listed_image_classes ||= ['avatar', 'favicon', 'thumbnail', 'emoji']
   end
 
   def post_analyzer
@@ -318,7 +327,7 @@ class Post < ActiveRecord::Base
   end
 
   def archetype
-    topic.archetype
+    topic&.archetype
   end
 
   def self.regular_order
@@ -563,7 +572,7 @@ class Post < ActiveRecord::Base
   before_save do
     self.last_editor_id ||= user_id
 
-    if !new_record? && raw_changed?
+    if !new_record? && will_save_change_to_raw?
       self.cooked = cook(raw, topic_id: topic_id)
     end
 

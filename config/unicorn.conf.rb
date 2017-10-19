@@ -66,7 +66,7 @@ before_fork do |server, worker|
     I18n.t(:posts)
 
     # load up all models and schema
-    (ActiveRecord::Base.connection.tables - %w[schema_migrations]).each do |table|
+    (ActiveRecord::Base.connection.tables - %w[schema_migrations versions]).each do |table|
       table.classify.constantize.first rescue nil
     end
 
@@ -84,6 +84,11 @@ before_fork do |server, worker|
         server.logger.info "Failed to initialize stats socket dir #{e}"
       end
     end
+
+    # preload discourse version
+    Discourse.git_version
+    Discourse.git_branch
+    Discourse.full_version
 
     # get rid of rubbish so we don't share it
     GC.start

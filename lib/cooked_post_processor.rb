@@ -65,7 +65,7 @@ class CookedPostProcessor
 
     values = upload_ids.map { |u| "(#{@post.id},#{u})" }.join(",")
     PostUpload.transaction do
-      PostUpload.delete_all(post_id: @post.id)
+      PostUpload.where(post_id: @post.id).delete_all
       if upload_ids.length > 0
         PostUpload.exec_sql("INSERT INTO post_uploads (post_id, upload_id) VALUES #{values}")
       end
@@ -337,7 +337,7 @@ class CookedPostProcessor
       end
     end
 
-    use_s3_cdn = SiteSetting.enable_s3_uploads && SiteSetting.s3_cdn_url.present?
+    use_s3_cdn = SiteSetting.Upload.enable_s3_uploads && SiteSetting.Upload.s3_cdn_url.present?
 
     %w{href data-download-href}.each do |selector|
       @doc.css("a[#{selector}]").each do |a|

@@ -198,6 +198,7 @@ class Auth::DefaultCurrentUserProvider
     elsif user && @user_token
       @user_token.destroy
     end
+
     cookies.delete(TOKEN_COOKIE)
   end
 

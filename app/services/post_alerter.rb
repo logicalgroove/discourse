@@ -1,4 +1,5 @@
 require_dependency 'distributed_mutex'
+require_dependency 'user_action_creator'
 
 class PostAlerter
   def self.post_created(post, opts = {})
@@ -92,7 +93,7 @@ class PostAlerter
         DiscourseEvent.trigger(:before_create_notifications_for_users, users, post)
         users.each do |user|
           notification_level = TopicUser.get(post.topic, user).try(:notification_level)
-          if notified.include?(user) || notification_level == TopicUser.notification_levels[:watching]
+          if notified.include?(user) || notification_level == TopicUser.notification_levels[:watching] || user.staged?
             create_notification(user, Notification.types[:private_message], post)
           end
         end
@@ -472,7 +473,7 @@ class PostAlerter
     post.topic_links.where(reflection: false).map do |link|
       linked_post = link.link_post
       if !linked_post && topic = link.link_topic
-        linked_post = topic.posts(post_number: 1).first
+        linked_post = topic.posts.find_by(post_number: 1)
       end
       (linked_post && post.user_id != linked_post.user_id && linked_post.user) || nil
     end.compact
