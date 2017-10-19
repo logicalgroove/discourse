@@ -116,6 +116,8 @@ end
 
 group :test, :development do
   gem 'rspec'
+  gem 'capybara'
+  gem 'poltergeist'
   gem 'mock_redis'
   gem 'listen', require: false
   gem 'certified', require: false
@@ -125,7 +127,7 @@ group :test, :development do
   gem 'mocha', require: false
   gem 'rb-fsevent', require: RUBY_PLATFORM =~ /darwin/i ? 'rb-fsevent' : false
   gem 'rb-inotify', '~> 0.9', require: RUBY_PLATFORM =~ /linux/i ? 'rb-inotify' : false
-  gem 'rspec-rails', require: false
+  gem 'rspec-rails'
   gem 'shoulda', require: false
   gem 'rspec-html-matchers'
   gem 'pry-nav'
