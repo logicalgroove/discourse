@@ -44,7 +44,6 @@ export function transformBasicPost(post) {
     user_id: post.user_id,
     usernameUrl: userPath(post.username),
     username: post.username,
-    user_online: post.user_online,
     avatar_template: post.avatar_template,
     bookmarked: post.bookmarked,
     yours: post.yours,
@@ -137,12 +136,10 @@ export default function transformPost(currentUser, site, post, prevPost, nextPos
     postAtts.showTopicMap = true;
     postAtts.topicCreatedAt = topic.created_at;
     postAtts.createdByUsername = createdBy.username;
-    postAtts.createdByOnline = createdBy.online;
     postAtts.createdByAvatarTemplate = createdBy.avatar_template;
 
     postAtts.lastPostUrl = topic.get('lastPostUrl');
     postAtts.lastPostUsername = details.last_poster.username;
-    postAtts.lastPostOnline = details.last_poster.online;
     postAtts.lastPostAvatarTemplate = details.last_poster.avatar_template;
     postAtts.lastPostAt = topic.last_posted_at;
 

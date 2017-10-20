@@ -1,12 +1,8 @@
 class BasicUserSerializer < ApplicationSerializer
-  attributes :id, :username, :avatar_template, :online
+  attributes :id, :username, :avatar_template
 
   def include_name?
     SiteSetting.enable_names?
-  end
-
-  def online
-    user.is_a?(PostAction) ? user.user.online? : user.try(:online?)
   end
 
   def avatar_template
