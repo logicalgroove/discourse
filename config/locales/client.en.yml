@@ -143,6 +143,7 @@ en:
       split_topic: "split this topic %{when}"
       invited_user: "invited %{who} %{when}"
       invited_group: "invited %{who} %{when}"
+      user_left: "%{who} left this message %{when}"
       removed_user: "removed %{who} %{when}"
       removed_group: "removed %{who} %{when}"
       autoclosed:
@@ -598,6 +599,7 @@ en:
       disable_jump_reply: "Don't jump to my post after I reply"
       dynamic_favicon: "Show new / updated topic count on browser icon"
       theme_default_on_all_devices: "Make this my default theme on all my devices"
+      allow_private_messages: "Allow other users to send me private messages"
       external_links_in_new_tab: "Open all external links in a new tab"
       enable_quoting: "Enable quote reply for highlighted text"
       change: "change"
@@ -1032,6 +1034,7 @@ en:
     private_message_info:
       title: "Message"
       invite: "Invite Others..."
+      leave_message: "Do you really want to leave this message?"
       remove_allowed_user: "Do you really want to remove {{name}} from this message?"
       remove_allowed_group: "Do you really want to remove {{name}} from this message?"
 
@@ -1567,7 +1570,7 @@ en:
         public_timer_types: Topic Timers
         private_timer_types: User Topic Timers
       auto_update_input:
-        none: ""
+        none: "Select a timeframe"
         later_today: "Later today"
         tomorrow: "Tomorrow"
         later_this_week: "Later this week"
@@ -2666,22 +2669,12 @@ en:
           users: "Users"
           last_flagged: "Last Flagged"
 
-        summary:
-          action_type_3:
-            one: "off-topic"
-            other: "off-topic x{{count}}"
-          action_type_4:
-            one: "inappropriate"
-            other: "inappropriate x{{count}}"
-          action_type_6:
-            one: "custom"
-            other: "custom x{{count}}"
-          action_type_7:
-            one: "custom"
-            other: "custom x{{count}}"
-          action_type_8:
-            one: "spam"
-            other: "spam x{{count}}"
+        short_names:
+          off_topic: "off-topic"
+          inappropriate: "inappropriate"
+          spam: "spam"
+          notify_user: "custom"
+          notify_moderators: "custom"
 
       groups:
         primary: "Primary Group"

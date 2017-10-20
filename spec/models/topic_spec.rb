@@ -6,6 +6,7 @@ require_dependency 'post_destroyer'
 describe Topic do
   let(:now) { Time.zone.local(2013, 11, 20, 8, 0) }
   let(:user) { Fabricate(:user) }
+  let(:topic) { Fabricate(:topic) }
 
   context 'validations' do
     let(:topic) { Fabricate.build(:topic) }
@@ -326,6 +327,35 @@ describe Topic do
         # another edge case
         topic.title = "this is another edge case"
         expect(topic.fancy_title).to eq("this is another edge case")
+      end
+
+      it "works with long title that results in lots of entities" do
+        long_title = "NEW STOCK PICK: PRCT - LAST PICK UP 233%, NNCO.................................................................................................................................................................. ofoum"
+        topic.title = long_title
+
+        expect { topic.save! }.to_not raise_error
+        expect(topic.fancy_title).to eq(long_title)
+      end
+
+      context 'readonly mode' do
+        before do
+          Discourse.enable_readonly_mode
+        end
+
+        after do
+          Discourse.disable_readonly_mode
+        end
+
+        it 'should not attempt to update `fancy_title`' do
+          topic.save!
+          expect(topic.fancy_title).to eq('&ldquo;this topic&rdquo; &ndash; has &ldquo;fancy stuff&rdquo;')
+
+          topic.title = "This is a test testing testing"
+          expect(topic.fancy_title).to eq("This is a test testing testing")
+
+          expect(topic.reload.read_attribute(:fancy_title))
+            .to eq('&ldquo;this topic&rdquo; &ndash; has &ldquo;fancy stuff&rdquo;')
+        end
       end
     end
   end
@@ -2037,6 +2067,25 @@ describe Topic do
         topic.convert_to_public_topic(Fabricate(:admin))
 
         expect(topic.pm_with_non_human_user?).to be(false)
+      end
+    end
+  end
+
+  describe '#remove_allowed_user' do
+    let(:another_user) { Fabricate(:user) }
+
+    describe 'removing oneself' do
+      it 'should remove onself' do
+        topic.allowed_users << another_user
+
+        expect(topic.remove_allowed_user(another_user, another_user)).to eq(true)
+        expect(topic.allowed_users.include?(another_user)).to eq(false)
+
+        post = Post.last
+
+        expect(post.user).to eq(Discourse.system_user)
+        expect(post.post_type).to eq(Post.types[:small_action])
+        expect(post.action_code).to eq('user_left')
       end
     end
   end
