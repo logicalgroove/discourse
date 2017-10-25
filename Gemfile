@@ -2,7 +2,6 @@ source 'https://rubygems.org'
 # if there is a super emergency and rubygems is playing up, try
 #source 'http://production.cf.rubygems.org'
 
-ruby '2.4.2'
 # does not install in linux ATM, so hack this for now
 gem 'bootsnap', require: false
 
@@ -127,7 +126,7 @@ group :test, :development do
   gem 'mocha', require: false
   gem 'rb-fsevent', require: RUBY_PLATFORM =~ /darwin/i ? 'rb-fsevent' : false
   gem 'rb-inotify', '~> 0.9', require: RUBY_PLATFORM =~ /linux/i ? 'rb-inotify' : false
-  gem 'rspec-rails'
+  gem 'rspec-rails', require: false
   gem 'shoulda', require: false
   gem 'rspec-html-matchers'
   gem 'pry-nav'
