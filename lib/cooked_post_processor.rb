@@ -20,6 +20,7 @@ class CookedPostProcessor
     @cooking_options[:topic_id] = post.topic_id
     @cooking_options = @cooking_options.symbolize_keys
     @cooking_options[:omit_nofollow] = true if post.omit_nofollow?
+    @cooking_options[:cook_method] = post.cook_method
 
     analyzer = post.post_analyzer
     @doc = Nokogiri::HTML::fragment(analyzer.cook(post.raw, @cooking_options))
@@ -34,6 +35,8 @@ class CookedPostProcessor
       post_process_images
       post_process_oneboxes
       optimize_urls
+      update_post_image
+      enforce_nofollow
       pull_hotlinked_images(bypass_bump)
       grant_badges
       DiscourseEvent.trigger(:post_process_cooked, @doc, @post)
@@ -199,11 +202,10 @@ class CookedPostProcessor
 
   def convert_to_link!(img)
     src = img["src"]
-    return if src.blank?
+    return if src.blank? || is_a_hyperlink?(img)
 
     width, height = img["width"].to_i, img["height"].to_i
-    # TODO: even though get_size is cached, a better solution is to store
-    #       both original and "cropped" dimensions on the uploads table
+    # TODO: store original dimentions in db
     original_width, original_height = (get_size(src) || [0, 0]).map(&:to_i)
 
     # can't reach the image...
@@ -214,7 +216,6 @@ class CookedPostProcessor
 
     return if original_width <= width && original_height <= height
     return if original_width <= SiteSetting.max_image_width && original_height <= SiteSetting.max_image_height
-    return if is_a_hyperlink?(img)
 
     crop = false
     if original_width.to_f / original_height.to_f < MIN_RATIO_TO_CROP
@@ -235,8 +236,7 @@ class CookedPostProcessor
     parent = img.parent
     while parent
       return true if parent.name == "a"
-      break unless parent.respond_to? :parent
-      parent = parent.parent
+      parent = parent.parent if parent.respond_to?(:parent)
     end
     false
   end
@@ -315,25 +315,15 @@ class CookedPostProcessor
       Oneboxer.onebox(url, args)
     end
 
-    update_post_image
-
-    # make sure we grab dimensions for oneboxed images
-    oneboxed_images.each { |img| limit_size!(img) }
-
     uploads = oneboxed_image_uploads.select(:url, :origin)
     oneboxed_images.each do |img|
       url = img["src"].sub(/^https?:/i, "")
       upload = uploads.find { |u| u.origin.sub(/^https?:/i, "") == url }
-      next unless upload.present?
-      img["src"] = upload.url
-      # make sure we grab dimensions for oneboxed images
-      limit_size!(img)
+      img["src"] = upload.url if upload.present?
     end
 
-    # respect nofollow admin settings
-    if !@cooking_options[:omit_nofollow] && SiteSetting.add_rel_nofollow_to_user_content
-      PrettyText.add_rel_nofollow_to_user_content(@doc)
-    end
+    # make sure we grab dimensions for oneboxed images
+    oneboxed_images.each { |img| limit_size!(img) }
   end
 
   def optimize_urls
@@ -359,6 +349,12 @@ class CookedPostProcessor
       src = img["src"].to_s
       img["src"] = UrlHelper.schemaless UrlHelper.absolute(src) if UrlHelper.is_local(src)
       img["src"] = Discourse.store.cdn_url(img["src"]) if use_s3_cdn
+    end
+  end
+
+  def enforce_nofollow
+    if !@cooking_options[:omit_nofollow] && SiteSetting.add_rel_nofollow_to_user_content
+      PrettyText.add_rel_nofollow_to_user_content(@doc)
     end
   end
 

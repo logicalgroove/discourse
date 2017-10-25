@@ -48,19 +48,14 @@ export default Ember.Component.extend(UtilsMixin, DomHelpersMixin, KeyboardMixin
   fullWidthOnMobile: false,
   castInteger: false,
   allowAny: false,
+  allowValueMutation: true,
+  autoSelectFirst: true,
 
   init() {
     this._super();
 
     if ($(window).outerWidth(false) <= 420) {
       this.setProperties({ filterable: false, autoFilterable: false });
-    }
-
-    if (isNone(this.get("none")) && isEmpty(this.get("value")) && !isEmpty(this.get("content"))) {
-      Ember.run.scheduleOnce("sync", () => {
-        const firstValue = this.get(`content.0.${this.get("valueAttribute")}`);
-        this.set("value", firstValue);
-      });
     }
 
     this._previousScrollParentOverflow = "auto";
@@ -171,12 +166,13 @@ export default Ember.Component.extend(UtilsMixin, DomHelpersMixin, KeyboardMixin
 
   @computed("content.[]")
   computedContent(content) {
+    this._mutateValue();
     return this.formatContents(content || []);
   },
 
   @computed("value", "none", "computedContent.firstObject.value")
   computedValue(value, none, firstContentValue) {
-    if (isNone(value) && isNone(none)) {
+    if (isNone(value) && isNone(none) && this.get("autoSelectFirst") === true) {
       return this._castInteger(firstContentValue);
     }
 
@@ -276,10 +272,7 @@ export default Ember.Component.extend(UtilsMixin, DomHelpersMixin, KeyboardMixin
 
   @computed("filter", "computedFilterable", "computedContent.[]", "computedValue.[]")
   filteredContent(filter, computedFilterable, computedContent, computedValue) {
-    if (computedFilterable === false) {
-      return computedContent;
-    }
-
+    if (computedFilterable === false) { return computedContent; }
     return this.filterFunction(computedContent)(this, computedValue);
   },
 
@@ -347,7 +340,10 @@ export default Ember.Component.extend(UtilsMixin, DomHelpersMixin, KeyboardMixin
 
   _applyDirection() {
     let options = { left: "auto", bottom: "auto", top: "auto" };
-    const discourseHeaderHeight = $(".d-header").outerHeight(false);
+
+    const dHeader = $(".d-header")[0];
+    const dHeaderBounds = dHeader ? dHeader.getBoundingClientRect() : {top: 0, height: 0};
+    const dHeaderHeight = dHeaderBounds.top + dHeaderBounds.height;
     const headerHeight = this.$header().outerHeight(false);
     const headerWidth = this.$header().outerWidth(false);
     const bodyHeight = this.$body().outerHeight(false);
@@ -391,7 +387,7 @@ export default Ember.Component.extend(UtilsMixin, DomHelpersMixin, KeyboardMixin
 
     const componentHeight = this.get("verticalOffset") + bodyHeight + headerHeight;
     const hasBelowSpace = windowHeight - offsetBottom - componentHeight > 0;
-    const hasAboveSpace = offsetTop - componentHeight - discourseHeaderHeight > 0;
+    const hasAboveSpace = offsetTop - componentHeight - dHeaderHeight > 0;
     if (hasBelowSpace || (!hasBelowSpace && !hasAboveSpace)) {
       this.setProperties({ isBelow: true, isAbove: false });
       options.top = headerHeight + this.get("verticalOffset");
@@ -407,35 +403,35 @@ export default Ember.Component.extend(UtilsMixin, DomHelpersMixin, KeyboardMixin
     const width = this.$().outerWidth(false);
     const height = this.$header().outerHeight(false);
 
-    if (this.get("scrollableParent").length === 0) {
-      return;
-    }
+    if (this.get("scrollableParent").length === 0) { return; }
 
     const $placeholder = $(`<div class='select-box-kit-fixed-placeholder-${this.elementId}'></div>`);
 
     this._previousScrollParentOverflow = this.get("scrollableParent").css("overflow");
+    this.get("scrollableParent").css({ overflow: "hidden" });
+
     this._previousCSSContext = {
       minWidth: this.$().css("min-width"),
       maxWidth: this.$().css("max-width")
     };
-    this.get("scrollableParent").css({ overflow: "hidden" });
 
-    this.$()
-      .before($placeholder.css({
-        display: "inline-block",
-        width,
-        height,
-        "vertical-align": "middle"
-      }))
-      .css({
-        direction: $("html").css("direction"),
-        position: "fixed",
-        "margin-top": -this.get("scrollableParent").scrollTop(),
-        "margin-left": -width,
-        width,
-        minWidth: "unset",
-        maxWidth: "unset"
-      });
+    const componentStyles = {
+      position: "fixed",
+      "margin-top": -this.get("scrollableParent").scrollTop(),
+      width,
+      minWidth: "unset",
+      maxWidth: "unset"
+    };
+
+    if ($("html").css("direction") === "rtl") {
+      componentStyles.marginRight = -width;
+    } else {
+      componentStyles.marginLeft = -width;
+    }
+
+    $placeholder.css({ display: "inline-block", width, height, "vertical-align": "middle" });
+
+    this.$().before($placeholder).css(componentStyles);
   },
 
   _removeFixedPosition() {
@@ -451,6 +447,7 @@ export default Ember.Component.extend(UtilsMixin, DomHelpersMixin, KeyboardMixin
         top: "auto",
         left: "auto",
         "margin-left": "auto",
+        "margin-right": "auto",
         "margin-top": "auto",
         position: "relative"
       }
@@ -469,5 +466,23 @@ export default Ember.Component.extend(UtilsMixin, DomHelpersMixin, KeyboardMixin
       width: this.$().width(),
       height: headerHeight + this.$body().outerHeight(false)
     });
+  },
+
+  @on("didReceiveAttrs")
+  _mutateValue() {
+    if (this.get("allowValueMutation") !== true) {
+      return;
+    }
+
+    const none = isNone(this.get("none"));
+    const emptyValue = isEmpty(this.get("value"));
+    const notEmptyContent = !isEmpty(this.get("content"));
+
+    if (none && emptyValue && notEmptyContent) {
+      Ember.run.scheduleOnce("sync", () => {
+        const firstValue = this.get(`content.0.${this.get("valueAttribute")}`);
+        this.set("value", firstValue);
+      });
+    }
   }
 });

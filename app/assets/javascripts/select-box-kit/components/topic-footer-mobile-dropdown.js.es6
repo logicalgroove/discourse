@@ -7,12 +7,13 @@ export default ComboBoxComponent.extend({
   classNames: "topic-footer-mobile-dropdown",
   filterable: false,
   autoFilterable: false,
+  allowValueMutation: false,
+  autoSelectFirst: false,
 
   @on("didReceiveAttrs")
-  _setComponentOptions() {
-    this.set("headerComponentOptions", Ember.Object.create({
-      selectedName: I18n.t(this.get("headerText"))
-    }));
+  _setTopicFooterMobileDropdownOptions() {
+    this.get("headerComponentOptions")
+        .set("selectedName", I18n.t(this.get("headerText")));
   },
 
   @computed("topic", "topic.details", "value")
