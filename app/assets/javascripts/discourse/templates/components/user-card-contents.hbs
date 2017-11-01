@@ -10,10 +10,6 @@
           flairColor=user.primary_group_flair_color
           groupName=user.primary_group_name}}
       {{/if}}
-      {{#if user.online}}
-        <span class="fa fa-circle online-wrapper"></span>
-        <span class="fa fa-circle online"></span>
-      {{/if}}
       {{plugin-outlet name="user-card-avatar-flair" args=(hash user=user) tagName='div'}}
     </div>
 
