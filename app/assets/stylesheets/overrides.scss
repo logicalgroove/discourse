@@ -185,7 +185,10 @@ nav.post-controls button.d-hover, nav.post-controls button.delete.d-hover, nav.p
 }
 
 .google-dfp-ad.dfp-ad-post-bottom .google-dfp-ad-label, .google-dfp-ad.dfp-ad-post-bottom .dfp-ad-unit {
-  margin-left: 0 !important;
+  @media (max-width: $mobile-breakpoint) {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
 }
 .badge-wrapper {
   .badge-category {

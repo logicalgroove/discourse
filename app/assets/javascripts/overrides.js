@@ -15,3 +15,4 @@ $(function() {
         return re.test(email)
     }
 })
+
