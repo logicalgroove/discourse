@@ -6,6 +6,7 @@
     <meta name="description" content="<%= @description_meta || SiteSetting.site_description %>">
     <meta name="discourse_theme_key" content="<%= theme_key %>">
     <meta name="discourse_current_homepage" content="<%= current_homepage %>">
+    <meta name="google-site-verification" content="ziBzxutmmfMH2R8toH1tr5792QZA28BiMUzmIp5rNIY" />
     <%= render partial: "layouts/head" %>
     <%= discourse_csrf_tags %>
 
@@ -127,7 +128,6 @@
     </noscript>
     <%= render_google_tag_manager_code %>
     <%= render_fb_pixel_code %>
-    <%= render_google_analytics_code %>
     <%= render_google_universal_analytics_code %>
   </body>
 </html>

@@ -12,7 +12,7 @@ module CommonHelper
   end
 
   def render_fb_pixel_code
-    if Rails.env.production? && SiteSetting.ga_tracking_code.present?
+    if Rails.env.production? && SiteSetting.ga_universal_tracking_code.present?
       render partial: "common/fb_pixel_javascript"
     end
   end
