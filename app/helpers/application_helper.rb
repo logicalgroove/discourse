@@ -347,9 +347,18 @@ module ApplicationHelper
     end
   end
 
+  def current_homepage
+    current_user&.user_option&.homepage || SiteSetting.anonymous_homepage
+  end
+
   def build_plugin_html(name)
     return "" unless allow_plugins?
     DiscoursePluginRegistry.build_html(name, controller) || ""
+  end
+
+  # If there is plugin HTML return that, otherwise yield to the template
+  def replace_plugin_html(name)
+    build_plugin_html(name).presence || yield
   end
 
   def theme_lookup(name)

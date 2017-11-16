@@ -19,6 +19,9 @@ class User < ActiveRecord::Base
   include Roleable
   include HasCustomFields
 
+  # TODO: Remove this after 7th Jan 2018
+  self.ignored_columns = %w{email}
+
   has_many :posts
   has_many :notifications, dependent: :destroy
   has_many :topic_users, dependent: :destroy
@@ -89,7 +92,7 @@ class User < ActiveRecord::Base
 
   after_initialize :add_trust_level
 
-  before_validation :set_should_validate_email
+  before_validation :set_skip_validate_email
 
   after_create :create_email_token
   after_create :create_user_stat
@@ -143,9 +146,9 @@ class User < ActiveRecord::Base
 
   # TODO-PERF: There is no indexes on any of these
   # and NotifyMailingListSubscribers does a select-all-and-loop
-  # may want to create an index on (active, blocked, suspended_till)?
-  scope :blocked, -> { where(blocked: true) }
-  scope :not_blocked, -> { where(blocked: false) }
+  # may want to create an index on (active, silence, suspended_till)?
+  scope :silenced, -> { where("silenced_till IS NOT NULL AND silenced_till > ?", Time.zone.now) }
+  scope :not_silenced, -> { where("silenced_till IS NULL OR silenced_till <= ?", Time.zone.now) }
   scope :suspended, -> { where('suspended_till IS NOT NULL AND suspended_till > ?', Time.zone.now) }
   scope :not_suspended, -> { where('suspended_till IS NULL OR suspended_till <= ?', Time.zone.now) }
   scope :activated, -> { where(active: true) }
@@ -679,6 +682,22 @@ class User < ActiveRecord::Base
     !!(suspended_till && suspended_till > DateTime.now)
   end
 
+  def silenced?
+    !!(silenced_till && silenced_till > DateTime.now)
+  end
+
+  def silenced_record
+    UserHistory.for(self, :silence_user).order('id DESC').first
+  end
+
+  def silence_reason
+    silenced_record.try(:details) if silenced?
+  end
+
+  def silenced_at
+    silenced_record.try(:created_at) if silenced?
+  end
+
   def suspend_record
     UserHistory.for(self, :suspend_user).order('id DESC').first
   end
@@ -1119,9 +1138,9 @@ class User < ActiveRecord::Base
     true
   end
 
-  def set_should_validate_email
+  def set_skip_validate_email
     if self.primary_email
-      self.primary_email.should_validate_email = should_validate_email_address?
+      self.primary_email.skip_validate_email = !should_validate_email_address?
     end
 
     true
@@ -1140,7 +1159,6 @@ end
 #  name                    :string
 #  seen_notification_id    :integer          default(0), not null
 #  last_posted_at          :datetime
-#  email                   :string(513)
 #  password_hash           :string(64)
 #  salt                    :string(32)
 #  active                  :boolean          default(FALSE), not null
@@ -1160,7 +1178,7 @@ end
 #  flag_level              :integer          default(0), not null
 #  ip_address              :inet
 #  moderator               :boolean          default(FALSE)
-#  blocked                 :boolean          default(FALSE)
+#  silenced                :boolean          default(FALSE)
 #  title                   :string
 #  uploaded_avatar_id      :integer
 #  locale                  :string(10)

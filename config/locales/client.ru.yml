@@ -152,6 +152,7 @@ ru:
       split_topic: "Разделил эту тему %{when}"
       invited_user: "Пригласил %{who} %{when}"
       invited_group: "Пригласил %{who} %{when}"
+      user_left: "%{who} написал(а) это сообщение %{when}"
       removed_user: "Исключил %{who} %{when}"
       removed_group: "Исключил %{who} %{when}"
       autoclosed:
@@ -172,6 +173,8 @@ ru:
       visible:
         enabled: 'Включил в списки %{when}'
         disabled: 'Исключил из списков %{when}'
+      banner:
+        enabled: 'создал(а) из этого баннер %{when}. Он будет виден вверху каждой страницы пока пользователь не закроет его.'
     topic_admin_menu: "действия администратора над темой"
     wizard_required: "Добро пожаловать в ваш новый Discourse! Начните с <a href='%{url}' data-auto-route='true'>мастера настройки</a> ✨"
     emails_are_disabled: "Все исходящие письма были глобально отключены администратором. Уведомления любого вида не будут отправляться на почту."
@@ -192,6 +195,7 @@ ru:
         eu_west_2: "EU (London)"
         sa_east_1: "South America (Sao Paulo)"
         us_east_1: "US East (N. Virginia)"
+        us_east_2: "US East (Ohio)"
         us_gov_west_1: "AWS GovCloud (US)"
         us_west_1: "US West (N. California)"
         us_west_2: "US West (Oregon)"
@@ -576,8 +580,8 @@ ru:
       admin: "{{user}} - админ"
       moderator_tooltip: "Этот пользователь модератор"
       admin_tooltip: "{{user}} - админ"
-      blocked_tooltip: "Этот пользователь заблокирован"
       suspended_notice: "Пользователь заморожен до {{date}}."
+      suspended_permanently: "Этот пользователь заморожен."
       suspended_reason: "Причина:"
       github_profile: "Github"
       email_activity_summary: "Сводка Активности"
@@ -1179,10 +1183,6 @@ ru:
       olist_title: "Нумерованный список"
       ulist_title: "Ненумерованный список"
       list_item: "Пункт первый"
-      heading_label: "А"
-      heading_title: "Заголовок"
-      heading_text: "Заголовок"
-      hr_title: "Горизонтальный разделитель"
       help: "Справка по форматированию (Markdown)"
       toggler: "Закрыть / открыть панель редактирования"
       modal_ok: "OK"
@@ -1198,6 +1198,7 @@ ru:
       empty: "Уведомления не найдены."
       more: "посмотреть более ранние уведомления"
       total_flagged: "всего сообщений с жалобами"
+      granted_badge: "Заслужил(а) '{{description}}'"
       alt:
         mentioned: "Упомянуто"
         quoted: "Процитировано пользователем"
@@ -1533,6 +1534,7 @@ ru:
         open: "Открыть тему"
         close: "Закрыть тему"
         multi_select: "Выбрать сообщения..."
+        timed_update: "Действие по таймеру..."
         pin: "Закрепить тему..."
         unpin: "Открепить тему..."
         unarchive: "Разархивировать тему"
@@ -2443,8 +2445,7 @@ ru:
         no_problems: "Проблем не обнаружено."
         moderators: 'Модераторы:'
         admins: 'Администраторы:'
-        blocked: 'Заблокированы:'
-        suspended: 'Заморожены:'
+        suspended: 'Заморожен:'
         private_messages_short: "Сообщ."
         private_messages_title: "Сообщений"
         mobile_title: "Мобильный"
@@ -2994,8 +2995,6 @@ ru:
             change_category_settings: "изменена настройка раздела"
             delete_category: "удален раздел"
             create_category: "создан раздел"
-            block_user: "пользователь заблокирован"
-            unblock_user: "пользователь разблокирован"
             grant_admin: "выданы права администратора"
             revoke_admin: "отозваны права администратора"
             grant_moderation: "выданы права модератора"
@@ -3062,7 +3061,6 @@ ru:
           pending: "Ожидает одобрения"
           staff: 'Персонал'
           suspended: 'Замороженные'
-          blocked: 'Заблокированные'
           suspect: 'Подозрительные'
         approved: "Подтвердить?"
         approved_selected:
@@ -3087,7 +3085,6 @@ ru:
           staff: "Персонал"
           admins: 'Администраторы'
           moderators: 'Модераторы'
-          blocked: 'Заблокированные пользователи'
           suspended: 'Замороженные пользователи'
           suspect: 'Подозрительные пользователи'
         reject_successful:
@@ -3107,19 +3104,16 @@ ru:
       user:
         suspend_failed: "Ошибка заморозки пользователя {{error}}"
         unsuspend_failed: "Ошибка разморозки пользователя {{error}}"
-        suspend_duration: "На сколько времени вы хотите заморозить пользователя?"
-        suspend_duration_units: "(дней)"
+        suspend_duration: "На сколько времени заморозить пользователя?"
         suspend_reason_label: "Причина заморозки? Данный текст <b>будет виден всем</b> на странице профиля пользователя и будет отображаться, когда пользователь пытается войти. Введите краткое описание."
         suspend_reason: "Причина"
-        suspended_by: "Заморожен"
+        suspended_by: "Заморожен (кем)"
+        cant_suspend: "Этого пользователя нельзя заморозить."
         delete_all_posts: "Удалить все сообщения"
         delete_all_posts_confirm_MF: "Вы собираетесь удалить {POSTS, plural, one {1 сообщение} other {# сообщений}} и {TOPICS, plural, one {1 тему} other {# тем}}. Вы уверены?"
-        suspend: "Заморозить"
-        unsuspend: "Разморозить"
-        suspended: "Заморожен?"
         moderator: "Модератор?"
         admin: "Администратор?"
-        blocked: "Заблокирован?"
+        suspended: "Заморожен?"
         staged: "Имитация?"
         show_admin_profile: "Администратор"
         refresh_browsers: "Выполнить перезагрузку браузера"
@@ -3135,8 +3129,8 @@ ru:
         grant_admin_confirm: "Мы отправили вам письмо с инструкциями для активации нового администратора."
         revoke_moderation: 'Лишить прав Модератора'
         grant_moderation: 'Выдать права Модератора'
-        unblock: 'Разблокировать'
-        block: 'Заблокировать'
+        unsuspend: 'Разморозить'
+        suspend: 'Заморозить'
         reputation: Репутация
         permissions: Права
         activity: Активность
@@ -3189,17 +3183,12 @@ ru:
         activate_failed: "Во время активации пользователя произошла ошибка."
         deactivate_account: "Деактивировать"
         deactivate_failed: "Во время деактивации пользователя произошла ошибка."
-        unblock_failed: 'Не удалось разблокировать пользователя.'
-        block_failed: 'Не удалось заблокировать пользователя.'
-        block_confirm: 'Вы уверены что хотите заблокировать этого пользователя? Он больше не сможет создавать темы и отправлять сообщения.'
-        block_accept: 'Подтвердить блокировку'
         bounce_score: "Возвратов Писем"
         reset_bounce_score:
           label: "Сбросить"
           title: "сбросить карму к 0"
         deactivate_explanation: "Дезактивированные пользователи должны заново подтвердить свой e-mail."
-        suspended_explanation: "Замороженный пользователь не может войти."
-        block_explanation: "Заблокированный не может отвечать и создавать новые темы."
+        suspended_explanation: "Замороженный пользователь не может войти (авторизоваться)."
         staged_explanation: "Имитированный пользователь может отправлять сообщения только по эл.почте в определённые темы."
         bounce_score_explanation:
           none: "Нет возвратов полученных недавно от этой эл.почты."

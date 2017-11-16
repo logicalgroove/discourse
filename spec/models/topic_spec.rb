@@ -123,21 +123,25 @@ describe Topic do
   context 'slug' do
     let(:title) { "hello world topic" }
     let(:slug) { "hello-world-topic" }
+    let!(:expected_title) { title.dup }
+    let!(:expected_slug) { slug.dup }
+    let(:topic) { Fabricate.build(:topic, title: title) }
+
     context 'encoded generator' do
       before { SiteSetting.slug_generation_method = 'encoded' }
-      after { SiteSetting.slug_generation_method = 'ascii' }
 
       it "returns a Slug for a title" do
-        Slug.expects(:for).with(title).returns(slug)
-        expect(Fabricate.build(:topic, title: title).slug).to eq(slug)
+        expect(topic.title).to eq(expected_title)
+        expect(topic.slug).to eq(expected_slug)
       end
 
       context 'for cjk characters' do
         let(:title) { "熱帶風暴畫眉" }
-        let(:slug) { "熱帶風暴畫眉" }
+        let!(:expected_title) { title.dup }
+
         it "returns encoded Slug for a title" do
-          Slug.expects(:for).with(title).returns(slug)
-          expect(Fabricate.build(:topic, title: title).slug).to eq(slug)
+          expect(topic.title).to eq(expected_title)
+          expect(topic.slug).to eq(expected_title)
         end
       end
 
@@ -153,7 +157,7 @@ describe Topic do
 
     context 'none generator' do
       before { SiteSetting.slug_generation_method = 'none' }
-      after { SiteSetting.slug_generation_method = 'ascii' }
+
       let(:title) { "熱帶風暴畫眉" }
       let(:slug) { "topic" }
 
@@ -165,6 +169,7 @@ describe Topic do
 
     context '#ascii_generator' do
       before { SiteSetting.slug_generation_method = 'ascii' }
+
       it "returns a Slug for a title" do
         Slug.expects(:for).with(title).returns(slug)
         expect(Fabricate.build(:topic, title: title).slug).to eq(slug)
@@ -173,6 +178,7 @@ describe Topic do
       context 'for cjk characters' do
         let(:title) { "熱帶風暴畫眉" }
         let(:slug) { 'topic' }
+
         it "returns 'topic' when the slug is empty (say, non-latin characters)" do
           Slug.expects(:for).with(title).returns("topic")
           expect(Fabricate.build(:topic, title: title).slug).to eq("topic")
@@ -671,7 +677,7 @@ describe Topic do
 
     context "when moderator post fails to be created" do
       before do
-        user.toggle!(:blocked)
+        user.update_column(:silenced_till, 1.year.from_now)
       end
 
       it "should not increment moderator_posts_count" do
@@ -827,7 +833,7 @@ describe Topic do
       it_should_behave_like 'a status that closes a topic'
 
       context 'topic was set to close when it was created' do
-        it 'puts the autoclose duration in the moderator post' do
+        it 'includes the autoclose duration in the moderator post' do
           freeze_time(Time.new(2000, 1, 1))
           @topic.created_at = 3.days.ago
           @topic.update_status(status, true, @user)
@@ -836,7 +842,7 @@ describe Topic do
       end
 
       context 'topic was set to close after it was created' do
-        it 'puts the autoclose duration in the moderator post' do
+        it 'includes the autoclose duration in the moderator post' do
           freeze_time(Time.new(2000, 1, 1))
 
           @topic.created_at = 7.days.ago

@@ -2,7 +2,7 @@ import DiscourseURL from 'discourse/lib/url';
 import Quote from 'discourse/lib/quote';
 import Draft from 'discourse/models/draft';
 import Composer from 'discourse/models/composer';
-import { default as computed, observes } from 'ember-addons/ember-computed-decorators';
+import { default as computed, observes, on } from 'ember-addons/ember-computed-decorators';
 import InputValidation from 'discourse/models/input-validation';
 import { getOwner } from 'discourse-common/lib/get-owner';
 import { escapeExpression } from 'discourse/lib/utilities';
@@ -68,7 +68,26 @@ export default Ember.Controller.extend({
   isUploading: false,
   topic: null,
   linkLookup: null,
+  showPreview: true,
+  forcePreview: Ember.computed.and('site.mobileView', 'showPreview'),
   whisperOrUnlistTopic: Ember.computed.or('model.whisper', 'model.unlistTopic'),
+  categories: Ember.computed.alias('site.categoriesList'),
+
+  @on('init')
+  _setupPreview() {
+    const val = (this.site.mobileView ? false : (this.keyValueStore.get('composer.showPreview') || 'true'));
+    this.set('showPreview', val === 'true');
+  },
+
+  @computed('showPreview')
+  toggleText: function(showPreview) {
+    return showPreview ? I18n.t('composer.hide_preview') : I18n.t('composer.show_preview');
+  },
+
+  @observes('showPreview')
+  showPreviewChanged() {
+    this.keyValueStore.set({ key: 'composer.showPreview', value: this.get('showPreview') });
+  },
 
   @computed('model.replyingToTopic', 'model.creatingPrivateMessage', 'model.targetUsernames')
   focusTarget(replyingToTopic, creatingPM, usernames) {
@@ -205,6 +224,10 @@ export default Ember.Controller.extend({
 
   actions: {
 
+    togglePreview() {
+      this.toggleProperty('showPreview');
+    },
+
     typed() {
       this.checkReplyLength();
       this.get('model').typing();
@@ -288,10 +311,6 @@ export default Ember.Controller.extend({
         this.close();
       }
       return false;
-    },
-
-    togglePreview() {
-      this.get('model').togglePreview();
     },
 
     // Import a quote from the post
@@ -395,10 +414,6 @@ export default Ember.Controller.extend({
     }
 
   },
-
-  categories: function() {
-    return Discourse.Category.list();
-  }.property(),
 
   disableSubmit: Ember.computed.or("model.loading", "isUploading"),
 
@@ -654,7 +669,7 @@ export default Ember.Controller.extend({
       if (!splitCategory[1]) {
         category = this.site.get('categories').findBy('nameLower', splitCategory[0].toLowerCase());
       } else {
-        const categories = Discourse.Category.list();
+        const categories = this.site.get('categories');
         const mainCategory = categories.findBy('nameLower', splitCategory[0].toLowerCase());
         category = categories.find(function(item) {
           return item && item.get('nameLower') === splitCategory[1].toLowerCase() && item.get('parent_category_id') === mainCategory.id;

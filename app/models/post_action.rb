@@ -164,7 +164,7 @@ SQL
       if moderator.id == Discourse::SYSTEM_USER_ID
         PostActionType.auto_action_flag_types.values
       else
-        PostActionType.flag_types_without_custom.values
+        PostActionType.notify_flag_type_ids
       end
 
     actions = PostAction.where(post_id: post.id)
@@ -590,7 +590,7 @@ SQL
   end
 
   def self.post_action_type_for_post(post_id)
-    post_action = PostAction.find_by(deferred_at: nil, post_id: post_id, post_action_type_id: PostActionType.flag_types_without_custom.values, deleted_at: nil)
+    post_action = PostAction.find_by(deferred_at: nil, post_id: post_id, post_action_type_id: PostActionType.notify_flag_types.values, deleted_at: nil)
     PostActionType.types[post_action.post_action_type_id]
   end
 

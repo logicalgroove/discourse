@@ -308,7 +308,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_homepage
-    current_user ? SiteSetting.homepage : SiteSetting.anonymous_homepage
+    current_user&.user_option&.homepage || SiteSetting.anonymous_homepage
   end
 
   def serialize_data(obj, serializer, opts = nil)
@@ -465,9 +465,9 @@ class ApplicationController < ActionController::Base
         data.merge! DiscoursePluginRegistry.custom_html
       end
 
-      DiscoursePluginRegistry.html_builders.each do |name, blk|
+      DiscoursePluginRegistry.html_builders.each do |name, _|
         if name.start_with?("client:")
-          data[name.sub(/^client:/, '')] = blk.call(self)
+          data[name.sub(/^client:/, '')] = DiscoursePluginRegistry.build_html(name, self)
         end
       end
 

@@ -5,6 +5,7 @@
     <title><%= content_for?(:title) ? yield(:title) : SiteSetting.title %></title>
     <meta name="description" content="<%= @description_meta || SiteSetting.site_description %>">
     <meta name="discourse_theme_key" content="<%= theme_key %>">
+    <meta name="discourse_current_homepage" content="<%= current_homepage %>">
     <%= render partial: "layouts/head" %>
     <%= discourse_csrf_tags %>
 
@@ -54,7 +55,7 @@
 
     <%= yield :head %>
 
-    <%= raw build_plugin_html 'server:before-head-close' %>
+    <%= build_plugin_html 'server:before-head-close' %>
   </head>
 
   <body class="<%= body_classes %>">
@@ -64,7 +65,7 @@
 
     <%- unless customization_disabled? || loading_admin? %>
       <%= theme_lookup("header") %>
-      <%= raw build_plugin_html 'server:header' %>
+      <%= build_plugin_html 'server:header' %>
     <%- end %>
 
     <section id='main'>

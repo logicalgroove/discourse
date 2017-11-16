@@ -15,8 +15,8 @@ class Admin::UsersController < Admin::AdminController
                                     :approve,
                                     :activate,
                                     :deactivate,
-                                    :block,
-                                    :unblock,
+                                    :silence,
+                                    :unsilence,
                                     :trust_level,
                                     :trust_level_lock,
                                     :add_group,
@@ -272,16 +272,50 @@ class Admin::UsersController < Admin::AdminController
     render body: nil
   end
 
-  def block
-    guardian.ensure_can_block_user! @user
-    UserBlocker.block(@user, current_user, keep_posts: true)
-    render body: nil
+  def silence
+    guardian.ensure_can_silence_user! @user
+
+    message = params[:message]
+
+    silencer = UserSilencer.new(
+      @user,
+      current_user,
+      silenced_till: params[:silenced_till],
+      reason: params[:reason],
+      context: message,
+      keep_posts: true
+    )
+    if silencer.silence && message.present?
+      Jobs.enqueue(
+        :critical_user_email,
+        type: :account_silenced,
+        user_id: @user.id,
+        user_history_id: silencer.user_history.id
+      )
+    end
+
+    render_json_dump(
+      silence: {
+        silenced: true,
+        silence_reason: params[:reason],
+        silenced_till: @user.silenced_till,
+        suspended_at: @user.silenced_at
+      }
+    )
   end
 
-  def unblock
-    guardian.ensure_can_unblock_user! @user
-    UserBlocker.unblock(@user, current_user)
-    render body: nil
+  def unsilence
+    guardian.ensure_can_unsilence_user! @user
+    UserSilencer.unsilence(@user, current_user)
+
+    render_json_dump(
+      unsilence: {
+        silenced: false,
+        silence_reason: nil,
+        silenced_till: nil,
+        suspended_at: nil
+      }
+    )
   end
 
   def reject_bulk

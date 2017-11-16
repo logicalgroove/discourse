@@ -40,9 +40,7 @@ class FinalDestination
     @opts[:max_redirects] ||= 5
     @opts[:lookup_ip] ||= lambda do |host|
       begin
-        IPSocket::getaddress(host)
-      rescue SocketError
-        nil
+        FinalDestination.lookup_ip(host)
       end
     end
     @ignored = [Discourse.base_url_no_prefix] + (@opts[:ignore_redirects] || [])
@@ -51,6 +49,7 @@ class FinalDestination
     @http_verb = @force_get_hosts.any? { |host| hostname_matches?(host) } ? :get : :head
     @cookie = nil
     @limited_ips = []
+    @verbose = @opts[:verbose] || false
   end
 
   def self.connection_timeout
@@ -93,6 +92,7 @@ class FinalDestination
 
     if @limit < 0
       @status = :too_many_redirects
+      log(:warn, "FinalDestination could not resolve URL (too many redirects): #{@uri}") if @verbose
       return nil
     end
 
@@ -103,7 +103,11 @@ class FinalDestination
       end
     end
 
-    return nil unless validate_uri
+    unless validate_uri
+      log(:warn, "FinalDestination could not resolve URL (invalid URI): #{@uri}") if @verbose
+      return nil
+    end
+
     headers = request_headers
     response = Excon.public_send(@http_verb,
       @uri.to_s,
@@ -175,8 +179,10 @@ class FinalDestination
     @status = :failure
     @status_code = response.status
 
+    log(:warn, "FinalDestination could not resolve URL (status #{response.status}): #{@uri}") if @verbose
     nil
   rescue Excon::Errors::Timeout
+    log(:warn, "FinalDestination could not resolve URL (timeout): #{@uri}") if @verbose
     nil
   end
 
@@ -246,6 +252,13 @@ class FinalDestination
       SiteSetting.blacklist_ip_blocks.split('|').map { |r| IPAddr.new(r) rescue nil }.compact
   end
 
+  def log(log_level, message)
+    Rails.logger.public_send(
+      log_level,
+      "#{RailsMultisite::ConnectionManagement.current_db}: #{message}"
+    )
+  end
+
   def self.standard_private_ranges
     @private_ranges ||= [
       IPAddr.new('127.0.0.1'),
@@ -257,7 +270,13 @@ class FinalDestination
   end
 
   def self.lookup_ip(host)
+    # TODO clean this up in the test suite, cause it is a mess
+    # if Rails.env == "test"
+    #   STDERR.puts "WARNING FinalDestination.lookup_ip was called with host: #{host}, this is network call that should be mocked"
+    # end
     IPSocket::getaddress(host)
+  rescue SocketError
+    nil
   end
 
 end

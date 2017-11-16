@@ -120,8 +120,8 @@ Discourse::Application.routes.draw do
       post "log_out", constraints: AdminConstraint.new
       put "activate"
       put "deactivate"
-      put "block"
-      put "unblock"
+      put "silence"
+      put "unsilence"
       put "trust_level"
       put "trust_level_lock"
       put "primary_group"
@@ -177,6 +177,7 @@ Discourse::Application.routes.draw do
         end
       end
       post "watched_words/upload" => "watched_words#upload"
+      resources :search_logs,           only: [:index]
     end
 
     get "/logs" => "staff_action_logs#index"
@@ -695,6 +696,7 @@ Discourse::Application.routes.draw do
   get "favicon/proxied" => "static#favicon", format: false
 
   get "robots.txt" => "robots_txt#index"
+  get "offline.html" => "offline#index"
   get "manifest.json" => "metadata#manifest", as: :manifest
   get "opensearch" => "metadata#opensearch", format: :xml
 

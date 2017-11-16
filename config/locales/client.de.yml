@@ -116,6 +116,7 @@ de:
       split_topic: "Thema aufgeteilt, %{when}"
       invited_user: "%{who} eingeladen, %{when}"
       invited_group: "%{who} eingeladen, %{when}"
+      user_left: "%{who} hat diese Nachricht %{when} hinterlassen"
       removed_user: "%{who} entfernt, %{when}"
       removed_group: "%{who} entfernt, %{when}"
       autoclosed:
@@ -525,12 +526,14 @@ de:
         disable: "Benachrichtigungen deaktivieren"
         enable: "Benachrichtigungen aktivieren"
         each_browser_note: "Hinweis: Du musst diese Einstellung in jedem von dir verwendeten Browser ändern."
+      dismiss: 'Ablehnen'
       dismiss_notifications: "Alles ausblenden"
       dismiss_notifications_tooltip: "Alle ungelesenen Benachrichtigungen als gelesen markieren"
       first_notification: "Deine erste Benachrichtigung! Wähle sie aus um fortzufahren."
       disable_jump_reply: "Springe nicht zu meinem Beitrag, nachdem ich geantwortet habe"
       dynamic_favicon: "Zeige die Anzahl der neuen und geänderten Themen im Browser-Symbol an"
       theme_default_on_all_devices: "Übernehme dieses Theme für alle meine Geräte."
+      allow_private_messages: "Erlaube anderen Benutzern, mir Nachrichten zu schicken"
       external_links_in_new_tab: "Öffne alle externen Links in einem neuen Tab"
       enable_quoting: "Aktiviere Zitatantwort mit dem hervorgehobenen Text"
       change: "ändern"
@@ -538,8 +541,9 @@ de:
       admin: "{{user}} ist ein Administrator"
       moderator_tooltip: "Dieser Benutzer ist ein Moderator"
       admin_tooltip: "Dieser Benutzer ist ein Administrator"
-      blocked_tooltip: "Dieser Benutzer wird blockiert."
+      silenced_tooltip: "Der Benutzer ist stummgeschaltet"
       suspended_notice: "Dieser Benutzer ist bis zum {{date}} gesperrt."
+      suspended_permanently: "Der Benutzer ist gesperrt."
       suspended_reason: "Grund: "
       github_profile: "Github"
       email_activity_summary: "Aktivitäts-Übersicht"
@@ -589,6 +593,7 @@ de:
       undo_revoke_access: "Entziehe Zugriffsrecht widerrufen"
       api_approved: "Genehmigt:"
       theme: "Design"
+      home: "Standard-Startseite"
       staff_counters:
         flags_given: "hilfreiche Meldungen"
         flagged_posts: "gemeldete Beiträge"
@@ -805,11 +810,11 @@ de:
           one: "Beitrag erstellt"
           other: "Beiträge erstellt"
         likes_given:
-          one: "<i class='fa fa-heart'></i> gegeben"
-          other: "<i class='fa fa-heart'></i> gegeben"
+          one: "gegeben"
+          other: "gegeben"
         likes_received:
-          one: "<i class='fa fa-heart'></i> erhalten"
-          other: "<i class='fa fa-heart'></i> erhalten"
+          one: "vergeben"
+          other: "vergeben"
         days_visited:
           one: "Tag vorbeigekommen"
           other: "Tage vorbeigekommen"
@@ -901,7 +906,8 @@ de:
     first_post: Erster Beitrag
     mute: Stummschalten
     unmute: Stummschaltung aufheben
-    last_post: Letzter Beitrag
+    last_post: Geschrieben
+    time_read: Gelesen
     last_reply_lowercase: letzte Antwort
     replies_lowercase:
       one: Antwort
@@ -927,6 +933,7 @@ de:
     private_message_info:
       title: "Nachricht"
       invite: "Andere einladen…"
+      leave_message: "Möchtest du diese Nachricht wirklich verlassen?"
       remove_allowed_user: "Willst du {{name}} wirklich aus dieser Unterhaltung entfernen?"
       remove_allowed_group: "Willst du {{name}} wirklich aus dieser Unterhaltung entfernen?"
     email: 'E-Mail-Adresse'
@@ -1037,6 +1044,7 @@ de:
       default_header_text: Auswählen…
       no_content: Keine Treffer gefunden
       filter_placeholder: Suchen…
+      create: "Erstelle {{content}}"
     emoji_picker:
       filter_placeholder: Emoji suchen
       people: Personen
@@ -1092,6 +1100,7 @@ de:
       cancel: "Abbrechen"
       create_topic: "Thema erstellen"
       create_pm: "Nachricht"
+      create_whisper: "Flüstern"
       title: "Oder drücke Strg+Eingabetaste"
       users_placeholder: "Benutzer hinzufügen"
       title_placeholder: "Um was geht es in dieser Diskussion? Schreib einen kurzen Satz."
@@ -1129,10 +1138,6 @@ de:
       olist_title: "Nummerierte Liste"
       ulist_title: "Liste mit Aufzählungszeichen"
       list_item: "Listenelement"
-      heading_label: "Ü"
-      heading_title: "Überschrift"
-      heading_text: "Überschrift"
-      hr_title: "Horizontale Linie"
       help: "Hilfe zur Markdown-Formatierung"
       toggler: "Eingabebereich aus- oder einblenden"
       modal_ok: "OK"
@@ -1226,7 +1231,7 @@ de:
       no_more_results: "Es wurde keine weiteren Ergebnisse gefunden."
       searching: "Suche …"
       post_format: "#{{post_number}} von {{username}}"
-      results_page: "Suchergebnisse"
+      results_page: "Suchergebnisse für '{{term}}'"
       more_results: "Es gibt mehr Ergebnisse. Bitte grenze deine Suchkriterien weiter ein."
       cant_find: "Nicht gefunden, wonach du suchst?"
       start_new_topic: "Wie wär’s mit einem neuen Thema?"
@@ -1403,19 +1408,27 @@ de:
       jump_reply_down: zur nachfolgenden Antwort springen
       deleted: "Das Thema wurde gelöscht"
       topic_status_update:
-        title: "Setzte die Themen-Stoppuhr"
+        title: "Themen-Zeitschaltuhr"
         save: "Stoppuhr setzen"
         num_of_hours: "Stunden:"
         remove: "Stoppuhr löschen"
         publish_to: "Veröffentlichen in:"
         when: "Wann:"
+        public_timer_types: Themen-Zeitschaltuhren
+        private_timer_types: Benutzer-Themen-Zeitschaltuhren
       auto_update_input:
+        none: "Wähle einen Zeitbereich aus"
         later_today: "Im Laufe des Tages"
         tomorrow: "Morgen"
         later_this_week: "Später in dieser Woche"
         this_weekend: "Dieses Wochenende"
         next_week: "Nächste Woche"
+        two_weeks: "Zwei Wochen"
         next_month: "Nächster Monat"
+        three_months: "Drei Monate"
+        six_months: "Sechs Monate"
+        one_year: "Ein Jahr"
+        forever: "Für immer"
         pick_date_and_time: "Datum und Zeit wählen"
         set_based_on_last_post: "Schließen basierend auf dem letzten Beitrag"
       publish_to_category:
@@ -2164,7 +2177,7 @@ de:
         hamburger_menu: '<b>=</b> „Hamburger“-Menü öffnen'
         user_profile_menu: '<b>p</b> Benutzermenü öffnen'
         show_incoming_updated_topics: '<b>.</b> Aktualisierte Themen anzeigen'
-        search: '<b>/</b> oder <b>Strg</b>+<b>Shift</b>+<b>s</b> Suche'
+        search: '<b>/</b> oder <b>Strg</b>+<b>Alt</b>+<b>f</b> Suche'
         help: '<b>?</b> Tastaturhilfe öffnen'
         dismiss_new_posts: '<b>x</b>, <b>r</b> Neue/ausgewählte Beiträge ausblenden'
         dismiss_topics: '<b>x</b>, <b>t</b> Themen ausblenden'
@@ -2237,7 +2250,10 @@ de:
       tags: "Schlagwörter"
       choose_for_topic: "Optionale Schlagwörter für dieses Thema wählen"
       delete_tag: "Schlagwört löschen"
-      delete_confirm: "Möchtest du wirklich dieses Schlagwort löschen?"
+      delete_confirm:
+        one: "Bist du sicher, dass du dieses Schlagwort löschen und von einem zugeordneten Thema entfernen möchtest?"
+        other: "Bist du sicher, dass du dieses Schlagwort löschen und von {{count}} zugeordneten Themen entfernen möchtest?"
+      delete_confirm_no_topics: "Bist du sicher, dass du dieses Schlagwort löschen möchtest?"
       rename_tag: "Schlagwort umbenennen"
       rename_instructions: "Neuen Namen für das Schlagwort wählen:"
       sort_by: "Sortieren nach:"
@@ -2332,7 +2348,7 @@ de:
         no_problems: "Es wurden keine Probleme gefunden."
         moderators: 'Moderatoren:'
         admins: 'Administratoren:'
-        blocked: 'Blockiert:'
+        silenced: 'Stummgeschaltet:'
         suspended: 'Gesperrt:'
         private_messages_short: "Nachr."
         private_messages_title: "Nachrichten"
@@ -2365,8 +2381,9 @@ de:
         by: "von"
       flags:
         title: "Meldungen"
-        old: "Alt"
-        active: "Aktiv"
+        active_posts: "Gemeldete Beiträge"
+        old_posts: "Alte gemeldete Beiträge"
+        topics: "Gemeldete Themen"
         agree: "Zustimmen"
         agree_title: "Meldung bestätigen, weil diese gültig und richtig ist"
         agree_flag_modal_title: "Zustimmen und…"
@@ -2394,6 +2411,8 @@ de:
         clear_topic_flags: "Erledigt"
         clear_topic_flags_title: "Das Thema wurde untersucht und Probleme wurden beseitigt. Klicke auf „Erledigt“, um die Meldungen zu entfernen."
         more: "(weitere Antworten…)"
+        suspend_user: "Benutzer sperren"
+        suspend_user_title: "Benutzer für diesen Beitrag sperren"
         dispositions:
           agreed: "zugestimmt"
           disagreed: "abgelehnt"
@@ -2404,27 +2423,25 @@ de:
         system: "System"
         error: "Etwas ist schief gelaufen"
         reply_message: "Antworten"
-        no_results: "Es gibt keine Meldungen."
+        no_results: "Es gibt keine gemeldeten Beiträge."
         topic_flagged: "Dieses <strong>Thema</strong> wurde gemeldet."
+        show_full: "zeige vollständigen Beitrag"
         visit_topic: "Besuche das Thema, um zu reagieren"
         was_edited: "Beitrag wurde nach der ersten Meldung bearbeitet"
         previous_flags_count: "Dieses Thema wurde bereits {{count}} mal gemeldet."
-        summary:
-          action_type_3:
-            one: "„am Thema vorbei“"
-            other: "„am Thema vorbei“ x{{count}}"
-          action_type_4:
-            one: "unangemessen"
-            other: "unangemessen x{{count}}"
-          action_type_6:
-            one: "benutzerdefiniert"
-            other: "benutzerdefiniert x{{count}}"
-          action_type_7:
-            one: "benutzerdefiniert"
-            other: "benutzerdefiniert x{{count}}"
-          action_type_8:
-            one: "Spam"
-            other: "Spam x{{count}}"
+        show_details: "Zeige Meldungsdetails"
+        details: "Details"
+        flagged_topics:
+          topic: "Thema"
+          type: "Art"
+          users: "Benutzer"
+          last_flagged: "Zuletzt gemeldet"
+        short_names:
+          off_topic: "off-topic"
+          inappropriate: "unangemessen"
+          spam: "spam"
+          notify_user: "benutzerdefiniert"
+          notify_moderators: "benutzerdefiniert"
       groups:
         primary: "Hauptgruppe"
         no_primary: "(keine Hauptgruppe)"
@@ -2874,8 +2891,8 @@ de:
             change_category_settings: "Kategorieeinstellungen ändern"
             delete_category: "Kategorie löschen"
             create_category: "Kategorie erstellen"
-            block_user: "Benutzer blockieren"
-            unblock_user: "Blockierung von Benutzer aufheben"
+            silence_user: "Benutzer stummschalten"
+            unsilence_user: "Benutzer nicht mehr stummschalten"
             grant_admin: "Administration gewähren"
             revoke_admin: "Administration entziehen"
             grant_moderation: "Moderation gewähren"
@@ -2946,6 +2963,7 @@ de:
         form:
           label: 'Neues Wort:'
           placeholder: 'vollständiges Wort oder * als Platzhalter'
+          placeholder_regexp: "regulärer Ausdruck"
           add: 'Hinzufügen'
           success: 'Erfolg'
           upload: "Hochladen"
@@ -2969,7 +2987,7 @@ de:
           pending: "Genehmigung"
           staff: 'Team'
           suspended: 'Gesperrt'
-          blocked: 'Blockiert'
+          silenced: 'Stummgeschaltet'
           suspect: 'Verdächtig'
         approved: "Genehmigt?"
         approved_selected:
@@ -2990,7 +3008,7 @@ de:
           staff: "Team"
           admins: 'Administratoren'
           moderators: 'Moderatoren'
-          blocked: 'Blockierte Benutzer'
+          silenced: 'Stummgeschaltete Benutzer'
           suspended: 'Gesperrte Benutzer'
           suspect: 'Verdächtige Benutzer'
         reject_successful:
@@ -3007,18 +3025,23 @@ de:
         suspend_failed: "Beim Sperren dieses Benutzers ist etwas schief gegangen {{error}}"
         unsuspend_failed: "Beim Entsperren dieses Benutzers ist etwas schief gegangen {{error}}"
         suspend_duration: "Wie lange soll dieser Benutzer gesperrt werden?"
-        suspend_duration_units: "(Tage)"
         suspend_reason_label: "Warum sperrst du? Dieser Text ist auf der Profilseite des Benutzers <b>für jeden sichtbar</b> und wird dem Benutzer angezeigt, wenn sich dieser anmelden will. Bitte kurz halten."
+        suspend_reason_hidden_label: "Warum sperrst du? Dieser Text wird dem Benutzer angezeigt, wenn er versucht, sich anzumelden. Fasse dich kurz."
         suspend_reason: "Grund"
+        suspend_reason_placeholder: "Grund der Sperre"
+        suspend_message: "E-Mail-Nachricht"
+        suspend_message_placeholder: "Optional: Gib weitere Informationen über deine Sperrung an und sie wird dem Benutzer per E-Mail geschickt."
         suspended_by: "Gesperrt von"
+        suspended_until: "(bis %{until})"
+        cant_suspend: "Der Benutzer kann nicht gesperrt werden."
         delete_all_posts: "Lösche alle Beiträge"
         delete_all_posts_confirm_MF: "Du wirst {POSTS, plural, one {einen Beitrag} other {# Beiträge}} und {TOPICS, plural, one {ein Thema} other {# Themen}} löschen. Bist du dir sicher?"
-        suspend: "Sperren"
-        unsuspend: "Entsperren"
-        suspended: "Gesperrt?"
+        silence: "Stummschalten"
+        unsilence: "Stummschaltung aufheben"
+        silenced: "Stummgeschaltet?"
         moderator: "Moderator?"
         admin: "Administrator?"
-        blocked: "Geblockt?"
+        suspended: "Gesperrt?"
         staged: "Vorbereitet?"
         show_admin_profile: "Administration"
         refresh_browsers: "Aktualisierung im Browser erzwingen"
@@ -3034,8 +3057,8 @@ de:
         grant_admin_confirm: "Wir haben dir eine E-Mail geschickt, um den neuen Administrator zu überprüfen. Bitte öffne sie und folge den Anweisungen."
         revoke_moderation: 'Moderationsrechte entziehen'
         grant_moderation: 'Moderationsrechte vergeben'
-        unblock: 'Blockierung aufheben'
-        block: 'Blockieren'
+        unsuspend: 'Entsperren'
+        suspend: 'Sperren'
         reputation: Reputation
         permissions: Berechtigungen
         activity: Aktivität
@@ -3082,10 +3105,10 @@ de:
         activate_failed: "Beim Aktivieren des Benutzers ist ein Fehler aufgetreten."
         deactivate_account: "Benutzer deaktivieren"
         deactivate_failed: "Beim Deaktivieren des Benutzers ist ein Fehler aufgetreten."
-        unblock_failed: 'Beim Aufheben der Blockierung des Benutzers ist ein Fehler aufgetreten.'
-        block_failed: 'Beim Blocken des Benutzers ist ein Fehler aufgetreten.'
-        block_confirm: 'Bist du sicher, dass du diesen Benutzer blockieren willst? Der Benutzer wird keine Möglichkeit mehr haben, Themen oder Beiträge zu erstellen.'
-        block_accept: 'Ja, diesen Benutzer blockieren.'
+        unsilence_failed: 'Beim Aufheben der Stummschaltung ist ein Fehler aufgetreten.'
+        silence_failed: 'Beim Aufheben der Stummschaltung ist ein Fehler aufgetreten.'
+        silence_confirm: 'Bist du sicher, dass du diesen Benutzer stummschalten möchtest? Der Benutzer wird keine Möglichkeit mehr haben, Themen oder Beiträge zu erstellen.'
+        silence_accept: 'Ja, diesen Benutzer stummschalten'
         bounce_score: "Anzahl unzustellbarer E-Mails"
         reset_bounce_score:
           label: "Zurücksetzen"
@@ -3093,7 +3116,7 @@ de:
         visit_profile: "Besuche die <a href='%{url}'>Benutzer-Einstellungen</a>, um dieses Profil zu bearbeiten"
         deactivate_explanation: "Ein deaktivierter Benutzer muss seine E-Mail-Adresse erneut bestätigen."
         suspended_explanation: "Ein gesperrter Benutzer kann sich nicht anmelden."
-        block_explanation: "Ein geblockter Benutzer kann keine Themen erstellen oder Beiträge veröffentlichen."
+        silence_explanation: "Ein stummgeschalteter Benutzer kann keine Beiträge schreiben oder Themen beginnen."
         staged_explanation: "Ein vorbereiteter Benutzer kann nur per E-Mail und nur in bestimmten Themen schreiben."
         bounce_score_explanation:
           none: "Keine unzustellbaren E-Mails an diese Adresse in letzter Zeit."
@@ -3211,6 +3234,7 @@ de:
           developer: 'Entwickler'
           embedding: "Einbettung"
           legal: "Rechtliches"
+          api: 'API-Schnittstelle'
           user_api: 'Benutzer API'
           uncategorized: 'Sonstiges'
           backups: "Backups"

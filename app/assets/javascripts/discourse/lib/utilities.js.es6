@@ -1,5 +1,7 @@
 import { escape } from 'pretty-text/sanitizer';
 
+const homepageSelector = 'meta[name=discourse_current_homepage]';
+
 export function translateSize(size) {
   switch (size) {
     case 'tiny': return 20;
@@ -20,6 +22,17 @@ export function escapeExpression(string) {
 
   return escape(string);
 }
+
+let _usernameFormatDelegate = username => username;
+
+export function formatUsername(username) {
+  return _usernameFormatDelegate(username || '');
+}
+
+export function replaceFormatter(fn) {
+  _usernameFormatDelegate = fn;
+}
+
 
 export function avatarUrl(template, size) {
   if (!template) { return ""; }
@@ -338,8 +351,22 @@ export function displayErrorForUpload(data) {
 }
 
 export function defaultHomepage() {
-  // the homepage is the first item of the 'top_menu' site setting
-  return Discourse.SiteSettings.top_menu.split("|")[0].split(",")[0];
+  let homepage = null;
+  let elem = _.first($(homepageSelector));
+  if (elem) {
+    homepage = elem.content;
+  }
+  if (!homepage) {
+    homepage = Discourse.SiteSettings.top_menu.split("|")[0].split(",")[0];
+  }
+  return homepage;
+}
+
+export function setDefaultHomepage(homepage) {
+  let elem = _.first($(homepageSelector));
+  if (elem) {
+    elem.content = homepage;
+  }
 }
 
 export function determinePostReplaceSelection({ selection, needle, replacement }) {

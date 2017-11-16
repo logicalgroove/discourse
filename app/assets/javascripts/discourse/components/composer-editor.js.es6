@@ -1,5 +1,5 @@
 import userSearch from 'discourse/lib/user-search';
-import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
+import { default as computed, on } from 'ember-addons/ember-computed-decorators';
 import { linkSeenMentions, fetchUnseenMentions } from 'discourse/lib/link-mentions';
 import { linkSeenCategoryHashtags, fetchUnseenCategoryHashtags } from 'discourse/lib/link-category-hashtags';
 import { linkSeenTagHashtags, fetchUnseenTagHashtags } from 'discourse/lib/link-tag-hashtag';
@@ -13,50 +13,17 @@ import { tinyAvatar,
          displayErrorForUpload,
          getUploadMarkdown,
          validateUploadedFiles } from 'discourse/lib/utilities';
-import { lookupCachedUploadUrl,
-         lookupUncachedUploadUrls,
-         cacheShortUploadUrl } from 'pretty-text/image-short-url';
+import { cacheShortUploadUrl, resolveAllShortUrls } from 'pretty-text/image-short-url';
 
 export default Ember.Component.extend({
-  classNames: ['wmd-controls'],
-  classNameBindings: ['showToolbar:toolbar-visible', ':wmd-controls', 'showPreview', 'showPreview::hide-preview'],
+  classNameBindings: ['showToolbar:toolbar-visible', ':wmd-controls'],
 
   uploadProgress: 0,
-  showPreview: true,
   _xhr: null,
 
   @computed
   uploadPlaceholder() {
     return `[${I18n.t('uploading')}]() `;
-  },
-
-  @on('init')
-  _setupPreview() {
-    const val = (this.site.mobileView ? false : (this.keyValueStore.get('composer.showPreview') || 'true'));
-    this.set('showPreview', val === 'true');
-
-    this.appEvents.on('composer:show-preview', () => {
-      this.set('showPreview', true);
-    });
-
-    this.appEvents.on('composer:hide-preview', () => {
-      this.set('showPreview', false);
-    });
-  },
-
-  @computed('site.mobileView', 'showPreview')
-  forcePreview(mobileView, showPreview) {
-    return mobileView && showPreview;
-  },
-
-  @computed('showPreview')
-  toggleText: function(showPreview) {
-    return showPreview ? I18n.t('composer.hide_preview') : I18n.t('composer.show_preview');
-  },
-
-  @observes('showPreview')
-  showPreviewChanged() {
-      this.keyValueStore.set({ key: 'composer.showPreview', value: this.get('showPreview') });
   },
 
   @computed
@@ -73,6 +40,19 @@ export default Ember.Component.extend({
           const quotedPost = posts.findBy("post_number", postNumber);
           if (quotedPost) {
             return tinyAvatar(quotedPost.get('avatar_template'));
+          }
+        }
+      },
+
+      lookupPrimaryUserGroupByPostNumber: (postNumber, topicId) => {
+        const topic = this.get('topic');
+        if (!topic) { return; }
+
+        const posts = topic.get('postStream.posts');
+        if (posts && topicId === topic.get('id')) {
+          const quotedPost = posts.findBy("post_number", postNumber);
+          if (quotedPost) {
+            return quotedPost.primary_group_name;
           }
         }
       }
@@ -196,24 +176,6 @@ export default Ember.Component.extend({
     }
 
     $oneboxes.each((_, o) => load(o, refresh, ajax, this.currentUser.id));
-  },
-
-  _loadShortUrls($images) {
-    const urls = _.map($images, img => $(img).data('orig-src'));
-    lookupUncachedUploadUrls(urls, ajax).then(() => this._loadCachedShortUrls($images));
-  },
-
-  _loadCachedShortUrls($images) {
-    $images.each((idx, image) => {
-      let $image = $(image);
-      let url = lookupCachedUploadUrl($image.data('orig-src'));
-      if (url) {
-        $image.removeAttr('data-orig-src');
-        if (url !== "missing") {
-          $image.attr('src', url);
-        }
-      }
-    });
   },
 
   _warnMentionedGroups($preview) {
@@ -350,7 +312,7 @@ export default Ember.Component.extend({
     });
 
     if (this.site.mobileView) {
-      this.$(".mobile-file-upload").on("click.uploader", function () {
+      $("#reply-control .mobile-file-upload").on("click.uploader", function () {
         // redirect the click on the hidden file input
         $("#mobile-uploader").click();
       });
@@ -360,29 +322,28 @@ export default Ember.Component.extend({
   },
 
   _optionsLocation() {
-    // long term we want some smart positioning algorithm in popup-menu
-    // the problem is that positioning in a fixed panel is a nightmare
-    // cause offsetParent can end up returning a fixed element and then
-    // using offset() is not going to work, so you end up needing special logic
-    // especially since we allow for negative .top, provided there is room on screen
-    const myPos = this.$().position();
-    const buttonPos = this.$('.options').position();
+    const composer = $("#reply-control");
+    const composerOffset = composer.offset();
+    const composerPosition = composer.position();
 
-    const popupHeight = $('#reply-control .popup-menu').height();
-    const popupWidth = $('#reply-control .popup-menu').width();
+    const buttonBarOffset = $('#reply-control .d-editor-button-bar').offset();
+    const optionsButton = $('#reply-control .d-editor-button-bar .options');
 
-    var top = myPos.top + buttonPos.top - 15;
-    var left = myPos.left + buttonPos.left - (popupWidth/2);
+    const popupMenu = $("#reply-control .popup-menu");
+    const popupWidth = popupMenu.outerWidth();
+    const popupHeight = popupMenu.outerHeight();
 
-    const composerPos = $('#reply-control').position();
+    const headerHeight = $(".d-header").outerHeight();
 
-    if (composerPos.top + top - popupHeight < 0) {
-      top = top + popupHeight + this.$('.options').height() + 50;
+    let left = optionsButton.offset().left - composerOffset.left;
+    let top = buttonBarOffset.top - composerOffset.top - popupHeight + popupMenu.innerHeight();
+
+    if (top + composerPosition.top - headerHeight - popupHeight < 0) {
+      top += popupHeight + optionsButton.outerHeight();
     }
 
-    var replyWidth = $('#reply-control').width();
-    if (left + popupWidth > replyWidth) {
-      left = replyWidth - popupWidth - 40;
+    if (left + popupWidth > composer.width()) {
+      left -= popupWidth - optionsButton.outerWidth();
     }
 
     return { position: "absolute", left, top };
@@ -480,7 +441,7 @@ export default Ember.Component.extend({
   @on('willDestroyElement')
   _unbindUploadTarget() {
     this._validUploads = 0;
-    this.$(".mobile-file-upload").off("click.uploader");
+    $("#reply-control .mobile-file-upload").off("click.uploader");
     this.messageBus.unsubscribe("/uploads/composer");
     const $uploadTarget = this.$();
     try { $uploadTarget.fileupload("destroy"); }
@@ -491,8 +452,6 @@ export default Ember.Component.extend({
   @on('willDestroyElement')
   _composerClosed() {
     this.appEvents.trigger('composer:will-close');
-    this.appEvents.off('composer:show-preview');
-    this.appEvents.off('composer:hide-preview');
     Ember.run.next(() => {
       $('#main-outlet').css('padding-bottom', 0);
       // need to wait a bit for the "slide down" transition of the composer
@@ -528,12 +487,12 @@ export default Ember.Component.extend({
       }
     },
 
-    showUploadModal(toolbarEvent) {
-      this.sendAction('showUploadSelector', toolbarEvent);
+    togglePreview() {
+      this.sendAction('togglePreview');
     },
 
-    togglePreview() {
-      this.toggleProperty('showPreview');
+    showUploadModal(toolbarEvent) {
+      this.sendAction('showUploadSelector', toolbarEvent);
     },
 
     extraButtons(toolbar) {
@@ -605,18 +564,8 @@ export default Ember.Component.extend({
         Ember.run.debounce(this, this._loadOneboxes, $oneboxes, 450);
       }
 
-      // Short upload urls
-      let $shortUploadUrls = $('img[data-orig-src]');
-
-      if ($shortUploadUrls.length > 0) {
-        this._loadCachedShortUrls($shortUploadUrls);
-
-        $shortUploadUrls = $('img[data-orig-src]');
-        if ($shortUploadUrls.length > 0) {
-          // this is carefully batched so we can do an leading debounce (trigger right away)
-          Ember.run.debounce(this, this._loadShortUrls, $shortUploadUrls, 450, true);
-        }
-      }
+      // Short upload urls need resolution
+      resolveAllShortUrls(ajax);
 
       let inline = {};
       $('a.inline-onebox-loading', $preview).each(function(index, link) {

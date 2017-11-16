@@ -10,15 +10,13 @@ export default SelectBoxKitComponent.extend({
   rowComponent: "dropdown-select-box/dropdown-select-box-row",
 
   clickOutside() {
+    if (this.get("isExpanded") === false) { return; }
     this.close();
   },
 
-  actions: {
-    onSelect(value) {
-      value = this.defaultOnSelect(value);
-      this.set("value", value);
+  didSelectValue() {
+    this._super();
 
-      this.blur();
-    }
+    this.blur();
   }
 });

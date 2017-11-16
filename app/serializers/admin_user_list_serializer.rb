@@ -22,7 +22,8 @@ class AdminUserListSerializer < BasicUserSerializer
              :suspended_at,
              :suspended_till,
              :suspended,
-             :blocked,
+             :silenced,
+             :silenced_till,
              :time_read,
              :staged
 
@@ -39,6 +40,22 @@ class AdminUserListSerializer < BasicUserSerializer
   end
 
   alias_method :include_associated_accounts?, :include_email?
+
+  def silenced
+    object.silenced?
+  end
+
+  def include_silenced?
+    object.silenced?
+  end
+
+  def silenced_till
+    object.silenced_till
+  end
+
+  def include_silenced_till?
+    object.silenced_till?
+  end
 
   def suspended
     object.suspended?

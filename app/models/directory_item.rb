@@ -25,10 +25,10 @@ class DirectoryItem < ActiveRecord::Base
     period_types.each_key { |p| refresh_period!(p) }
   end
 
-  def self.refresh_period!(period_type)
+  def self.refresh_period!(period_type, force: false)
 
     # Don't calculate it if the user directory is disabled
-    return unless SiteSetting.enable_user_directory?
+    return unless SiteSetting.enable_user_directory? || force
 
     since =
       case period_type
@@ -82,7 +82,7 @@ class DirectoryItem < ActiveRecord::Base
                   LEFT OUTER JOIN posts AS p ON ua.target_post_id = p.id
                   LEFT OUTER JOIN categories AS c ON t.category_id = c.id
                   WHERE u.active
-                    AND NOT u.blocked
+                    AND u.silenced_till IS NULL
                     AND t.deleted_at IS NULL
                     AND COALESCE(t.visible, true)
                     AND p.deleted_at IS NULL

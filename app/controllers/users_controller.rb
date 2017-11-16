@@ -466,7 +466,10 @@ class UsersController < ApplicationController
         if @error
           render layout: 'no_ember'
         else
-          store_preloaded("password_reset", MultiJson.dump(is_developer: UsernameCheckerService.is_developer?(@user.email)))
+          store_preloaded(
+            "password_reset",
+            MultiJson.dump(is_developer: UsernameCheckerService.is_developer?(@user.email), admin: @user.admin?)
+          )
         end
         return redirect_to(wizard_path) if request.put? && Wizard.user_requires_completion?(@user)
       end
@@ -478,7 +481,8 @@ class UsersController < ApplicationController
               success: false,
               message: @error,
               errors: @user&.errors.to_hash,
-              is_developer: UsernameCheckerService.is_developer?(@user.email)
+              is_developer: UsernameCheckerService.is_developer?(@user.email),
+              admin: @user.admin?
             }
           else
             render json: {
@@ -489,7 +493,7 @@ class UsersController < ApplicationController
             }
           end
         else
-          render json: { is_developer: UsernameCheckerService.is_developer?(@user.email) }
+          render json: { is_developer: UsernameCheckerService.is_developer?(@user.email), admin: @user.admin? }
         end
       end
     end
@@ -634,18 +638,18 @@ class UsersController < ApplicationController
       @user = User.where(id: user_key.to_i).first
     end
 
-    raise Discourse::InvalidAccess.new unless @user.present?
-    raise Discourse::InvalidAccess.new if @user.active?
-    raise Discourse::InvalidAccess.new if current_user.present?
+    if @user.blank? || @user.active? || current_user.present?
+      raise Discourse::InvalidAccess.new
+    end
 
     User.transaction do
       primary_email = @user.primary_email
 
       primary_email.email = params[:email]
-      primary_email.should_validate_email = true
+      primary_email.skip_validate_email = false
 
       if primary_email.save
-        @user.email_tokens.create(email: @user.email)
+        @user.email_tokens.create!(email: @user.email)
         enqueue_activation_email
         render json: success_json
       else
@@ -685,7 +689,7 @@ class UsersController < ApplicationController
   end
 
   def enqueue_activation_email
-    @email_token ||= @user.email_tokens.create(email: @user.email)
+    @email_token ||= @user.email_tokens.create!(email: @user.email)
     Jobs.enqueue(:critical_user_email, type: :signup, user_id: @user.id, email_token: @email_token.token, to_address: @user.email)
   end
 
@@ -711,23 +715,23 @@ class UsersController < ApplicationController
 
     to_render = { users: results.as_json(only: user_fields, methods: [:avatar_template]) }
 
-    if params[:include_groups] == "true"
-      to_render[:groups] = Group.search_group(term).map do |m|
-        { name: m.name, full_name: m.full_name }
-      end
-    end
-
-    if current_user
-      groups =
+    groups =
+      if current_user
         if params[:include_mentionable_groups] == 'true'
           Group.mentionable(current_user)
         elsif params[:include_messageable_groups] == 'true'
           Group.messageable(current_user)
         end
+      end
 
-      if groups
-        to_render[:groups] = groups.where("name ILIKE :term_like", term_like: "#{term}%")
-          .map { |m| { name: m.name, full_name: m.full_name } }
+    include_groups = params[:include_groups] == "true"
+
+    if include_groups || groups
+      groups = Group.search_groups(term, groups: groups)
+      groups = groups.where(visibility_level: Group.visibility_levels[:public]) if include_groups
+
+      to_render[:groups] = groups.map do |m|
+        { name: m.name, full_name: m.full_name }
       end
     end
 
