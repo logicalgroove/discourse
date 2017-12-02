@@ -267,6 +267,7 @@ en:
 
   queue:
     delete_reason: "Deleted via post moderation queue"
+    not_found: "Post not found or already updated."
 
   groups:
     success:
@@ -426,7 +427,7 @@ en:
         translation_overrides:
           attributes:
             value:
-              missing_interpolation_keys: 'The following interpolation key(s) are missing: "%{keys}"'
+              invalid_interpolation_keys: 'The following interpolation key(s) are invalid: "%{keys}"'
         watched_word:
           attributes:
             word:
@@ -1743,7 +1744,8 @@ en:
     email_too_long: "The email you provided is too long. Mailbox names must be no more than 254 characters, and domain names must be no more than 253 characters."
     reserved_username: "That username is not allowed."
     missing_user_field: "You have not completed all the user fields"
-    close_window: "Authentication is complete. Close this window to continue."
+    auth_complete: "Authentication is complete."
+    click_to_continue: "Click here to continue."
     already_logged_in: "Oops, looks like you are attempting to accept an invitation for another user. If you are not %{current_user}, please log out and try again."
 
   user:
@@ -1773,6 +1775,10 @@ en:
     website:
       domain_not_allowed: "Website is invalid. Allowed domains are: %{domains}"
     auto_rejected: "Rejected automatically due to age. See auto_handle_queued_age site setting."
+    destroy_reasons:
+      unused_staged_user: "Unused staged user"
+      fixed_primary_email: "Fixed primary email for staged user"
+      same_ip_address: "Same IP address (%{ip_address}) as other users"
 
   flags_reminder:
     flags_were_submitted:
@@ -1953,7 +1959,7 @@ en:
 
       - Upgrade using our easy **[one-click browser upgrade](%{base_url}/admin/upgrade)**
 
-      - See what's new in the [GitHub changelog](https://github.com/discourse/discourse/commits/master)
+      - See what's new in the [release notes](https://meta.discourse.org/tags/release-notes) or view the [raw GitHub changelog](https://github.com/discourse/discourse/commits/master)
 
       - Visit [meta.discourse.org](https://meta.discourse.org) for news, discussion, and support for Discourse
 
@@ -1968,7 +1974,7 @@ en:
 
       - Upgrade using our easy **[one-click browser upgrade](%{base_url}/admin/upgrade)**
 
-      - See what's new in the [GitHub changelog](https://github.com/discourse/discourse/commits/master)
+      - See what's new in the [release notes](https://meta.discourse.org/tags/release-notes) or view the [raw GitHub changelog](https://github.com/discourse/discourse/commits/master)
 
       - Visit [meta.discourse.org](https://meta.discourse.org) for news, discussion, and support for Discourse
 

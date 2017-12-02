@@ -67,7 +67,7 @@ class Admin::UsersController < Admin::AdminController
       user_history = StaffActionLogger.new(current_user).log_user_suspend(
         @user,
         params[:reason],
-        context: message,
+        message: message,
         post_id: params[:post_id]
       )
     end
@@ -200,14 +200,14 @@ class Admin::UsersController < Admin::AdminController
     guardian.ensure_can_change_trust_level!(@user)
     level = params[:level].to_i
 
-    if !@user.trust_level_locked && [0, 1, 2].include?(level) && Promotion.send("tl#{level + 1}_met?", @user)
-      @user.trust_level_locked = true
-      @user.save
-    end
-
-    if !@user.trust_level_locked && level == 3 && Promotion.tl3_lost?(@user)
-      @user.trust_level_locked = true
-      @user.save
+    if @user.manual_locked_trust_level.nil?
+      if [0, 1, 2].include?(level) && Promotion.send("tl#{level + 1}_met?", @user)
+        @user.manual_locked_trust_level = level
+        @user.save
+      elsif level == 3 && Promotion.tl3_lost?(@user)
+        @user.manual_locked_trust_level = level
+        @user.save
+      end
     end
 
     @user.change_trust_level!(level, log_action_for: current_user)
@@ -225,19 +225,11 @@ class Admin::UsersController < Admin::AdminController
       return render_json_error I18n.t('errors.invalid_boolean')
     end
 
-    @user.trust_level_locked = new_lock == "true"
+    @user.manual_locked_trust_level = (new_lock == "true") ? @user.trust_level : nil
     @user.save
 
     StaffActionLogger.new(current_user).log_lock_trust_level(@user)
-
-    unless @user.trust_level_locked
-      p = Promotion.new(@user)
-      2.times { p.review }
-      p.review_tl2
-      if @user.trust_level == 3 && Promotion.tl3_lost?(@user)
-        @user.change_trust_level!(2, log_action_for: current_user)
-      end
-    end
+    Promotion.recalculate(@user, current_user)
 
     render body: nil
   end
@@ -282,7 +274,7 @@ class Admin::UsersController < Admin::AdminController
       current_user,
       silenced_till: params[:silenced_till],
       reason: params[:reason],
-      context: message,
+      message_body: message,
       keep_posts: true
     )
     if silencer.silence && message.present?
@@ -387,7 +379,14 @@ class Admin::UsersController < Admin::AdminController
     params.require(:order)
 
     user_destroyer = UserDestroyer.new(current_user)
-    options = { delete_posts: true, block_email: true, block_urls: true, block_ip: true, delete_as_spammer: true }
+    options = {
+      delete_posts: true,
+      block_email: true,
+      block_urls: true,
+      block_ip: true,
+      delete_as_spammer: true,
+      context: I18n.t("user.destroy_reasons.same_ip_address", ip_address: params[:ip])
+    }
 
     AdminUserIndexQuery.new(params).find_users(50).each do |user|
       user_destroyer.destroy(user, options) rescue nil

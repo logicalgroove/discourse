@@ -86,7 +86,9 @@ export default Ember.Controller.extend({
 
   @observes('showPreview')
   showPreviewChanged() {
-    this.keyValueStore.set({ key: 'composer.showPreview', value: this.get('showPreview') });
+    if (!this.site.mobileView) {
+      this.keyValueStore.set({ key: 'composer.showPreview', value: this.get('showPreview') });
+    }
   },
 
   @computed('model.replyingToTopic', 'model.creatingPrivateMessage', 'model.targetUsernames')
@@ -301,15 +303,17 @@ export default Ember.Controller.extend({
     // Toggle the reply view
     toggle() {
       this.closeAutocomplete();
-      if (this.get('model.composeState') === Composer.OPEN) {
-        if (Ember.isEmpty(this.get('model.reply')) && Ember.isEmpty(this.get('model.title'))) {
-          this.close();
-        } else {
-          this.shrink();
-        }
-      } else {
+
+      if (Ember.isEmpty(this.get('model.reply')) && Ember.isEmpty(this.get('model.title'))) {
         this.close();
+      } else {
+        if (this.get('model.composeState') === Composer.OPEN) {
+          this.shrink();
+        } else {
+          this.cancelComposer();
+        }
       }
+
       return false;
     },
 
@@ -386,8 +390,9 @@ export default Ember.Controller.extend({
           const body = I18n.t('composer.group_mentioned', {
             group: "@" + group.name,
             count: group.user_count,
-            group_link: Discourse.getURL(`/group/${group.name}/members`)
+            group_link: Discourse.getURL(`/groups/${group.name}/members`)
           });
+
           this.appEvents.trigger('composer-messages:create', {
             extraClass: 'custom-body',
             templateName: 'custom-body',
@@ -735,7 +740,7 @@ export default Ember.Controller.extend({
   },
 
   shrink() {
-    if (this.get('model.replyDirty')) {
+    if (this.get('model.replyDirty') || (this.get('model.canEditTitle') && this.get('model.titleDirty'))) {
       this.collapse();
     } else {
       this.close();

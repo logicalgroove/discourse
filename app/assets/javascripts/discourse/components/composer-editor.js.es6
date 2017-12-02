@@ -12,14 +12,24 @@ import { findRawTemplate } from 'discourse/lib/raw-templates';
 import { tinyAvatar,
          displayErrorForUpload,
          getUploadMarkdown,
-         validateUploadedFiles } from 'discourse/lib/utilities';
+         validateUploadedFiles,
+         formatUsername,
+         clipboardData
+} from 'discourse/lib/utilities';
 import { cacheShortUploadUrl, resolveAllShortUrls } from 'pretty-text/image-short-url';
+
+const REBUILD_SCROLL_MAP_EVENTS = [
+  'composer:resized',
+  'composer:typed-reply'
+];
 
 export default Ember.Component.extend({
   classNameBindings: ['showToolbar:toolbar-visible', ':wmd-controls'],
 
   uploadProgress: 0,
   _xhr: null,
+  shouldBuildScrollMap: true,
+  scrollMap: null,
 
   @computed
   uploadPlaceholder() {
@@ -30,6 +40,8 @@ export default Ember.Component.extend({
   markdownOptions() {
     return {
       previewing: true,
+
+      formatUsername,
 
       lookupAvatarByPostNumber: (postNumber, topicId) => {
         const topic = this.get('topic');
@@ -63,6 +75,8 @@ export default Ember.Component.extend({
   _composerEditorInit() {
     const topicId = this.get('topic.id');
     const $input = this.$('.d-editor-input');
+    const $preview = this.$('.d-editor-preview');
+
     $input.autocomplete({
       template: findRawTemplate('user-selector-autocomplete'),
       dataSource: term => userSearch({
@@ -74,7 +88,7 @@ export default Ember.Component.extend({
       transformComplete: v => v.username || v.name
     });
 
-    $input.on('scroll', () => Ember.run.throttle(this, this._syncEditorAndPreviewScroll, 20));
+    this._initInputPreviewSync($input, $preview);
 
     // Focus on the body unless we have a title
     if (!this.get('composer.canEditTitle') && !this.capabilities.isIOS) {
@@ -114,29 +128,163 @@ export default Ember.Component.extend({
     }
   },
 
-  _syncEditorAndPreviewScroll() {
-    const $input = this.$('.d-editor-input');
-    if (!$input) { return; }
+  _resetShouldBuildScrollMap() {
+    this.set('shouldBuildScrollMap', true);
+  },
 
-    const $preview = this.$('.d-editor-preview');
+  _initInputPreviewSync($input, $preview) {
+    REBUILD_SCROLL_MAP_EVENTS.forEach(event => {
+      this.appEvents.on(event, this, this._resetShouldBuildScrollMap);
+    });
 
-    if ($input.scrollTop() === 0) {
-      $preview.scrollTop(0);
-      return;
+    Ember.run.scheduleOnce("afterRender", () => {
+      $input.on('touchstart mouseenter', () => {
+        if (!$preview.is(":visible")) return;
+        $preview.off('scroll');
+
+        $input.on('scroll', () => {
+          this._syncScroll(this._syncEditorAndPreviewScroll, $input, $preview);
+        });
+      });
+
+      $preview.on('touchstart mouseenter', () => {
+        $input.off('scroll');
+
+        $preview.on('scroll', () => {
+          this._syncScroll(this._syncPreviewAndEditorScroll, $input, $preview);
+        });
+      });
+    });
+  },
+
+  _syncScroll($callback, $input, $preview) {
+    if (!this.get('scrollMap') || this.get('shouldBuildScrollMap')) {
+      this.set('scrollMap', this._buildScrollMap($input, $preview));
+      this.set('shouldBuildScrollMap', false);
     }
 
-    const inputHeight = $input[0].scrollHeight;
-    const previewHeight = $preview[0].scrollHeight;
-    if (($input.height() + $input.scrollTop() + 100) > inputHeight) {
-      // cheat, special case for bottom
-      $preview.scrollTop(previewHeight);
-      return;
+    Ember.run.throttle(this, $callback, $input, $preview, this.get('scrollMap'), 20);
+  },
+
+  _teardownInputPreviewSync() {
+    [this.$('.d-editor-input'), this.$('.d-editor-preview')].forEach($element => {
+      $element.off("mouseenter touchstart");
+      $element.off("scroll");
+    });
+
+    REBUILD_SCROLL_MAP_EVENTS.forEach(event => {
+      this.appEvents.off(event, this, this._resetShouldBuildScrollMap);
+    });;
+  },
+
+  // Adapted from https://github.com/markdown-it/markdown-it.github.io
+  _buildScrollMap($input, $preview) {
+    let sourceLikeDiv = $('<div />').css({
+      position: 'absolute',
+      height: 'auto',
+      visibility: 'hidden',
+      width: $input[0].clientWidth,
+      'font-size': $input.css('font-size'),
+      'font-family': $input.css('font-family'),
+      'line-height': $input.css('line-height'),
+      'white-space': $input.css('white-space')
+    }).appendTo('body');
+
+    const linesMap = [];
+    let numberOfLines = 0;
+
+    $input.val().split('\n').forEach(text => {
+      linesMap.push(numberOfLines);
+
+      if (text.length === 0) {
+        numberOfLines++;
+      } else {
+        sourceLikeDiv.text(text);
+
+        let height;
+        let lineHeight;
+        height = parseFloat(sourceLikeDiv.css('height'));
+        lineHeight = parseFloat(sourceLikeDiv.css('line-height'));
+        numberOfLines += Math.round(height / lineHeight);
+      }
+    });
+
+    linesMap.push(numberOfLines);
+    sourceLikeDiv.remove();
+
+    const previewOffsetTop = $preview.offset().top;
+    const offset = $preview.scrollTop() - previewOffsetTop - ($input.offset().top - previewOffsetTop);
+    const nonEmptyList = [];
+    const scrollMap = [];
+    for (let i = 0; i < numberOfLines; i++) { scrollMap.push(-1); };
+
+    nonEmptyList.push(0);
+    scrollMap[0] = 0;
+
+    $preview.find('.preview-sync-line').each((_, element) => {
+      let $element = $(element);
+      let lineNumber = $element.data('line-number');
+      let linesToTop = linesMap[lineNumber];
+      if (linesToTop !== 0) { nonEmptyList.push(linesToTop); }
+      scrollMap[linesToTop] = Math.round($element.offset().top + offset);
+    });
+
+    nonEmptyList.push(numberOfLines);
+    scrollMap[numberOfLines] = $preview[0].scrollHeight;
+
+    let position = 0;
+
+    for (let i = 1; i < numberOfLines; i++) {
+      if (scrollMap[i] !== -1) {
+        position++;
+        continue;
+      }
+
+      let top = nonEmptyList[position];
+      let bottom = nonEmptyList[position + 1];
+
+      scrollMap[i] =
+        ((
+          scrollMap[bottom] * (i - top) +
+          scrollMap[top] * (bottom - i)
+        ) / (bottom - top)).toFixed(2);
+    };
+
+    return scrollMap;
+  },
+
+  _syncEditorAndPreviewScroll($input, $preview, scrollMap) {
+    let scrollTop;
+    const inputHeight = $input.height();
+    const inputScrollHeight = $input[0].scrollHeight;
+    const inputClientHeight = $input[0].clientHeight;
+    const scrollable = inputScrollHeight > inputClientHeight;
+
+    if (scrollable && ((inputHeight + $input.scrollTop() + 100) > inputScrollHeight)) {
+      scrollTop = $preview[0].scrollHeight;
+    } else {
+      const lineHeight = parseFloat($input.css('line-height'));
+      const lineNumber = Math.floor($input.scrollTop() / lineHeight);
+      scrollTop = scrollMap[lineNumber];
     }
 
-    const scrollPosition = $input.scrollTop();
-    const factor = previewHeight / inputHeight;
-    const desired = scrollPosition * factor;
-    $preview.scrollTop(desired + 50);
+    $preview.stop(true).animate({ scrollTop }, 100, 'linear');
+  },
+
+  _syncPreviewAndEditorScroll($input, $preview, scrollMap) {
+    if (scrollMap.length < 1) return;
+
+    let scrollTop;
+    const previewScrollTop = $preview.scrollTop();
+
+    if (($preview.height() + previewScrollTop + 100) > $preview[0].scrollHeight) {
+      scrollTop = $input[0].scrollHeight;
+    } else {
+      const lineHeight = parseFloat($input.css('line-height'));
+      scrollTop = lineHeight * scrollMap.findIndex(offset => offset > previewScrollTop);
+    }
+
+    $input.stop(true).animate({ scrollTop }, 100, 'linear');
   },
 
   _renderUnseenMentions($preview, unseen) {
@@ -247,7 +395,14 @@ export default Ember.Component.extend({
       pasteZone: $element,
     });
 
-    $element.on('fileuploadpaste', () => this._pasted = true);
+    $element.on('fileuploadpaste', (e) => {
+      let {types} = clipboardData(e);
+      this._pasted = true;
+
+      if (types.some(t => t === "text/plain")) {
+        e.preventDefault();
+      }
+    });
 
     $element.on('fileuploadsubmit', (e, data) => {
       const isPrivateMessage = this.get("composer.privateMessage");
@@ -283,6 +438,19 @@ export default Ember.Component.extend({
       }
     });
 
+    $element.on("fileuploaddone", (e, data) => {
+      let upload = data.result;
+
+      if (!this._xhr || !this._xhr._userCancelled) {
+        const markdown = getUploadMarkdown(upload);
+        cacheShortUploadUrl(upload.short_url, upload.url);
+        this.appEvents.trigger('composer:replace-text', uploadPlaceholder, markdown);
+        this._resetUpload(false);
+      } else {
+        this._resetUpload(true);
+      }
+    });
+
     $element.on("fileuploadfail", (e, data) => {
       this._resetUpload(true);
 
@@ -290,24 +458,7 @@ export default Ember.Component.extend({
       this._xhr = null;
 
       if (!userCancelled) {
-        displayErrorForUpload(data);
-      }
-    });
-
-    this.messageBus.subscribe("/uploads/composer", upload => {
-      // replace upload placeholder
-      if (upload && upload.url) {
-        if (!this._xhr || !this._xhr._userCancelled) {
-          const markdown = getUploadMarkdown(upload);
-          cacheShortUploadUrl(upload.short_url, upload.url);
-          this.appEvents.trigger('composer:replace-text', uploadPlaceholder, markdown);
-          this._resetUpload(false);
-        } else {
-          this._resetUpload(true);
-        }
-      } else {
-        this._resetUpload(true);
-        displayErrorForUpload(upload);
+        displayErrorForUpload(data.jqXHR.responseJSON);
       }
     });
 
@@ -458,6 +609,8 @@ export default Ember.Component.extend({
       Ember.run.later(() => this.appEvents.trigger("composer:closed"), 400);
     });
 
+    this._teardownInputPreviewSync();
+
     if (this.site.mobileView) {
       $(window).off('resize.composer-popup-menu');
     }
@@ -579,6 +732,7 @@ export default Ember.Component.extend({
         Ember.run.debounce(this, this._loadInlineOneboxes, inline, 450);
       }
 
+      this._syncScroll(this._syncEditorAndPreviewScroll, this.$('.d-editor-input'), $preview);
       this.trigger('previewRefreshed', $preview);
       this.sendAction('afterRefresh', $preview);
     },

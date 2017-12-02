@@ -8,7 +8,7 @@ import { emojiSearch, isSkinTonableEmoji } from 'pretty-text/emoji';
 import { emojiUrlFor } from 'discourse/lib/text';
 import { getRegister } from 'discourse-common/lib/get-owner';
 import { findRawTemplate } from 'discourse/lib/raw-templates';
-import { determinePostReplaceSelection } from 'discourse/lib/utilities';
+import { determinePostReplaceSelection, clipboardData } from 'discourse/lib/utilities';
 import deprecated from 'discourse-common/lib/deprecated';
 
 // Our head can be a static string or a function that returns a string
@@ -438,7 +438,9 @@ export default Ember.Component.extend({
       }
 
       if (operation !== OP.ADDED &&
-          (l.slice(0, hlen) === hval && tlen === 0 || l.slice(-tlen) === tail)) {
+          (l.slice(0, hlen) === hval && tlen === 0 ||
+          (tail.length && l.slice(-tlen) === tail))) {
+
         operation = OP.REMOVED;
         if (tlen === 0) {
           const result = l.slice(hlen);
@@ -500,6 +502,7 @@ export default Ember.Component.extend({
           tlen,
           opts
         );
+
         this.set('value', `${pre}${contents}${post}`);
         if (lines.length === 1 && tlen > 0) {
           this._selectText(sel.start + hlen, sel.value.length);
@@ -611,6 +614,14 @@ export default Ember.Component.extend({
     $textarea.prop("selectionStart", insert.length);
     $textarea.prop("selectionEnd", insert.length);
     Ember.run.scheduleOnce("afterRender", () => $textarea.focus());
+  },
+
+  paste(e) {
+    let {types} = clipboardData(e);
+
+    if (types.some(t => t === "Files") && !types.some(t => t === "text/plain")) {
+      e.preventDefault();
+    }
   },
 
   actions: {

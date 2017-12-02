@@ -17,19 +17,6 @@ header {
   height: 100%;
 }
 
-.grippie {
-  cursor: row-resize;
-  padding: 4px 0px;
-
-  &:before {
-    content: '';
-    display: block;
-    width: 27px;
-    margin: auto;
-    border-top: 3px double dark-light-choose($primary-low-mid, $secondary-medium);
-  }
-}
-
 .topic-statuses {
   float: left;
   padding: 0;
@@ -64,36 +51,6 @@ pre {
   font-family: Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
 }
 
-/* page not found styles */
-h1.page-not-found {
-  line-height: 30px;
-}
-
-.page-not-found {
-  margin: 20px 0 40px 0;
-
-  &-search {
-    margin-top: 20px;
-  }
-
-  &-topics .span8 {
-    line-height: 1.5em;
-    margin-right: 20px;
-  }
-}
-
-.popular-topics-title,
-.recent-topics-title {
-  margin-bottom: 10px;
-}
-
-.not-found-topic {
-  > a {
-    margin-right: 10px;
-    line-height: 2;
-  }
-}
-
 // this removes the unwanted top margin on a paragraph under a heading
 h1,
 h2,
@@ -115,16 +72,9 @@ input,
 button,
 select,
 textarea {
-  font-size: 0.929em;
+  font-size: 1em;
   font-weight: normal;
   line-height: 18px;
-}
-
-input,
-button,
-select,
-textarea {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 select,
@@ -132,7 +82,7 @@ textarea {
   display: inline-block;
   padding: 4px;
   margin-bottom: 9px;
-  font-size: 0.929em;
+  font-size: 1em;
   line-height: 18px;
   color: $primary;
 }
@@ -187,7 +137,6 @@ input {
       position: relative;
       margin-bottom: 0;
       vertical-align: middle;
-      border-radius: 0 3px 3px 0;
 
       &:focus {
         z-index: 2;

@@ -134,10 +134,19 @@ aside.onebox {
     img {
       max-height: 170px;
       max-width: 20%;
+      @media all and (max-width: 600px) {
+        max-width: 35%;
+      }
       height: auto;
       width: auto;
       float: left;
       margin-right: 10px;
+      &.onebox-full-image {
+        max-height: none;
+        max-width: none;
+        width: initial;
+        height: initial;
+      }
     }
 
     [style*="--aspect-ratio"] > :first-child {
@@ -153,10 +162,11 @@ aside.onebox {
 
       .aspect-image {
         max-height: 170px;
+        --magic-ratio: calc(var(--aspect-ratio) + 0.15);
+        width: calc(128px * var(--magic-ratio));
         max-width: 20%;
         float: left;
         margin-right: 10px;
-        width: 100%;
         height: auto;
 
         img {
@@ -434,11 +444,19 @@ aside.onebox.stackexchange .onebox-body {
 
 // whitelistedgeneric twitter labels
 .onebox.whitelistedgeneric {
+  .label1, .label2 {
+    color: dark-light-choose($primary-medium, $secondary-medium);
+  }
   .label1 {
     float: left;
   }
   .label2 {
     float: right;
+  }
+  .site-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 3px;
   }
 }
 

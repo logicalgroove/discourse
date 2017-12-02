@@ -75,7 +75,7 @@
   background-color: $secondary;
   background-clip: padding-box;
 
-  .select-box-kit {
+  .select-kit {
     width: 220px;
   }
 }
@@ -241,7 +241,7 @@
       text-align: left;
       font-size: 1.286em;
       line-height: 20px;
-      width: 310px;
+      width: auto;
       margin-bottom: 10px;
       display: block;
       margin-left: 0 !important; // override needed

@@ -394,7 +394,7 @@ Discourse::Application.routes.draw do
     get "#{root_path}/:username/activity.rss" => "posts#user_posts_feed", format: :rss, constraints: { username: USERNAME_ROUTE_FORMAT }
     get "#{root_path}/:username/activity" => "users#show", constraints: { username: USERNAME_ROUTE_FORMAT }
     get "#{root_path}/:username/activity/:filter" => "users#show", constraints: { username: USERNAME_ROUTE_FORMAT }
-    get "#{root_path}/:username/badges" => "users#show", constraints: { username: USERNAME_ROUTE_FORMAT }
+    get "#{root_path}/:username/badges" => "users#badges", constraints: { username: USERNAME_ROUTE_FORMAT }
     get "#{root_path}/:username/notifications" => "users#show", constraints: { username: USERNAME_ROUTE_FORMAT }
     get "#{root_path}/:username/notifications/:filter" => "users#show", constraints: { username: USERNAME_ROUTE_FORMAT }
     get "#{root_path}/:username/activity/pending" => "users#show", constraints: { username: USERNAME_ROUTE_FORMAT }
@@ -689,6 +689,8 @@ Discourse::Application.routes.draw do
   get "draft" => "draft#show"
   post "draft" => "draft#update"
   delete "draft" => "draft#destroy"
+
+  get "service-worker" => "static#service_worker_asset", format: :js
 
   get "cdn_asset/:site/*path" => "static#cdn_asset", format: false
   get "brotli_asset/*path" => "static#brotli_asset", format: false

@@ -192,7 +192,7 @@ describe Admin::UsersController do
         log = UserHistory.where(target_user_id: user.id).order('id desc').first
         expect(log).to be_present
         expect(log.details).to match(/short reason/)
-        expect(log.context).to match(/long reason/)
+        expect(log.details).to match(/long reason/)
       end
 
       it "also revoke any api keys" do
@@ -372,12 +372,14 @@ describe Admin::UsersController do
         @another_user.update_attributes(trust_level: TrustLevel[1])
 
         put :trust_level, params: {
-          user_id: @another_user.id, level: TrustLevel[0]
+          user_id: @another_user.id,
+          level: TrustLevel[0]
         }, format: :json
 
         expect(response).to be_success
         @another_user.reload
-        expect(@another_user.trust_level_locked).to eq(true)
+        expect(@another_user.trust_level).to eq(TrustLevel[0])
+        expect(@another_user.manual_locked_trust_level).to eq(TrustLevel[0])
       end
     end
 
@@ -610,6 +612,7 @@ describe Admin::UsersController do
       end
 
       it "will send a message if provided" do
+        Jobs.stubs(:enqueue)
         Jobs.expects(:enqueue).with(
           :critical_user_email,
           has_entries(
