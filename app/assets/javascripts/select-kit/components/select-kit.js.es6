@@ -62,6 +62,7 @@ export default Ember.Component.extend(UtilsMixin, PluginApiMixin, DomHelpersMixi
   limitMatches: 100,
   nameChanges: false,
   allowsContentReplacement: false,
+  collectionHeader: null,
 
   init() {
     this._super();
@@ -193,7 +194,9 @@ export default Ember.Component.extend(UtilsMixin, PluginApiMixin, DomHelpersMixi
 
     switch (typeof none) {
     case "string":
-      return this.computeContentItem(this.noneValue, { name: I18n.t(none) });
+      return this.computeContentItem(this.noneValue, {
+        name: I18n.t(none).htmlSafe()
+      });
     default:
       return this.computeContentItem(none);
     }
@@ -226,6 +229,10 @@ export default Ember.Component.extend(UtilsMixin, PluginApiMixin, DomHelpersMixi
 
   actions: {
     onToggle() {
+      if (this.get("onToggle")) this.sendAction("onToggle");
+      if (this.get("onCollapse") && this.get("isExpanded") === true) this.sendAction("onCollapse");
+      if (this.get("onExpand") && this.get("isExpanded") === false) this.sendAction("onExpand");
+
       this.get("isExpanded") === true ? this.collapse() : this.expand();
     },
 

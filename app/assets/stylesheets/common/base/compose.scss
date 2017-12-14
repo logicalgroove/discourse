@@ -172,6 +172,10 @@
 
   .add-warning {
     margin-left: 1em;
+    display: flex;
+    input {
+      margin-right: 5px;
+    }
   }
 
   #reply-title {
@@ -184,6 +188,7 @@
     flex: 1 1 25%;
     margin: 0 0 5px 10px;
     border: 1px solid $primary-medium;
+    background: $secondary;
     @media all and (max-width: 900px) {
       margin: 0;
       flex: 1 1 100%;
@@ -295,7 +300,7 @@
           color: $primary;
         }
         span.name {
-          font-size: 11px;
+          font-size: .8em;
           vertical-align: middle;
         }
         &.selected {
@@ -321,7 +326,7 @@ div.ac-wrap.disabled {
 
 div.ac-wrap div.item a.remove, .remove-link {
   margin-left: 4px;
-  font-size: 11px;
+  font-size: .8em;
   line-height: 10px;
   padding: 1.5px 1.5px 1.5px 2.5px;
   border-radius: 12px;

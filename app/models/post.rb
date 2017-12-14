@@ -654,6 +654,30 @@ class Post < ActiveRecord::Base
     Post.secured(guardian).where(id: post_ids).includes(:user, :topic).order(:id).to_a
   end
 
+  def reply_ids(guardian = nil)
+    replies = Post.exec_sql("
+      WITH RECURSIVE breadcrumb(id, level) AS (
+        SELECT :post_id, 0
+        UNION
+        SELECT reply_id, level + 1
+          FROM post_replies, breadcrumb
+         WHERE post_id = id
+      ), breadcrumb_with_count AS (
+        SELECT id, level, COUNT(*)
+          FROM post_replies, breadcrumb
+         WHERE reply_id = id
+         GROUP BY id, level
+      )
+      SELECT id, level FROM breadcrumb_with_count WHERE level > 0 AND count = 1 ORDER BY id
+    ", post_id: id).to_a
+
+    replies.map! { |r| { id: r["id"].to_i, level: r["level"].to_i } }
+
+    secured_ids = Post.secured(guardian).where(id: replies.map { |r| r[:id] }).pluck(:id).to_set
+
+    replies.reject { |r| !secured_ids.include?(r[:id]) }
+  end
+
   def revert_to(number)
     return if number >= version
     post_revision = PostRevision.find_by(post_id: id, number: (number + 1))
@@ -760,7 +784,7 @@ end
 #  notify_user_count       :integer          default(0), not null
 #  like_score              :integer          default(0), not null
 #  deleted_by_id           :integer
-#  edit_reason             :string
+#  edit_reason             :string(255)
 #  word_count              :integer
 #  version                 :integer          default(1), not null
 #  cook_method             :integer          default(1), not null
@@ -773,10 +797,8 @@ end
 #  via_email               :boolean          default(FALSE), not null
 #  raw_email               :text
 #  public_version          :integer          default(1), not null
-#  action_code             :string
+#  action_code             :string(255)
 #  image_url               :string
-#  trolling_count          :integer          default(0), not null
-#  real_life_threat_count  :integer          default(0), not null
 #
 # Indexes
 #

@@ -39,7 +39,7 @@ class UsersController < ApplicationController
     return redirect_to path('/login') if SiteSetting.hide_user_profiles_from_public && !current_user
 
     @user = fetch_user_from_params(
-      { include_inactive: current_user.try(:staff?) },
+      { include_inactive: current_user.try(:staff?) || (current_user && SiteSetting.show_inactive_accounts) },
       [{ user_profile: :card_image_badge }]
     )
 
@@ -203,14 +203,14 @@ class UsersController < ApplicationController
   end
 
   def summary
-    user = fetch_user_from_params
+    user = fetch_user_from_params(include_inactive: current_user.try(:staff?) || (current_user && SiteSetting.show_inactive_accounts))
     summary = UserSummary.new(user, guardian)
     serializer = UserSummarySerializer.new(summary, scope: guardian)
     render_json_dump(serializer)
   end
 
   def invited
-    inviter = fetch_user_from_params
+    inviter = fetch_user_from_params(include_inactive: current_user.try(:staff?) || (current_user && SiteSetting.show_inactive_accounts))
     offset = params[:offset].to_i || 0
     filter_by = params[:filter]
 
@@ -226,7 +226,7 @@ class UsersController < ApplicationController
   end
 
   def invited_count
-    inviter = fetch_user_from_params
+    inviter = fetch_user_from_params(include_inactive: current_user.try(:staff?) || (current_user && SiteSetting.show_inactive_accounts))
 
     pending_count = Invite.find_pending_invites_count(inviter)
     redeemed_count = Invite.find_redeemed_invites_count(inviter)
@@ -298,6 +298,8 @@ class UsersController < ApplicationController
     params[:for_user_id] ? User.find(params[:for_user_id]) : current_user
   end
 
+  FROM_STAGED = "from_staged".freeze
+
   def create
     params.require(:email)
     params.permit(:user_fields)
@@ -321,6 +323,8 @@ class UsersController < ApplicationController
     if user = User.where(staged: true).with_email(params[:email].strip.downcase).first
       user_params.each { |k, v| user.send("#{k}=", v) }
       user.staged = false
+      user.active = false
+      user.custom_fields[FROM_STAGED] = true
     else
       user = User.new(user_params)
       user.gen_username_by_email
@@ -486,7 +490,7 @@ class UsersController < ApplicationController
             render json: {
               success: false,
               message: @error,
-              errors: @user&.errors.to_hash,
+              errors: @user&.errors&.to_hash,
               is_developer: UsernameCheckerService.is_developer?(@user.email),
               admin: @user.admin?
             }
@@ -590,7 +594,7 @@ class UsersController < ApplicationController
       if user = User.where(id: session_user_id.to_i).first
         @account_created[:username] = user.username
         @account_created[:email] = user.email
-        @account_created[:show_controls] = true
+        @account_created[:show_controls] = !user.custom_fields[FROM_STAGED]
       end
     end
 
@@ -645,6 +649,10 @@ class UsersController < ApplicationController
     end
 
     if @user.blank? || @user.active? || current_user.present?
+      raise Discourse::InvalidAccess.new
+    end
+
+    if @user.custom_fields[FROM_STAGED]
       raise Discourse::InvalidAccess.new
     end
 
