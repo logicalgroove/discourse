@@ -7,9 +7,14 @@ export default MultiSelectComponent.extend({
   filterable: true,
   allowAny: false,
   rowComponent: "category-row",
+  categories: null,
+  blacklist: null,
 
   init() {
     this._super();
+
+    if (!this.get("categories")) this.set("categories", []);
+    if (!this.get("blacklist")) this.set("blacklist", []);
 
     this.get("headerComponentOptions").setProperties({
       selectedNameComponent: "multi-select/selected-category"
@@ -35,6 +40,9 @@ export default MultiSelectComponent.extend({
 
   computeContent() {
     const blacklist = Ember.makeArray(this.get("blacklist"));
-    return Category.list().filter(category => !blacklist.includes(category));
+    return Category.list().filter(category => {
+      return this.get("categories").includes(category) ||
+             !blacklist.includes(category);
+    });
   }
 });

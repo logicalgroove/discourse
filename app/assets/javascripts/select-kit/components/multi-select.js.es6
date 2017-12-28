@@ -116,6 +116,7 @@ export default SelectKitComponent.extend({
 
   baseHeaderComputedContent() {
     return {
+      title: this.get("title"),
       selectedComputedContents: this.get("selectedComputedContents")
     };
   },
@@ -193,7 +194,12 @@ export default SelectKitComponent.extend({
   @computed("computedValues.[]", "computedContent.[]")
   selectedComputedContents(computedValues, computedContent) {
     const selected = [];
-    computedValues.forEach(v => selected.push(computedContent.findBy("value", v)) );
+
+    computedValues.forEach(v => {
+      const value = computedContent.findBy("value", v);
+      if (value) selected.push(value);
+    });
+
     return selected;
   },
 

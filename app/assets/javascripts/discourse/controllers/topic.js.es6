@@ -272,7 +272,7 @@ export default Ember.Controller.extend(BufferedContent, {
       const quoteState = this.get('quoteState');
       const postStream = this.get('model.postStream');
 
-      if (!postStream) return;
+      if (!postStream || !topic || !topic.get('details.can_create_post')) { return; }
 
       const quotedPost = postStream.findLoadedPost(quoteState.postId);
       const quotedText = Quote.build(quotedPost, quoteState.buffer);
@@ -305,7 +305,7 @@ export default Ember.Controller.extend(BufferedContent, {
     },
 
     recoverPost(post) {
-      post.get("post_number") === 1 ? this.recoverTopic() : this.recover();
+      post.get("post_number") === 1 ? this.recoverTopic() : post.recover();
     },
 
     deletePost(post) {

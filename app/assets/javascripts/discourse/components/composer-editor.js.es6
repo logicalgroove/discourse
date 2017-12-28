@@ -363,7 +363,7 @@ export default Ember.Component.extend({
         const $e = $(e);
         var name = $e.data('name');
         if (found.indexOf(name) === -1){
-          this.sendAction('groupsMentioned', [{name: name, user_count: $e.data('mentionable-user-count')}]);
+          this.sendAction('groupsMentioned', [{name: name, user_count: $e.data('mentionable-user-count'), max_mentions: $e.data('max-mentions')}]);
           found.push(name);
         }
       });
@@ -432,9 +432,9 @@ export default Ember.Component.extend({
         return;
       }
 
-      const { types } = clipboardData(e);
+      const { canUpload, canPasteHtml } = clipboardData(e, true);
 
-      if (types.includes("text/plain") || (types.includes("text/html") && this.siteSettings.enable_rich_text_paste)) {
+      if (!canUpload || canPasteHtml) {
         e.preventDefault();
       }
     });
@@ -493,7 +493,7 @@ export default Ember.Component.extend({
       this._xhr = null;
 
       if (!userCancelled) {
-        displayErrorForUpload(data.jqXHR.responseJSON);
+        displayErrorForUpload(data);
       }
     });
 

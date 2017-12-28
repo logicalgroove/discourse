@@ -142,6 +142,7 @@ en:
       max_username_length_range: "You cannot set the maximum below the minimum."
       default_categories_already_selected: "You cannot select a category used in another list."
       s3_upload_bucket_is_required: "You cannot enable uploads to S3 unless you've provided the 's3_upload_bucket'."
+    conflicting_google_user_id: 'The Google Account ID for this account has changed; staff intervention is required for security reasons. Please contact staff and point them to <br><a href="https://meta.discourse.org/t/76575">https://meta.discourse.org/t/76575</a>'
 
   activemodel:
     errors:
@@ -1090,7 +1091,7 @@ en:
     top_page_default_timeframe: "Default timeframe for the top view page."
     show_email_on_profile: "Show a user's email on their profile (only visible to themselves and staff)"
     prioritize_username_in_ux: "Show username first on user page, user card and posts (when disabled name is shown first)"
-    enable_rich_text_paste: "Enable automatic HTML to Markdown conversion when pasting text into the composer."
+    enable_rich_text_paste: "Enable automatic HTML to Markdown conversion when pasting text into the composer. (Experimental)"
 
     email_token_valid_hours: "Forgot password / activate account tokens are valid for (n) hours."
 
@@ -1162,6 +1163,7 @@ en:
     github_client_secret: "Client secret for Github authentication, registered at https://github.com/settings/applications"
 
     readonly_mode_during_backup: "Enable read only mode while taking a backup"
+    enable_backups: "Allow administrators to create backups of the forum"
     allow_restore: "Allow restore, which can replace ALL site data! Leave false unless you plan to restore a backup"
     maximum_backups: "The maximum amount of backups to keep on disk. Older backups are automatically deleted"
     automatic_backups_enabled: "Run automatic backups as defined in backup frequency"
@@ -1422,7 +1424,7 @@ en:
     relative_date_duration: "Number of days after posting where post dates will be shown as relative (7d) instead of absolute (20 Feb)."
     delete_user_max_post_age: "Don't allow deleting users whose first post is older than (x) days."
     delete_all_posts_max: "The maximum number of posts that can be deleted at once with the Delete All Posts button. If a user has more than this many posts, the posts cannot all be deleted at once and the user can't be deleted."
-    username_change_period: "The number of days after registration that accounts can change their username (0 to disallow username change)."
+    username_change_period: "The maximum number of days after registration that accounts can change their username (0 to disallow username change)."
     email_editable: "Allow users to change their e-mail address after registration."
     logout_redirect: "Location to redirect browser to after logout (eg: http://somesite.com/logout)"
 
@@ -1617,6 +1619,7 @@ en:
       enable_sso_disabled: "You must first enable 'enable sso' before enabling this setting."
       staged_users_disabled: "You must first enable 'staged users' before enabling this setting."
       reply_by_email_disabled: "You must first enable 'reply by email' before enabling this setting."
+      sso_url_is_empty: "You must set a 'sso url' before enabling this setting."
 
   search:
     within_post: "#%{post_number} by %{username}"
@@ -2012,7 +2015,7 @@ en:
 
         This is an automated message from %{site_name} to let you know that your post was hidden.
 
-        %{base_url}%{url}
+        <%{base_url}%{url}>
 
         %{flag_reason}
 
@@ -2875,6 +2878,7 @@ en:
     store_failure: "Failed to store upload #%{upload_id} for user #%{user_id}."
     file_missing: "Sorry, you must provide a file to upload."
     empty: "Sorry, but the file you provided is empty."
+    png_to_jpg_conversion_failure_message: "An error happened when converting from PNG to JPG."
     attachments:
       too_large: "Sorry, the file you are trying to upload is too big (maximum size is %{max_size_kb}KB)."
     images:
@@ -3667,3 +3671,6 @@ en:
         description: |
           <p>If you ever feel like changing these settings, visit <a href='/admin' target='_blank'>your admin section</a>; find it next to the wrench icon in the site menu.</p>
           <p>Have fun, and good luck <a href='https://blog.discourse.org/2014/08/building-a-discourse-community/' target='_blank'>building your new community!</a></p>
+
+  search_logs:
+    graph_title: "Search Count"

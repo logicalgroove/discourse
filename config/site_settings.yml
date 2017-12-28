@@ -291,6 +291,7 @@ login:
   enable_sso:
     client: true
     default: false
+    validator: "EnableSsoValidator"
   sso_allows_all_return_paths: false
   enable_sso_provider: false
   verbose_sso_logging: false
@@ -1095,7 +1096,7 @@ developer:
   top_topics_formula_least_likes_per_post_multiplier:
     default: 3
   rebake_old_posts_count:
-    default: 250
+    default: 100
     min: 1
   migrate_to_new_scheme:
     hidden: true
@@ -1171,6 +1172,10 @@ legal:
     default: ''
 
 backups:
+  enable_backups:
+    default: true
+    shadowed_by_global: true
+    client: true
   readonly_mode_during_backup:
     default: false
   allow_restore:

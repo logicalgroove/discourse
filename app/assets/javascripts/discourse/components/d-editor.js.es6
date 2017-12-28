@@ -9,8 +9,7 @@ import { emojiUrlFor } from 'discourse/lib/text';
 import { getRegister } from 'discourse-common/lib/get-owner';
 import { findRawTemplate } from 'discourse/lib/raw-templates';
 import { determinePostReplaceSelection, clipboardData } from 'discourse/lib/utilities';
-import { ajax } from 'discourse/lib/ajax';
-import { popupAjaxError } from 'discourse/lib/ajax-error';
+import toMarkdown from 'discourse/lib/to-markdown';
 import deprecated from 'discourse-common/lib/deprecated';
 
 // Our head can be a static string or a function that returns a string
@@ -37,6 +36,11 @@ const OP = {
 const FOUR_SPACES_INDENT = '4-spaces-indent';
 
 const _createCallbacks = [];
+
+const isInside = (text, regex) => {
+  const matches = text.match(regex);
+  return matches && (matches.length % 2);
+};
 
 class Toolbar {
 
@@ -275,6 +279,7 @@ export default Ember.Component.extend({
     const markdownOptions = this.get('markdownOptions') || {};
 
     cookAsync(value, markdownOptions).then(cooked => {
+      if (this.get('isDestroyed')) { return; }
       this.set('preview', cooked);
       Ember.run.scheduleOnce('afterRender', () => {
         if (this._state !== "inDOM") { return; }
@@ -628,7 +633,8 @@ export default Ember.Component.extend({
 
     if (rows.length > 1) {
       const columns = rows.map(r => r.split("\t").length);
-      const isTable = columns.reduce((a, b) => a && columns[0] === b && b > 1);
+      const isTable = columns.reduce((a, b) => a && columns[0] === b && b > 1) &&
+                      !(columns[0] === 2 && rows[0].split("\t")[0].match(/^•$|^\d+.$/)); // to skip tab delimited lists
 
       if (isTable) {
         const splitterRow = [...Array(columns[0])].map(() => "---").join("\t");
@@ -645,9 +651,11 @@ export default Ember.Component.extend({
       return;
     }
 
-    const { clipboard, types } = clipboardData(e);
+    const isComposer = $("#reply-control .d-editor-input").is(":focus");
+    let { clipboard, canPasteHtml } = clipboardData(e, isComposer);
+
     let plainText = clipboard.getData("text/plain");
-    const html = clipboard.getData("text/html");
+    let html = clipboard.getData("text/html");
     let handled = false;
 
     if (plainText) {
@@ -659,33 +667,32 @@ export default Ember.Component.extend({
       }
     }
 
-    if (this.siteSettings.enable_rich_text_paste && html && !handled) {
-      const placeholder = `${ plainText || I18n.t('pasting') }`;
-      const self = this;
+    const { pre, lineVal } = this._getSelected(null, {lineVal: true});
+    const isInlinePasting = pre.match(/[^\n]$/);
 
-      this.appEvents.trigger('composer:insert-text', placeholder);
-      handled = true;
-
-      ajax('/composer/parse_html', {
-        type: 'POST',
-        data: { html }
-      }).then(response => {
-        if (response.markdown) {
-          self.appEvents.trigger('composer:replace-text', placeholder, response.markdown);
-        } else if (!plainText) {
-          self.appEvents.trigger('composer:replace-text', placeholder, "");
-        }
-      }).catch(error => {
-        if (!plainText) {
-          self.appEvents.trigger('composer:replace-text', placeholder, "");
-          popupAjaxError(error);
-        }
-      });
+    if (canPasteHtml && plainText) {
+      if (isInlinePasting) {
+        canPasteHtml = !(lineVal.match(/^```/) || isInside(pre, /`/g) || lineVal.match(/^    /));
+      } else {
+        canPasteHtml = !isInside(pre, /(^|\n)```/g);
+      }
     }
 
-    const uploadFiles = types.includes("Files") && !plainText && !handled;
+    if (canPasteHtml && !handled) {
+      let markdown = toMarkdown(html);
 
-    if (handled || uploadFiles) {
+      if (!plainText || plainText.length < markdown.length) {
+        if(isInlinePasting) {
+          markdown = markdown.replace(/^#+/, "").trim();
+          markdown = pre.match(/\S$/) ? ` ${markdown}` : markdown;
+        }
+
+        this.appEvents.trigger('composer:insert-text', markdown);
+        handled = true;
+      }
+    }
+
+    if (handled) {
       e.preventDefault();
     }
   },
