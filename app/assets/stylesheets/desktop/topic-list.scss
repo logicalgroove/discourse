@@ -64,6 +64,7 @@
     padding: 12px 5px;
     &:first-of-type {
       padding-left: 10px;
+    }
     > tbody > tr {
       &.highlighted {
         animation: background-fade-highlight 2.5s ease-out;
@@ -73,6 +74,7 @@
       padding: 0;
       margin-right: 0.3em;
     }
+  }
 
     .star {
       width: 20px;
