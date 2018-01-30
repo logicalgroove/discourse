@@ -70,7 +70,8 @@ class PostSerializer < BasicPostSerializer
              :is_auto_generated,
              :action_code,
              :action_code_who,
-             :last_wiki_edit
+             :last_wiki_edit,
+             :locked
 
   def initialize(object, opts)
     super(object, opts)
@@ -357,6 +358,15 @@ class PostSerializer < BasicPostSerializer
 
   def include_action_code_who?
     include_action_code? && action_code_who.present?
+  end
+
+  def locked
+    true
+  end
+
+  # Only show locked posts to the users who made the post and staff
+  def include_locked?
+    object.locked? && (yours || scope.is_staff?)
   end
 
   def last_wiki_edit
