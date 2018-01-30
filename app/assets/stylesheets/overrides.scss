@@ -129,7 +129,9 @@ nav.post-controls button.d-hover, nav.post-controls button.delete.d-hover, nav.p
     .avatar-wrapper {
       float: left;
       margin-right: 10px;
-      @include small-width {  margin-right: 0px !important; }
+      @include small-width {
+        margin: 0px 0px 5px 0px !important;
+      }
       span.online {
         font-size: 18px;
         top: 94px;

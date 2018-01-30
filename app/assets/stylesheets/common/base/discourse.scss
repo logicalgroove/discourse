@@ -312,6 +312,7 @@ select {
 }
 
 .avatar-wrapper {
+  @include small-width { background-color: transparent; }
   background-color: $secondary;
   display: inline-block;
   border-radius: 50%;
