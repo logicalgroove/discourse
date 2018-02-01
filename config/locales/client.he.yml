@@ -444,7 +444,6 @@ he:
       '14': "ממתין"
     categories:
       all: "כל הקטגוריות"
-      all_subcategories: "הכל"
       no_subcategory: "ללא"
       category: "קטגוריה"
       category_list: "הצגת גשימת קטגוריות"
@@ -739,7 +738,6 @@ he:
         title: "הזמנות"
         user: "משתמשים שהוזמנו"
         sent: "נשלח"
-        none: "אין הזמנות ממתינות להציג."
         truncated:
           one: "מראה את ההזמנה הראשונה."
           other: "מראה את {{count}} ההזמנות הראשונות."
@@ -1120,8 +1118,6 @@ he:
         posted: "פורסם על ידי"
         edited: "ערוך את הפוסט שלך על ידי"
         liked: "אהב את הפוסט שלך"
-        private_message: "הודעה פרטית מ"
-        invited_to_private_message: "הזמנה להודעה פרטית מ"
         invited_to_topic: "הוזמנת לנושא חדש מ"
         invitee_accepted: "הזמנה התקבלה על ידי"
         moved_post: "הפוסט שלך הוזז על ידי"
@@ -1134,7 +1130,6 @@ he:
         quoted: '{{username}} ציטט/ה אותך ב"{{topic}}" - {{site_title}}'
         replied: '{{username}} הגיב/ה לך ב"{{topic}}" - {{site_title}}'
         posted: '{{username}} הגיב/ה ב"{{topic}}" - {{site_title}}'
-        private_message: '{{username}} שלח/ה לך הודעה פרטית ב"{{topic}}" - {{site_title}}'
         linked: '{{username}} קישרו לפוסט שלכם מ"{{topic}}" - {{site_title}}'
     upload_selector:
       title: "הוספת תמונה"
@@ -1442,7 +1437,6 @@ he:
         visible: "גילוי"
         reset_read: "אפס מידע שנקרא"
         make_public: "הפיכת הנושא לפומבי"
-        make_private: "הפיכה להודעה פרטית"
       feature:
         pin: "נעיצת נושא"
         unpin: "שחרור נעיצת נושא"
@@ -1570,8 +1564,6 @@ he:
           one: בחרתם פוסט אחד.
           other: בחרתם <b>{{count}}</b> פוסטים.
     post:
-      reply: "<i class='fa fa-mail-forward'></i> {{replyAvatar}} {{usernameLink}}"
-      reply_topic: "<i class='fa fa-mail-forward'></i> {{link}}"
       quote_reply: "ציטוט"
       edit_reason: "סיבה: "
       post_number: "פוסט {{number}}"
@@ -2116,7 +2108,6 @@ he:
         one: "הוענק"
         other: "%{count} הוענקו"
       select_badge_for_title: בחרו בעיטור לשימוש בכותרת שלכם
-      none: "(none)"
       badge_grouping:
         getting_started:
           name: מתחילים
@@ -2272,7 +2263,6 @@ he:
         title: "דגלים"
         agree: "הסכמה"
         agree_title: "אישור דגל זה כתקין ונכון"
-        defer_flag_title: "הסרה של דגל זה; הוא אינו דורש פעולה כעת."
         delete: "מחיקה"
         delete_title: "מחיקת הפוסט שהדגל מצביע עליו."
         delete_post_defer_flag_title: "מחיקת הפוסט; אם זהו הפוסט הראשון, מחיקת הנושא"
@@ -2451,7 +2441,6 @@ he:
           label: "העלה"
           title: "טען גיבוי לinstance הזה"
           uploading: "מעלה..."
-          success: "'{{filename}}' הועלה בהצלחה."
           error: "הייתה שגיאה במהלך העלאת '{{filename}}': {{message}}"
         operations:
           is_running: "פעולה רצה כרגע..."

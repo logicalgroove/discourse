@@ -855,7 +855,7 @@ en:
         title: "Invites"
         user: "Invited User"
         sent: "Sent"
-        none: "There are no pending invites to display."
+        none: "No invites to display."
         truncated:
           one: "Showing the first invite."
           other: "Showing the first {{count}} invites."
@@ -1281,6 +1281,7 @@ en:
       olist_title: "Numbered List"
       ulist_title: "Bulleted List"
       list_item: "List item"
+      toggle_direction: "Toggle Direction"
       help: "Markdown Editing Help"
       collapse: "minimize the composer panel"
       abandon: "close composer and discard draft"
@@ -1292,6 +1293,23 @@ en:
         body: "Right now this message is only being sent to yourself!"
 
       admin_options_title: "Optional staff settings for this topic"
+
+      composer_actions:
+        reply_as_new_topic:
+          label: Reply as linked topic
+          desc: Create a new topic
+        reply_as_private_message:
+          label: New message
+          desc: Create a private message
+        reply_to_topic:
+          label: Reply to topic
+          desc: Reply to the original post without replying to a specific post
+        reply_as_whisper:
+          label: Reply as whipser
+          desc: This message will only be visible by staff members
+        reply_as_not_whisper:
+          label: Reply as not whisher
+          desc: This message will be visible by anyone
 
     notifications:
       tooltip:
@@ -1884,8 +1902,6 @@ en:
           other: "You have selected <b>{{count}}</b> posts."
 
     post:
-      reply: "<i class='fa fa-mail-forward'></i> {{replyAvatar}} {{usernameLink}}"
-      reply_topic: "<i class='fa fa-mail-forward'></i> {{link}}"
       quote_reply: "Quote"
       edit: "<i class='fa fa-pencil'></i> {{link}} {{replyAvatar}} {{username}}"
       edit_reason: "Reason: "
@@ -2897,7 +2913,7 @@ en:
           label: "Upload"
           title: "Upload a backup to this instance"
           uploading: "Uploading..."
-          success: "'{{filename}}' has successfully been uploaded."
+          success: "'{{filename}}' has successfully been uploaded. The file is now being processed and will take up to a minute to show up in the list."
           error: "There has been an error while uploading '{{filename}}': {{message}}"
         operations:
           is_running: "An operation is currently running..."
